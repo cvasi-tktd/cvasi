@@ -9,6 +9,8 @@ utils::globalVariables(c(
   "ep", # <epx_binary_search>
   "level", # <epx_binary_search>
   "mf", # <epx_binary_search>
+  "gridExtra", # <derive_range>
+  ".data", # <derive_range>
   ".", # <format_table>
   "scenario", # <pull_metadata>
   "context", # <pull_metadata>

@@ -32,7 +32,6 @@ Imports:
     deSolve,
     lubridate,
     attempt,
-    tidyselect,
     units
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd",

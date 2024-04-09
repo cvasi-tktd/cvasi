@@ -15,3 +15,4 @@
 # directory created by README.Rmd
 ^man/figures$
 ^LICENSE\.md$
+^CONTRIBUTING.md$

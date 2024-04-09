@@ -6,6 +6,7 @@
 #' @param obs_full `data.frame`, full experimental data set including replicates
 #' @param ... any additional parameters
 #' @return data frame with confidence intervals
+#' @autoglobal
 #'
 #' @examples
 #' \dontrun{

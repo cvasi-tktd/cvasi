@@ -6,7 +6,7 @@
 <!-- badges: start -->
 <!--[![CRAN status](https://www.r-pkg.org/badges/version/cvasi)](https://cran.r-project.org/package=cvasi)-->
 
-[![R-CMD-check](https://github.com/bayer-int/cvasi/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bayer-int/cvasi/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/Bayer-Group/cvasi/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Bayer-Group/cvasi/actions/workflows/R-CMD-check.yaml)
 <!--[![Codecov test coverage](https://codecov.io/gh/xy/cvasi/branch/main/graph/badge.svg)](https://app.codecov.io/gh/xy/cvasi?branch=main)-->
 <!-- badges: end -->
 
@@ -18,13 +18,13 @@ time-consuming processes can be run in parallel if requested.
 
 The package provides facilities to
 
-- simulate effect models GUTS-RED, DEB, and Lemna
-- calculate survival and other effect endpoints
-- create dose-response curves
-- derive effect profiles (EPx values)
-- import exposure time-series from FOCUS TOXSWA
-- import fitted parameters from morse
-- …
+- simulate effect models such as *GUTS-RED*, *DEB*, *Lemna*,
+  *Myriophyllum*, and *Algae*
+- calculate effect endpoints
+- derive effect profiles (*EPx* values)
+- import exposure time-series from *FOCUS TOXSWA*
+- import fitted parameters from *morse*
+- and more
 
 Please have a look at the [CHANGELOG](CHANGELOG.md) for an overview of
 user-facing updates and changes.
@@ -33,10 +33,8 @@ user-facing updates and changes.
 
 The package contains the following vignettes
 
-- [User
-  Manual](https://github.com/bayer-int/cvasi/blob/master/doc/manual.md)
-- [Modeling
-  Howto](https://github.com/bayer-int/cvasi/blob/master/doc/howto.md)
+- [User Manual](doc/manual.md)
+- [Modeling Howto](doc/howto.md)
 
 They can also be accessed locally by executing an *R* statement such as:
 
@@ -46,20 +44,16 @@ vignette("manual", package="cvasi")
 
 ## Installation
 
-1.  Create a GitHub Access Token if you don’t have one already:
-    - Open [GitHub](https://github.com/)
-    - Go to *User Preferences* \> *Settings* \> *Developer Settings*
-    - Go to *Personal Access Tokens*
-    - Click *Generate new token*  
-      Assign a token name, set an expiration date, select `repo` scope,
-      and create the token.  
-      **Please save it for later use**, it will only be displayed once.
-2.  Install the packages in the following order
+<!-- 1. Install from CRAN -->
+<!-- ```{r eval=FALSE} -->
+<!-- install.packages("cvasi", dependencies=TRUE) -->
+<!-- ``` -->
+
+Install latest version from GitHub:
 
 ``` r
 install.packages("remotes", dependencies=TRUE)
-Sys.setenv(GITHUB_PAT=rstudioapi::askForPassword("Enter your GitHub token"))
-remotes::install_github("bayer-int/cvasi", dependencies=TRUE, upgrade="never")
+remotes::install_github("Bayer-Group/cvasi", dependencies=TRUE, upgrade="never")
 ```
 
 ## Example

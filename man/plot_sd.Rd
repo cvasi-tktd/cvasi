@@ -56,7 +56,51 @@ can be optionally displayed. Data should be provided in long format.
 }
 \examples{
 \dontrun{
-plot_sd(model_base, treatments, rs_mean, obs_mean)
-}
+exposure <- structure(list(time = 0:21,
+  conc = c(0.0446, 0.0182, 0.007, 0.0563,
+         0.1079, 0.047, 0.0193, 0.061, 0.0555, 0.163, 0.1277, 0.1587,
+         0.0269, 0.1438, 0.1004, 0.1563, 0.1138, 0.1461, 0.1101, 0.2733,
+         0.2752, 0.2772),
+  trial = c("T1", "T1", "T1", "T1", "T1", "T1",
+          "T1", "T1", "T1", "T1", "T1", "T1", "T1", "T1", "T1", "T1", "T1",
+          "T1", "T1", "T1", "T1", "T1")),
+  row.names = c(NA, -22L), class = "data.frame")
 
+forcings <- list(temp = structure(list(t = 0, value = 12),
+                                  class = "data.frame",
+                                  row.names = c(NA, -1L)),
+                 rad = structure(list(t = 0, value = 15000),
+                                 class = "data.frame",
+                                 row.names = c(NA, -1L)))
+
+param <- list(Emax = 0.784, AperBM = 1000, Kbm = 0.75, P_Temp = FALSE,
+              MolWeight = 381, k_phot_fix = FALSE, k_phot_max = 0.47, k_resp = 0.05,
+              k_loss = 0, Tmin = 8, Tmax = 40.5, Topt = 26.7, t_ref = 25,
+              Q10 = 2, k_0 = 3, a_k = 5e-05, C_P = 0.3, CP50 = 0.0043,
+              a_P = 1, KiP = 101, C_N = 0.6, CN50 = 0.034, a_N = 1, KiN = 604,
+              BM50 = 176, mass_per_frond = 1e-04, BMw2BMd = 16.7, EC50 = 0.3,
+              b = 4.16, P_up = 0.0054)
+inits <- list(BM = 0.0012, E = 1, M_int = 0)
+
+model_input <- cvasi::Lemna_Schmitt() \%>\%
+  cvasi::set_forcings(forcings) \%>\%
+  cvasi::set_param(param) \%>\%
+  cvasi::set_init(inits)
+
+sim_result <- cvasi::simulate_batch(model_base = model_input,
+                                    treatments = exposure,
+                                    param_sample = NULL)
+
+
+cvasi::plot_sd(model_base = model_input,
+               treatments = exposure,
+               rs_mean = sim_result,
+               obs_mean = NULL,
+               x_breaks = axisTicks(
+                 usr = range(exposure[,"time"]),
+                 log = FALSE,
+                 axp = NULL,
+                 nint = 5)
+)
+}
 }

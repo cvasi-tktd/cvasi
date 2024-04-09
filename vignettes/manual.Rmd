@@ -79,36 +79,14 @@ especially if several operations are performed on the same objects.
 
 # How to install
 
-The *cvasi* package is provided as a *source packages* that contains all the
-libraries' source code, documentation, and unit tests for review.
-*Source packages* have the file extension `.tar.gz` which indicates a
-gzipped tarball, i.e. a compressed file archive. Installing the packages requires
-the following software and libraries to be present on the target computer:
+The simplest way to install the *cvasi* package is by downloading it from *CRAN*:
 
- - *R* shell, version 4+ recommended
- - *Rtools*, for building *R* packages from source (on *MS Windows* only)
- - `remotes`, a package to simplify the installation process
-
-The *R* shell (and *Rtools*, if needed) can be downloaded and installed
-from the official [R-Project](https://cran.r-project.org/) website. After installing the
-required software, the following *R* statements install the *source packages* in the
-computer's *R* library:
-
-```{r, eval=FALSE}
-## Optional: print current working directory
-#getwd()
-## Optional: switch working directory
-#setwd("local/path/to/cvasi_files")
-
-## Install the 'remotes' package if not yet present
-install.packages("remotes")
-## Followed by package 'cvasi'
-remotes::install_local("cvasi_y.y.y.tar.gz", dependencies=TRUE)
+```{r eval=FALSE}
+install.packages("cvasi", dependencies=TRUE)
 ```
 
-The actual file names of the *source packages* depend on their version numbers
-and may differ from the values given in this manual. During installation,
-missing dependencies will be automatically fetched and installed.
+The package and its source code is also available on [GitHub](https://github.com/Bayer-Group/cvasi/).
+
 
 # Modeling and assessment workflow
 

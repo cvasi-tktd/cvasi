@@ -1,7 +1,7 @@
 User Manual
 ================
 Nils Kehrein
-20 February, 2024
+09 April, 2024
 
 - <a href="#required-skills" id="toc-required-skills">Required skills</a>
 - <a href="#how-to-install" id="toc-how-to-install">How to install</a>
@@ -84,38 +84,15 @@ especially if several operations are performed on the same objects.
 
 # How to install
 
-The *cvasi* package is provided as a *source packages* that contains all
-the libraries’ source code, documentation, and unit tests for review.
-*Source packages* have the file extension `.tar.gz` which indicates a
-gzipped tarball, i.e. a compressed file archive. Installing the packages
-requires the following software and libraries to be present on the
-target computer:
-
-- *R* shell, version 4+ recommended
-- *Rtools*, for building *R* packages from source (on *MS Windows* only)
-- `remotes`, a package to simplify the installation process
-
-The *R* shell (and *Rtools*, if needed) can be downloaded and installed
-from the official [R-Project](https://cran.r-project.org/) website.
-After installing the required software, the following *R* statements
-install the *source packages* in the computer’s *R* library:
+The simplest way to install the *cvasi* package is by downloading it
+from *CRAN*:
 
 ``` r
-## Optional: print current working directory
-#getwd()
-## Optional: switch working directory
-#setwd("local/path/to/cvasi_files")
-
-## Install the 'remotes' package if not yet present
-install.packages("remotes")
-## Followed by package 'cvasi'
-remotes::install_local("cvasi_y.y.y.tar.gz", dependencies=TRUE)
+install.packages("cvasi", dependencies=TRUE)
 ```
 
-The actual file names of the *source packages* depend on their version
-numbers and may differ from the values given in this manual. During
-installation, missing dependencies will be automatically fetched and
-installed.
+The package and its source code is also available on
+[GitHub](https://github.com/Bayer-Group/cvasi/).
 
 # Modeling and assessment workflow
 
@@ -454,11 +431,6 @@ efficiently with arbitrary precision:
 mydeb %>% 
   set_endpoints("L") %>%
   epx()
-#> 
-#> Attaching package: 'purrr'
-#> The following object is masked from 'package:testthat':
-#> 
-#>     is_null
 #> # A tibble: 1 × 3
 #>   scenario L.EP10 L.EP50
 #>   <list>    <dbl>  <dbl>
@@ -466,37 +438,35 @@ mydeb %>%
 ```
 
 In the previous example, a factor `1.16` resulted in 10% effect on
-structural length and a factor of `1.71` in 50% effect. The margin of
-safety could be considered small in this particular scenario as small
-increases in exposure could cause large effects. `epx()` provides means
-to control the precision of derived *EPx* values, the range of tested
-multiplication factors, factor cutoff thresholds, and debugging
+structural length and a factor of `1.71` in 50% effect. `epx()` provides
+means to control the precision of derived *EPx* values, the range of
+tested multiplication factors, factor cutoff thresholds, and debugging
 capabilities. To examine how a particular *EPx* value was derived,
 simply set the argument `verbose=TRUE`:
 
 ``` r
 # Examine how the EP23 value is derived
-minnow_it %>% epx(level=23, verbose=TRUE)
+minnow_it %>% epx(level=20, verbose=TRUE)
 #> epx: screening multiplication factors
 #>   start: 10
-#>   L.EP23: 1 <<<
-#>   L.EP23: 5.5
-#>   L.EP23: 7.75
-#>   L.EP23: 6.625
-#>   L.EP23: 7.1875
-#>   L.EP23: 6.90625
-#>   L.EP23: 7.046875
-#>   L.EP23: 7.1171875
-#>   L.EP23: 7.08203125
+#>   L.EP20: 1 <<<
+#>   L.EP20: 5.5
+#>   L.EP20: 7.75
+#>   L.EP20: 6.625
+#>   L.EP20: 7.1875
+#>   L.EP20: 6.90625
+#>   L.EP20: 6.765625
+#>   L.EP20: 6.8359375
+#>   L.EP20: 6.80078125
 #> # A tibble: 1 × 2
-#>   scenario   L.EP23
+#>   scenario   L.EP20
 #>   <list>      <dbl>
-#> 1 <GutsRdIt>   7.08
+#> 1 <GutsRdIt>   6.80
 ```
 
 In this example, the algorithm of `epx()` first tests a multiplication
 factor of `10` and then continues testing additional factors until one
-is found that causes 23% effect.
+is found that causes 20% effect.
 
 # Data format of model inputs
 

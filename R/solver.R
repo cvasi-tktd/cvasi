@@ -1,0 +1,559 @@
+#' Calls ODE solver for a particular model
+#'
+#' Please refer to the *Modeling Howto* vignette on how to implement custom
+#' models by overloading the `solver` function.
+#'
+#' @param scenario \linkS4class{EffectScenario} object
+#' @param times numeric vector of output times, overrides any scenario setting
+#' @param ... additional parameters passed on to [deSolve::ode()]
+#' @param approx string, interpolation method of exposure series, see [stats::approxfun()]
+#' @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
+#' @param method string, numerical solver used by [deSolve::ode()]
+#' @param hmax numeric, maximum step length in time, see [deSolve::ode()]
+#' @return `data.frame` with simulation results
+#' @export
+setGeneric("solver",
+           function(scenario, times, ...) standardGeneric("solver"),
+           signature = "scenario"
+)
+
+# Default solver which uses the model's name to switch between solver calls
+solver_default <- function(scenario, times, ...) {
+  stop("unknown model type, cannot simulate scenario")
+}
+#' @describeIn solver Default solver, raises an error
+setMethod("solver", "ANY", solver_default)
+
+# @param scenario Scenario object
+# @param times numeric vector, time points for result set
+# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
+# @param hmax numeric, maximum step length in time, see [deSolve::ode()]
+# @param ... additional arguments passed to [deSolve::ode()]
+# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
+# @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
+# @param method string, numerical solver used by [deSolve::ode()]
+#' @importFrom deSolve ode
+solver_GUTS_RED_SD <- function(scenario, times, approx=c("linear","constant"),
+                               f=1, method="lsoda", hmax=1, ...) {
+  # use time points from scenario if nothing else is provided
+  if(missing(times))
+    times <- scenario@times
+  # check if at least two time points are present
+  if(length(times)<2) stop("times vector is not an interval")
+
+  params <- scenario@param
+  if(is.list(params))
+    params <- unlist(params)
+  approx <- match.arg(approx)
+
+  # make sure that parameters are present and in required order
+  params <- params[c("kd","hb","z","kk")]
+
+  as.data.frame(ode(y=scenario@init, times=times, parms=params, dllname="cvasi",
+      initfunc="gutsredsd_init", func="gutsredsd_func", initforc="gutsredsd_forc",
+      forcings=scenario@exposure@series, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
+      outnames=c("Cw"), method=method, hmax=hmax, ...))
+}
+#' @include class-GutsRed.R
+#' @describeIn solver Numerically integrates GUTS-RED-SD models
+setMethod("solver", "GutsRedSd", function(scenario, times, ...) solver_GUTS_RED_SD(scenario, times, ...))
+
+# @param scenario Scenario object
+# @param times numeric vector, time points for result set
+# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
+# @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
+# @param method string, numerical solver used by [deSolve::ode()]
+# @param hmax numeric, maximum step length in time, see [deSolve::ode()]
+# @param ... additional arguments passed to [deSolve::ode()]
+#' @importFrom deSolve ode
+solver_GUTS_RED_IT <- function(scenario, times, approx=c("linear","constant"),
+                               f=1, method="lsoda", hmax=1, ...) {
+  # use time points from scenario if nothing else is provided
+  if(missing(times))
+    times <- scenario@times
+  # check if at least two time points are present
+  if(length(times)<2) stop("times vector is not an interval")
+
+  params <- scenario@param
+  if(is.list(params))
+    params <- unlist(params)
+  approx <- match.arg(approx)
+
+  # make sure that parameters are present and in required order
+  params <- params[c("kd","hb")]
+
+  as.data.frame(ode(y=scenario@init, times=times, parms=params, dllname="cvasi",
+                    initfunc="gutsredit_init", func="gutsredit_func", initforc="gutsredit_forc",
+                    forcings=scenario@exposure@series, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
+                    outnames=c("Cw"), method=method, hmax=hmax, ...))
+}
+#' @include class-GutsRed.R
+#' @describeIn solver Numerically integrates GUTS-RED-IT models
+setMethod("solver", "GutsRedIt", function(scenario, times, ...) solver_GUTS_RED_IT(scenario, times, ...) )
+
+# @param scenario Scenario object
+# @param times numeric vector, time points for result set
+# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
+# @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
+# @param nout `numeric`, number of additional output variables, `nout=1` appends
+#   the internal concentration `C_int`, the maximum number is 13
+# @param method string, numerical solver used by [deSolve::ode()]
+# @param hmax numeric, maximum step length in time, see [deSolve::ode()]
+# @param ... additional arguments passed to [deSolve::ode()]
+#' @importFrom deSolve ode
+solver_Lemna_Schmitt <- function(scenario, times, approx=c("linear","constant"),
+                                 f=1, nout=2, method="ode45", hmax=0.1, ...) {
+  # use time points from scenario if nothing else is provided
+  if(missing(times))
+    times <- scenario@times
+  # check if at least two time points are present
+  if(length(times)<2)
+    stop("times vector is not an interval")
+
+  params <- scenario@param
+  if(is.list(params))
+    params <- unlist(params)
+  approx <- match.arg(approx)
+
+  # make sure that parameters are present and in required order
+  params.req <- c("Emax","EC50","b","P_up","AperBM","Kbm","P_Temp","MolWeight",
+                  "k_phot_fix","k_phot_max","k_resp","k_loss","Tmin","Tmax",
+                  "Topt","t_ref","Q10","k_0","a_k","C_P","CP50","a_P","KiP",
+                  "C_N","CN50","a_N","KiN","BM50","mass_per_frond","BMw2BMd")
+  # additional output variables
+  outnames <- c("C_int","FrondNo","C_int_u","BM_fresh","k_phot_eff","k_resp_eff","f_Eff",
+                "P_up_eff","actConc","actTemp","actRad","dBMdt","dEdt","dM_intdt")
+
+  # check for missing parameters
+  params.missing <- setdiff(params.req, names(params))
+  if(length(params.missing)>0)
+    stop(paste("missing parameters:",paste(params.missing,sep=",",collapse=",")))
+
+  # make sure exposure AUC parameter exists
+  # magic value: -1 denotes that threshold is not considered
+  if(!("threshold" %in% names(params))) {
+    params["threshold"] <- -1
+  }
+  # disable threshold for scenarios were effects were disabled
+  if(params["Emax"] <= 0 | params["threshold"] <= 0) {
+    params["threshold"] <- -1
+  }
+
+  # reorder parameters for deSolve
+  params <- params[c(params.req, "threshold")]
+  # check if any parameter is negative apart from threshold
+  if(any(head(params,-1)<0))
+    stop(paste("parameter out of bounds:",paste(names(params)[which(head(params,-1)<0)],sep=",")))
+
+  # create forcings list
+  # TODO check if it can be activated without issues
+  #if(params["k_phot_fix"]==FALSE)
+  forcings <- list(scenario@exposure@series, scenario@forcings$temp, scenario@forcings$rad)
+  #else  # temp and radiation are not required by model if k_phot_fix==TRUE
+  #  forcings <- list(exposure, data.frame(t=0,temp=-1), data.frame(t=0,rad=-1))
+
+  # run solver
+  as.data.frame(ode(y=scenario@init, times=times, parms=params, dllname="cvasi",
+                    initfunc="lemna_init", func="lemna_func", initforc="lemna_forc",
+                    forcings=forcings, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
+                    nout=nout, outnames=outnames, method=method, hmax=hmax, ...))
+}
+#' @include class-Lemna.R
+#' @describeIn solver Numerically integrates Lemna_Schmitt models
+setMethod("solver", "LemnaSchmittScenario", function(scenario, times, ...) solver_Lemna_Schmitt(scenario, times, ...) )
+
+# Numerically integrate Lemna_SETAC scenarios
+#
+# @param scenario an EffectScenario object
+# @param times optional output times, will override scenario's properties
+# @param approx how to interpolate between data points in forcing series, see [deSolve::ode()]
+# @param rule how to handle data points outside of time-series, see [deSolve::forcings]
+# @param f how to approximate data points for `constant` interpolation, see [deSolve::forcings]
+# @param nout number of additional output variables, see [deSolve::ode()]
+# @param method numerical integration method, see [deSolve::ode()]
+# @param hmax numeric, set max step length in time, defaults to `0.1`
+# @param ... additional parameters passed on to [deSolve::ode()]
+#
+# @return data.frame
+### disabled for now @importFrom lemna lemna_desolve param_new
+solver_Lemna_SETAC <- function(scenario, times, approx = c("linear","constant"),
+                               rule=2, f=0, nout=2, method="lsoda", hmax=0.1, ...) {
+  if(missing(times))
+    times <- scenario@times
+  if(length(times) < 2)
+    stop("output times vector is not an interval")
+
+  params <- scenario@param
+  if(is.list(params)) params <- unlist(params)
+  approx <- match.arg(approx)
+
+  # check for missing parameters
+  params.missing <- setdiff(scenario@param.req, names(params))
+  if(length(params.missing)>0)
+    stop(paste("missing parameters:",paste(params.missing,sep=",",collapse=",")))
+
+  # reorder parameters for deSolve
+  params <- params[names(lemna::param_new())]
+  # check if any parameter is negative
+  if(any(params<0, na.rm=TRUE))
+    stop(paste("parameter out of bounds:",paste(names(params)[which(params<0)],sep=",")))
+
+  envir <- scenario@forcings
+  # Environmental factors are irrelevant in case of unlimited growth, removing any
+  # superfluous time-series data will reduce simulation overhead/runtime
+  if(params["k_photo_fixed"]) {
+    forcings <- list(scenario@exposure@series,
+                     data.frame(time=0, tmp=0),
+                     data.frame(time=0, irr=0),
+                     data.frame(time=0, P=0),
+                     data.frame(time=0, N=0))
+  } else {
+    forcings <- list(scenario@exposure@series, envir$tmp, envir$irr, envir$P, envir$N)
+  }
+
+  # run deSolve
+  as.data.frame(lemna::lemna_desolve(y=scenario@init, times=times, parms=params, forcings=forcings,
+    fcontrol=list(method=approx, rule=rule, f=f, ties="ordered"), nout=nout,
+    method=method, hmax=hmax, ...))
+}
+#' @include class-Lemna.R
+#' @describeIn solver Numerically integrates Lemna_SETAC models
+setMethod("solver", "LemnaSetacScenario", function(scenario, times, ...) solver_Lemna_SETAC(scenario, times, ...) )
+
+
+# Solver for MyrioExp scenarios
+solver_MyrioExp <- function(scenario, ...) {
+  # Constant identifying exponential growth model
+  scenario@param$growthno <- 1
+  # Dummy value, only used for logistic growth
+  scenario@param$BM_L <- NA_real_
+
+  solver_Myrio(scenario, ...)
+}
+#' @include class-Myriophyllum.R
+#' @describeIn solver Numerically integrates Myrio models
+setMethod("solver", "MyrioExpScenario", function(scenario, times, ...) solver_MyrioExp(scenario, times, ...))
+
+# Solver for MyrioLog scenarios
+solver_MyrioLog <- function(scenario, ...) {
+  # Constant identifying logistic growth model
+  scenario@param$growthno <- 2
+  solver_Myrio(scenario, ...)
+}
+#' @include class-Myriophyllum.R
+#' @describeIn solver Numerically integrates Myrio_log models
+setMethod("solver", "MyrioLogScenario", function(scenario, times, ...) solver_MyrioLog(scenario, times, ...))
+
+# Numerically solve Myriophyllum scenarios
+#
+# @param scenario
+# @param times
+# @param ... additional parameters passed on to `solve_Lemna_SETAC()`
+# @return data.frame
+solver_Myrio <- function(scenario, times, approx=c("linear","constant"),
+                         rule=2, f=0, nout=2, method="lsoda", hmax=0.1, ...) {
+  approx <- match.arg(approx)
+  if(missing(times))
+    times <- scenario@times
+  if(length(times) < 2)
+    stop("output times vector is not an interval")
+
+  params <- scenario@param
+  # make sure that parameters are present and in required order
+  params_order <- c("k_photo_max", "growthno", "BM_L", "E_max", "EC50_int", "b",
+                    "P", "r_A_DW", "r_FW_DW", "r_FW_V", "r_DW_TSL", "K_pw",
+                    "k_met")
+  if(is.list(params))
+    params <- unlist(params)
+
+  # check for missing parameters
+  params_missing <- setdiff(scenario@param.req, names(params))
+  if(length(params_missing)>0)
+    stop(paste("missing parameters:", paste(params_missing, collapse=",")))
+
+  # reorder parameters for deSolve
+  params <- params[params_order]
+  forcings <- list(scenario@exposure@series)
+  fcontrol <- list(method=approx, rule=rule, f=f, ties="ordered")
+
+  # set names of additional output variables
+  outnames <- c("C_int", "TSL", "f_photo", "C_int_unb", "C_ext", "dBM", "dM_int")
+
+  as.data.frame(ode(y=scenario@init, times=times, parms=params, dllname="cvasi",
+                    initfunc="myrio_init", func="myrio_func", initforc="myrio_forc",
+                    forcings=forcings, fcontrol=fcontrol, nout=nout, method=method,
+                    hmax=hmax, outnames=outnames, ...))
+}
+
+#' @importFrom deSolve ode
+solver_DEB_abj <- function(scenario, times, approx=c("linear","constant"), f=1,
+                           method="lsoda", ...) {
+  # use time points from scenario if nothing else is provided
+  if(missing(times))
+    times <- scenario@times
+  # check if at least two time points are present
+  if(length(times)<2) stop("times vector is not an interval")
+
+  approx <- match.arg(approx)
+  # make sure that parameters are present and in required order
+  params.req <- c("p_M","v","k_J","p_Am","kap","E_G","f","E_Hj","E_Hp","kap_R","ke","c0",
+                  "cT","L_b","L_j","MoA")
+  # additional output variables
+  outnames <- c("pC","pA","pJ","MV")
+
+  params <- scenario@param
+  if(is.list(params))
+    params <- unlist(params)
+
+  # check for missing parameters
+  params.missing <- setdiff(params.req, names(params))
+  if(length(params.missing)>0)
+    stop(paste("missing parameters:",paste(params.missing,sep=",",collapse=",")))
+
+  # reorder parameters for deSolve
+  params <- params[params.req]
+
+  # create forcings list
+  forcings <- list(scenario@exposure@series)
+
+  # run solver
+  as.data.frame(ode(y=scenario@init, times=times, parms=params, method=method,
+      dllname="cvasi", initfunc="deb_abj_init", func="deb_abj_func", initforc="deb_abj_forc",
+      forcings=forcings, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
+      outnames=outnames, ...))
+}
+#' @include class-Deb.R
+#' @describeIn solver Numerically integrates DEB_abj models
+setMethod("solver", "DebAbj", function(scenario, times, ...) solver_DEB_abj(scenario, times, ...))
+
+#' @importFrom utils head tail
+#' @importFrom deSolve ode
+solver_DEB_Daphnia <- function(scenario, times, approx=c("linear", "constant"),
+                               f=1, method="ode45", ...) {
+  # use time points from scenario if nothing else is provided
+  if(missing(times))
+    times <- scenario@times
+  # check if at least two time points are present
+  if(length(times)<2) stop("times vector is not an interval")
+
+  params <- scenario@param
+  if(is.list(params))
+    params <- unlist(params)
+  approx <- match.arg(approx)
+
+  if(scenario@init[["L"]] < params[["L0"]])
+    warning("initial L is smaller than parameter L0")
+
+  # make sure that parameters are present and in required order
+  params_req <- c("L0", "Lp", "Lm", "rB", "Rm", "f", "hb", "Lf", "Lj", "Tlag",
+                  "kd", "zb", "bb", "zs", "bs", "FBV", "KRV", "kap", "yP",
+                  "Lm_ref", "len", "Tbp", "MoA", "FB")
+  # Not all parameters are required by the ODE
+  params_ode <- setdiff(params_req, c("len", "Tbp"))
+  # additional output variables
+  outnames <- c("f", "fR", "kd", "s", "sA", "h", "xu", "xe", "xG", "xR")
+
+  # check for missing parameters
+  params.missing <- setdiff(params_req, names(params))
+  if(length(params.missing)>0)
+    stop(paste("missing parameters:",paste(params.missing,sep=",",collapse=",")))
+
+  # check if any parameter is negative
+  if(any(head(params,-1)<0))
+    stop(paste("parameter out of bounds:",paste(names(params)[which(head(params,-1)<0)],sep=",")))
+
+  # only one forcings time-series: exposure
+  forcings <- list(scenario@exposure@series)
+
+  # This is a means to include a delay caused by the brood pouch in species
+  # like Daphnia. The repro data are for the appearance of neonates, but egg
+  # production occurs earlier. This globally shifts the model output in this
+  # function below. This way, the time vector in the data does not need to be
+  # manipulated, and the model plots show the neonate production as expected.
+  bp <- params[["Tbp"]] > 0 # consider brood-pouch delay?
+  if(bp) {
+    tbp <- times[times > params[["Tbp"]]] - params[["Tbp"]] # extra times needed to calculate brood-pouch delay
+    ordering <- order(c(times, tbp))
+    loct <- c(rep(F, length(times)), rep(T, length(tbp)))[ordering]
+    times <- sort(c(times, tbp))
+  }
+
+  # run solver
+  out <- ode(y=scenario@init, times=times, parms=params[params_ode], dllname="cvasi",
+             initfunc="debtox_daphnia_init", func="debtox_daphnia_func",
+             initforc="debtox_daphnia_forc", forcings=forcings,
+             fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
+             outnames=outnames, method=method, ...)
+  out <- as.data.frame(out)
+
+  # Since we need to find the maximum of length over time, a large time
+  # vector is needed. We cannot use the events function to find the exact
+  # point at which length becomes negative, since the events functions only
+  # looks at states, and not at the derivatives!
+  if(params["len"] == 2) { # when animal cannot shrink in length (but does on weight!)
+    out[, "L"] <- cummax(out[, "L"])
+  }
+
+  out[, "S"] <- pmax(0, out[, "S"]) # make sure survival does not get negative
+  # In some cases, it may become just a bit negative, which means zero.
+
+  # if we need a brood-pouch delay ...
+  if(bp) {
+    Xbp <- out[loct, "R"]
+
+    # Select the correct time points to return to the calling function
+    out <- out[!loct, ]
+    # put in the brood-pouch ones we asked for
+    out[, "R"] <- c(rep(0, nrow(out) - length(Xbp)), Xbp)
+  }
+  out
+}
+#' @include class-Deb.R
+#' @describeIn solver Numerically integrates DEB_Daphnia models
+setMethod("solver", "DebDaphnia", solver_DEB_Daphnia)
+
+
+# @param scenario Scenario object
+# @param times numeric vector, time points for result set
+# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
+# @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
+# @param nout `numeric`, number of additional output variables, `nout=1` appends
+#   the internal concentration `C_int`, the maximum number is 13
+# @param method string, numerical solver used by [deSolve::ode()]
+# @param hmax numeric, maximum step length in time, see [deSolve::ode()]
+# @param ... additional arguments passed to [deSolve::ode()]
+#' @importFrom deSolve ode
+solver_Algae_Weber <- function(scenario, times, approx = c("linear","constant"),
+                                 f = 1, method = "lsoda", hmax = 0.1, ...) {
+  # use time points from scenario if nothing else is provided
+  if(missing(times))
+    times <- scenario@times
+  # check if at least two time points are present
+  if(length(times)<2)
+    stop("times vector is not an interval")
+
+  params.req = c("mu_max", "m_max", "v_max", "k_s",
+                "Q_min", "Q_max", "R_0", "D",
+                "T_opt", "T_min", "T_max", "I_opt",
+                "EC_50", "b", "k"
+  )
+
+  params <- scenario@param
+  if(is.list(params))
+    params <- unlist(params)
+
+  # reorder parameters for deSolve
+  params <- params[params.req]
+
+  # create forcings list
+  forcings <- list(
+    scenario@exposure@series,
+    scenario@forcings$I,
+    scenario@forcings$T_act
+    )
+
+  # run solver
+  as.data.frame(ode(y = scenario@init, times,
+    initfunc = "algae_init",
+    func = "algae_func",
+    initforc = "algae_forc",
+    parms = params,
+    forcings = forcings,
+    dllname = "cvasi",
+    method = method,
+    hmax = hmax,
+    ...))
+}
+
+#' @include class-Algae.R
+#' @describeIn solver numerically integrates Algae_Weber models
+setMethod("solver", "AlgaeWeberScenario", solver_Algae_Weber)
+
+#' @importFrom deSolve ode
+solver_Algae_TKTD <- function(scenario, times, approx = c("linear","constant"),
+                               f = 1, method = "lsoda", hmax = 0.1, ...) {
+  # use time points from scenario if nothing else is provided
+  if(missing(times))
+    times <- scenario@times
+  # check if at least two time points are present
+  if(length(times)<2)
+    stop("times vector is not an interval")
+
+  params.req = c("mu_max", "m_max", "v_max", "k_s",
+                 "Q_min", "Q_max",
+                 "T_opt", "T_min", "T_max", "I_opt",
+                 "EC_50", "b", "kD", "dose_resp"
+  )
+
+  params <- scenario@param
+  if(is.list(params))
+    params <- unlist(params)
+
+  # reorder parameters for deSolve
+  params <- params[params.req]
+
+  # create forcings list
+  forcings <- list(
+    scenario@exposure@series,
+    scenario@forcings$I,
+    scenario@forcings$T_act
+  )
+
+  # run solver
+  as.data.frame(ode(y = scenario@init, times,
+                    initfunc = "algae_TKTD_init",
+                    func = "algae_TKTD_func",
+                    initforc = "algae_TKTD_forc",
+                    parms = params,
+                    forcings = forcings,
+                    dllname = "cvasi",
+                    method = method,
+                    hmax = hmax,
+                    ...))
+}
+
+#' @include class-Algae.R
+#' @describeIn solver numerically integrates Algae_TKTD models
+setMethod("solver", "AlgaeTKTDScenario", solver_Algae_TKTD)
+
+
+#' @importFrom deSolve ode
+solver_Algae_Simple <- function(scenario, times, approx = c("linear","constant"),
+                                f = 1, method = "lsoda", hmax = 0.1, ...) {
+  # use time points from scenario if nothing else is provided
+  if(missing(times))
+    times <- scenario@times
+  # check if at least two time points are present
+  if(length(times)<2)
+    stop("times vector is not an interval")
+
+  params.req = c("mu_max",
+                 "EC_50", "b", "kD", "scaled", "dose_response"
+  )
+
+  params <- scenario@param
+  if(is.list(params))
+    params <- unlist(params)
+
+  # reorder parameters for deSolve
+  params <- params[params.req]
+
+  # create forcings list
+  forcings <- list(scenario@exposure@series, scenario@forcings$f_growth)
+
+  # run solver
+  as.data.frame(ode(y = scenario@init, times,
+                    initfunc = "algae_simple_init",
+                    func = "algae_simple_func",
+                    initforc = "algae_simple_forc",
+                    parms = params,
+                    forcings = forcings,
+                    dllname = "cvasi",
+                    method = method,
+                    hmax = hmax,
+                    ...))
+}
+
+#' @include class-Algae.R
+#' @describeIn solver numerically integrates Algae_Simple models
+setMethod("solver", "AlgaeSimpleScenario", solver_Algae_Simple)

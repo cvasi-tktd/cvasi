@@ -1,0 +1,121 @@
+#include <R.h>
+#include <Rinternals.h>
+#include <math.h>
+
+/*******************************************************************
+ *
+ * Algae is a simplified model for the growth of algae as described
+ * by Weber (2012)
+ *
+ * The model provides no additional output on intermediary variables on
+ * request
+ *
+ *******************************************************************/
+
+/**
+ * Allocate memory for global parameter array
+ */
+static double parms[6];
+/**
+ * Allocate memory for forcing function data
+ *
+ * Array values get updated by the ODE solver in every time step.
+ */
+static double forc[2];
+/*
+ * Define aliases
+ */
+// State variable aliases
+#define A y[0]
+#define Dw y[1]
+
+// Derivative aliases
+#define dA ydot[0]
+#define dDw ydot[1]
+
+// Parameter aliases
+// Growth model parameters
+#define mu_max parms[0]
+// Toxicodynamic parameters
+#define EC_50 parms[1]
+#define b parms[2]
+// Toxicokinetic parameters
+#define kD parms[3]
+#define scaled ((parms[4] != 0.0) ? 1 : 0) //0 = no, 1 = yes
+// dose-response option
+#define dose_response ((parms[5] != 0.0) ? 1 : 0) //0 = logit, 1 = probit
+// Forcings by environmental variables
+#define Cw    forc[0]
+#define f_growth forc[1] //constant growth not observed in lab study
+
+/**
+ * Parameter initializer
+ */
+void algae_simple_init(void (*odeparms)(int *, double *))
+{
+  int N = 6;
+  odeparms(&N, parms);
+}
+
+/**
+ * Forcings initializer
+ */
+void algae_simple_forc(void (*odeforcs)(int *, double *))
+{
+  int N = 2;
+  odeforcs(&N, forc);
+}
+
+/*
+ * Functions for calculating reduction factors for growth rate
+ */
+
+// Probit function
+double probit_simple(double x) {
+  return 0.5 * (1 + erf(x / sqrt(2.0)));
+}
+
+// Effect of concentration on growth using probit
+double f_C_probit(double C_param) {
+  return 1 - probit_simple((log(C_param / EC_50) + b) / sqrt(2.0));
+}
+
+// Effect of concentration on growth using logit
+double f_C_logit(double C_param)
+{
+  return 1 / (1 + ((C_param / EC_50) * exp(-b)));
+}
+
+/**
+ * Derivatives
+ */
+void algae_simple_func(int *neq, double *t, double *y, double *ydot, double *yout, int *ip)
+{
+
+  if(scaled == 1) {
+    // Scaled damage concentration
+    dDw = kD * (Cw - Dw);
+    // Biomass
+    if(dose_response == 0) {
+      dA = (mu_max * f_growth * f_C_logit(Dw)) * A;
+    } else {
+      dA = (mu_max * f_growth * f_C_probit(Dw)) * A;
+    }
+  } else {
+    // Biomass
+    if(dose_response == 0) {
+      dA = (mu_max * f_C_logit(Cw)) * A;
+    } else {
+      dA = (mu_max * f_C_probit(Cw)) * A;
+    }
+  }
+
+  // derivatives as additional output
+  if(*ip >= 1) {
+    yout[0] = dose_response;
+  }
+  if(*ip >= 3) {
+    yout[1] = dA;
+    yout[2] = dDw;
+  }
+}

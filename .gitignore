@@ -1,0 +1,12 @@
+.Rhistory
+.RData
+.Rproj.user
+inst/doc
+/.docker
+/dev
+# any outputs in package directory that may have been created during testing
+/*.png
+/*.csv
+/Meta/
+# Exclude vignette outputs
+/doc/

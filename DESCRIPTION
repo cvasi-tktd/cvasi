@@ -1,0 +1,99 @@
+Package: cvasi
+Type: Package
+Title: Calibration, Validation, and Simulation of TKTD models in R
+Version: 0.9.0
+Authors@R: c(
+    person("Nils", "Kehrein", email="nils.kehrein@gmail.com", role=c("aut", "cre")),
+    person("Johannes", "Witt", role="ctb"),
+    person("Andre", "Gergs", role="ctb")
+    )
+Description: Package to ease the use of ecotox effect models. Supports the use of
+    tidyr workflows employing the pipe symbol. Time-consuming tasks can be
+    parallelized using the future package.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    cli,
+    glue,
+    rlang,
+    stringr,
+    dplyr,
+    tibble,
+    purrr,
+    furrr,
+    tidyr,
+    magrittr,
+    utils,
+    stats,
+    methods,
+    grid,
+    ggplot2,
+    deSolve,
+    lubridate,
+    attempt,
+    tidyselect,
+    units
+RoxygenNote: 7.2.3
+Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd",
+    "roxyglobals::global_roclet"))
+Config/testthat/edition: 3
+Collate: 
+    'cache_controls.R'
+    'class-ExposureSeries.R'
+    'class-EffectScenario.R'
+    'calibrate.R'
+    'class-Transferable.R'
+    'class-Algae.R'
+    'class-CalibrationSet.R'
+    'class-Deb.R'
+    'class-GutsRed.R'
+    'class-Lemna.R'
+    'class-Myriophyllum.R'
+    'class-ScenarioSequence.R'
+    'class-parameter_set.R'
+    'data.R'
+    'dose_response.R'
+    'effect.R'
+    'epx.R'
+    'get.R'
+    'globals.R'
+    'has.R'
+    'helper_functions.r'
+    'import.R'
+    'import_toxswa.R'
+    'is.R'
+    'log.R'
+    'morse.R'
+    'package.R'
+    'pll.R'
+    'plotting.r'
+    'pull.R'
+    'sequence.R'
+    'set.R'
+    'set_exposure.R'
+    'set_forcings.R'
+    'set_init.R'
+    'set_param.R'
+    'set_transfer.R'
+    'set_window.R'
+    'show.R'
+    'simulate.R'
+    'solver.R'
+    'survival.R'
+    'utils-pipe.R'
+    'utils-stats.R'
+Suggests: 
+    future,
+    testthat,
+    morse,
+    knitr,
+    rmarkdown,
+    lemna,
+    roxyglobals,
+    rjags
+Depends: 
+    R (>= 3.5.0)
+VignetteBuilder: knitr
+Config/roxyglobals/filename: globals.R
+Config/roxyglobals/unique: FALSE

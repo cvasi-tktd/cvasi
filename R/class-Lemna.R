@@ -236,8 +236,16 @@ Lemna_SchmittThold <- function(param, init) {
 
 #' Lemna model (Klein et al. 2021)
 #'
-#' Constructor to ease creation of scenarios based on the *Lemna* model by
-#' Klein *et al.* (2021).
+#' The model was described and published by the SETAC Europe Interest Group
+#' Effect Modeling (Klein et al. 2022). The *Lemna* model based on the *Lemna*
+#' model by Schmitt (2013). The model is a mechanistic combined
+#' toxicokinetic-toxicodynamic (TK/TD) and growth model for the aquatic
+#' macrophytes *Lemna spp.*. The model simulates the development of Lemna biomass
+#' under laboratory and environmental conditions. Growth of the Lemna population
+#' is simulated on basis of photosynthesis and respiration rates which are
+#' functions of environmental conditions. The toxicodynamic sub-model describes
+#' the effects of growth-inhibiting substances by a respective reduction in the
+#' photosynthesis rate based on internal concentrations.
 #'
 #' @section State variables:
 #' The model has two state variables:

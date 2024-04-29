@@ -7,8 +7,14 @@
 Algae_Simple()
 }
 \description{
-Constructor to ease creation of \emph{Algae} ‘EffectScenario’s. Model is derived
-from the \emph{Algae} model by Weber (2012) as cited in EFSA TKTD opinion (2018).
+The model is a mechanistic combined toxicokinetic-toxicodynamic (TK/TD) and
+growth model for algae. The model simulates the development of algal biomass.
+The growth of the algae population is simulated on the basis of growth rates,
+which are, in contrast to the Weber model, independent on environmental
+conditions which are usually optimal in laboratory effect studies.
+The toxicodynamic sub-model describes the effects of growth-inhibiting
+substances through a corresponding reduction in the photosynthesis rate on the
+basis of internal concentrations.
 }
 \section{State variables}{
 

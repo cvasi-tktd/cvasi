@@ -27,9 +27,25 @@ is_param_match <- function(scenario, param, ignore_tags=FALSE) {
   get_model(scenario) == get_model(param) & get_tag(scenario) == get_tag(param)
 }
 
+#' Test if argument is an effect scenario
+#'
+#' Supports vectorized arguments.
+#'
+#' @param x Some value or object
+#' @return vector of `logical` values
+#' @export
+#' @examples
+#' # returns `TRUE`
+#' is_scenario(minnow_it)
+#'
+#' # returns `FALSE`
+#' is_scenario(list())
+#'
 is_scenario <- function(x) {
-  if(is.list(x))
-    return(sapply(x, is_scenario))
+  if(is.list(x)) {
+    if(length(x) > 0)
+      return(sapply(x, is_scenario))
+  }
   is(x, "EffectScenario")
 }
 
@@ -39,105 +55,112 @@ is_exp_series <- function(x) {
   is(x, "ExposureSeries")
 }
 
-#' Test if scenario/model is a GUTS model
+#' Test if argument is a GUTS model
 #'
 #' @param x vector of `EffectScenario` objects
 #'
-#' @return vector of logical values
+#' @return vector of `logical` values
 #' @export
 #' @examples
-#' is_GUTS(GUTS_RED_IT()) # returns TRUE
-#' is_GUTS(rep(c(GUTS_RED_IT()),3)) # returns c(TRUE,TRUE,TRUE)
+#' # returns `TRUE`
+#' is_GUTS(minnow_it)
+#' is_GUTS(GUTS_RED_IT())
+#'
+#' # returns `c(TRUE,TRUE,TRUE)`
+#' is_GUTS(c(minnow_it, minnow_it, minnow_it))
+#'
+#' # returns `FALSE`
+#' is_GUTS_SD(minnow_it)
 is_GUTS <- function(x) {
-  if(is.list(x))
-    return(sapply(x, is_GUTS))
+  if(is.list(x)) {
+    if(length(x) > 0)
+      return(sapply(x, is_GUTS))
+  }
   if(!is_scenario(x))
     return(FALSE)
 
-  startsWith(get_model_name(x),"GUTS-")
+  startsWith(get_model(x),"GUTS-")
 }
 
-#' Test if scenario/model is an Internal Threshold (IT) type
-#'
-#' @param x vector of `EffectScenario` objects
-#'
-#' @return vector of logical values
+#' @describeIn is_GUTS Test if argument is a GUTS-IT model
 #' @export
-#' @examples
-#' is_GUTS_IT(GUTS_RED_IT())
-#' # returns TRUE
 is_GUTS_IT <- function(x) {
-  if(is.list(x))
-    return(sapply(x, is_GUTS_IT))
+  if(is.list(x)) {
+    if(length(x) > 0)
+      return(sapply(x, is_GUTS_IT))
+  }
   if(!is_scenario(x))
     return(FALSE)
 
-  name <- get_model_name(x)
+  name <- get_model(x)
   startsWith(name,"GUTS-") & endsWith(name,"-IT")
 }
 
-#' Test if scenario/model is a Stochastic Death (SD) type
-#'
-#' @param x vector of `EffectScenario` objects
-#'
-#' @return vector of logical values
+#' @describeIn is_GUTS Test if argument is a GUTS-IT model
 #' @export
-#' @examples
-#' is_GUTS_SD(GUTS_RED_SD())
-#' # returns TRUE
 is_GUTS_SD <- function(x) {
-  if(is.list(x))
-    return(sapply(x, is_GUTS_SD))
+  if(is.list(x)) {
+    if(length(x) > 0)
+      return(sapply(x, is_GUTS_SD))
+  }
   if(!is_scenario(x))
     return(FALSE)
 
-  name <- get_model_name(x)
+  name <- get_model(x)
   startsWith(name,"GUTS-") & endsWith(name,"-SD")
 }
 
 
-#' Test if scenario/model is a DEB type
+#' Test if argument is a DEB model
 #'
 #' @param x vector of `EffectScenario` objects
-#' @return vector of logical values
+#' @return vector of `logical` values
 #' @export
 is_DEB <- function(x) {
-  if(is.list(x))
-    return(sapply(x, is_DEB))
+  if(is.list(x)) {
+    if(length(x) > 0)
+      return(sapply(x, is_DEB))
+  }
   if(!is_scenario(x))
     return(FALSE)
 
-  startsWith(get_model_name(x), "DEB")
+  startsWith(get_model(x), "DEB")
 }
 
-#' Test if scenario/model is a Lemna model
+#' Test if argument is a Lemna model
 #'
 #' Also returns `TRUE` for `LemnaThreshold` models
 #'
-#' @param x vector of \linkS4class{EffectScenario} objects
+#' @param x vector of [scenarios] objects
 #' @return vector of logical values
+#' @seealso [is_LemnaThreshold()]
 #' @export
 is_Lemna <- function(x) {
-  if(is.list(x))
-    return(sapply(x, is_Lemna))
+  if(is.list(x)) {
+    if(length(x) > 0)
+      return(sapply(x, is_Lemna))
+  }
   if(!is_scenario(x))
     return(FALSE)
 
   is(x, "Lemna")
 }
 
-#' Test if scenario/model is a LemnaThreshold model
+#' Test if argument is a LemnaThreshold model
 #'
-#' @param x vector of \linkS4class{EffectScenario} objects
-#' @return vector of logical values
+#' @param x vector of [scenarios] objects
+#' @return vector of `logical` values
+#' @seealso [is_Lemna()]
 #' @export
 is_LemnaThreshold <- function(x) {
-  if(is.list(x))
-    return(sapply(x, is_LemnaThreshold))
+  if(is.list(x)) {
+    if(length(x) > 0)
+      return(sapply(x, is_LemnaThreshold))
+  }
   if(!is_scenario(x))
     return(FALSE)
 
-  get_model_name(x) == "Lemna_SchmittThold"
+  get_model(x) == "Lemna_SchmittThold"
 }
 
 # Check if an exposure series is complete, i.e. regular

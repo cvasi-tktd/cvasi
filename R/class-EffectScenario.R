@@ -1,4 +1,4 @@
-#' Effect scenario class
+#' Effect scenario classes
 #'
 #' The `EffectScenario` class is the base for all of the basic scenario
 #' types and models. It contains slots for data and settings that are
@@ -137,12 +137,14 @@
 #'   windows during effect calculation. First window starts at first time point
 #'   in exposure pattern.
 #'
-#' @name EffectScenario
-#' @rdname EffectScenario
-#' @aliases EffectScenario-class
-#' @include class-ExposureSeries.R
+#' @name Scenarios
+#' @aliases scenario scenarios EffectScenario-class
 #' @family scenarios
-#'
+NULL
+
+
+
+#' @include class-ExposureSeries.R
 #' @export
 setClass("EffectScenario",
    slots = list(

@@ -2,7 +2,7 @@
 #
 # Lemna simulation without transfers to new medium.
 # Reference values were calculated using the original model of Schmitt et al. (1993)
-# doi.org: 10.1016/j.ecolmodel.2013.01.017
+# doi.org/10.1016/j.ecolmodel.2013.01.017
 #
 test_that("Lemna_Schmitt simulation", {
   tol <- 1e-5
@@ -108,7 +108,7 @@ test_that("Lemna_SchmittThold simulation", {
 #
 # Lemna simulation without transfers to new medium.
 # Reference values were calculated using the original model of Schmitt et al. (1993)
-# doi.org: 10.1016/j.ecolmodel.2013.01.017
+# doi.org/10.1016/j.ecolmodel.2013.01.017
 #
 test_that("Lemna simulation, regular transfers", {
   tol <- 1e-4

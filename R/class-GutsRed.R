@@ -3,7 +3,8 @@
 #' Reduced *General Unified Threshold models of Survival* (GUTS) with stochastic
 #' death (*SD*) and individual tolerance (*IT*)
 #'
-#' The TKTD models *GUTS-RED-SD* and *GUTS-RED-IT* were described by EFSA (2018).
+#' The TKTD models *[GUTS-RED-SD][GUTS_RED_SD()]* and *[GUTS-RED-IT][GUTS_RED_IT()]*
+#' were described by EFSA (2018).
 #' GUTS-RED models assume a one-compartment model which directly links
 #' external concentration to the scaled damage. The scaled damage is given in
 #' units of concentration, equal to the units of measurement in the external
@@ -57,21 +58,21 @@
 #' 16(8):5377, 188 pp. \doi{10.2903/j.efsa.2018.5377}
 #'
 #' @name GUTS-RED-models
-#' @seealso [GUTS_RED_SD()], [GUTS_RED_IT()], \linkS4class{EffectScenario}
+#' @family GUTS-RED models
+#' @family scenarios
 NULL
 
-#' @rdname GUTS-RED-models
 #' @export
 setClass("GutsRedSd", contains="EffectScenario")
 
-#' @rdname GUTS-RED-models
 #' @export
 setClass("GutsRedIt", contains="EffectScenario")
 
 
 #' GUTS-RED-IT scenario
 #'
-#' Constructor to create a *GUTS-RED-IT* scenario object
+#' Reduced *General Unified Threshold models of Survival* (GUTS) with
+#' individual tolerance (*IT*).
 #'
 #' @inheritSection GUTS-RED-models State variables
 #' @inheritSection GUTS-RED-models IT model parameters
@@ -80,11 +81,12 @@ setClass("GutsRedIt", contains="EffectScenario")
 #'
 #' @param param optional named `list` or `vector` with model parameters
 #' @param init optional named numeric `vector` to use as initial state
-#' @return a \linkS4class{GutsRedIt} object
+#' @return GUTS_RED_IT scenario
 #'
 #' @export
+#' @family GUTS-RED models
+#' @aliases GutsRedIt-class
 #' @importFrom methods new
-#' @seealso [GUTS-RED-models], [GUTS_RED_SD()]
 GUTS_RED_IT <- function(param, init) {
   new("GutsRedIt",
       name = "GUTS-RED-IT",
@@ -104,18 +106,20 @@ GUTS_RED_IT <- function(param, init) {
 
 #' GUTS-RED-SD scenario
 #'
-#' Constructor to create a *GUTS-RED-SD* scenario object
+#' Reduced *General Unified Threshold models of Survival* (GUTS) with stochastic
+#' death (*SD*).
 #'
 #' @inheritSection GUTS-RED-models State variables
 #' @inheritSection GUTS-RED-models SD model parameters
 #' @inheritSection GUTS-RED-models Effects
 #' @inherit GUTS-RED-models references
 #' @inheritParams GUTS_RED_IT
-#' @return \linkS4class{GutsRedSd} object
+#' @return GUTS_RED_SD scenario
 #'
 #' @export
+#' @family GUTS-RED models
+#' @aliases GutsRedSd-class
 #' @importFrom methods new
-#' @seealso [GUTS-RED-models], [GUTS_RED_IT()]
 GUTS_RED_SD <- function(param, init) {
   new("GutsRedSd",
       name = "GUTS-RED-SD",

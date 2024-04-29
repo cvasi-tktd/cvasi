@@ -1,18 +1,25 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^\.docker$
-^\.github$
-^README\.Rmd$
 ^dev$
 ^data-raw$
-^CHANGELOG\.md$
+
+# ignore large test data files
+^tests/minnow_fit.it.rds$
+^tests/minnow_fit.sd.rds$
+
 # any outputs in package directory that may have been created during testing
 ^.*\.png$
 ^.*\.csv$
 ^doc$
 ^Meta$
 ^tests/testthat/_snaps$
-# directory created by README.Rmd
+
+# RMarkdown files and outputs
 ^man/figures$
+
+# GitHub files
+^\.github$
+^README\.md$
+^README\.Rmd$
 ^LICENSE\.md$
 ^CONTRIBUTING.md$

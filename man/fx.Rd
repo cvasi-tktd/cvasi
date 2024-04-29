@@ -25,7 +25,7 @@ fx(scenario, ...)
 \S4method{fx}{Algae}(scenario, ...)
 }
 \arguments{
-\item{scenario}{\linkS4class{EffectScenario} object}
+\item{scenario}{\link{scenario} object}
 
 \item{...}{additional parameters}
 }

@@ -1,25 +1,33 @@
+#' Dynamic Energy Budget (DEB) models
+#'
+#' Supported models:
+#' * [DEB_abj]
+#' * [DEB_Daphnia]
+#'
+#' @name DEB-models
+#' @family DEB models
+#' @family scenarios
+#' @aliases DebScenario-class
+NULL
+
 # Parent class for all DEB related models/scenarios
-#' @rdname EffectScenario
 #' @export
 setClass("DebScenario", contains="EffectScenario")
 
-#' @rdname DEB_abj
 #' @export
 setClass("DebAbj", contains="DebScenario")
 
-#' @rdname DEB_Daphnia
 #' @export
 setClass("DebDaphnia", contains="DebScenario")
 
-#' DEB_abj scenario
+#' DEB_abj
 #'
-#' Constructor to ease creation of scenarios based on the *DEB abj* model.
-#' The *abj* model with type M acceleration is like model *std*, but acceleration
-#' occurs between birth and metamorphosis (V1-morph).
+#' Creates a *DEB abj* scenario. The *abj* model with type M acceleration is
+#' like model *std*, but acceleration occurs between birth and metamorphosis (V1-morph).
 #' Isomorphy is assumed before and after acceleration. Metamorphosis is before
 #' puberty and occurs at maturity `E_Hj`, which might or might not correspond with
 #' changes in morphology. The *abj* model is a one-parameter extension of model *std*
-#' [(DEB Wiki)](http://www.debtheory.org/wiki/index.php?title=Typified_models).
+#' [(DEB Wiki)](https://debportal.debtheory.org/docs/Typified_models.html).
 #'
 #' ## State variables
 #'
@@ -80,8 +88,10 @@ setClass("DebDaphnia", contains="DebScenario")
 #' which considers exposure to a toxicant and one simulation without exposure, i.e.
 #' a control. See also [effect()].
 #'
-#' @return A \linkS4class{DebScenario} object
+#' @return A `DEB_abj` scenario
 #' @export
+#' @family DEB models
+#' @aliases DebAbj-class
 #' @examples
 #' # Create an abj scenario from scratch and simulate it
 #' DEB_abj() %>%
@@ -111,9 +121,9 @@ DEB_abj <- function() {
 }
 
 
-#' DEBtox Daphnia scenario
+#' DEBtox Daphnia
 #'
-#' Constructor to ease creation of scenarios based on the *DEBtox Daphnia* model.
+#' Creates a  *DEBtox Daphnia* scemarop.
 #'
 #' ## State variables
 #'
@@ -214,8 +224,10 @@ DEB_abj <- function() {
 #'    - `xG`, factor for growth dilution
 #'    - `xR`, factor for losses with repro
 #'
-#' @return A \linkS4class{DebScenario} object
+#' @return A `DEB_Daphnia` scenario
 #' @export
+#' @family DEB models
+#' @aliases DebDaphnia-class
 DEB_Daphnia <- function() {
   new("DebDaphnia",
       name="DEBtox_Daphnia",

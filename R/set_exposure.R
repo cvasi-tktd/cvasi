@@ -34,7 +34,7 @@
 #'
 #' ### Multiple exposure series and scenarios
 #' The functions supports modifying multiple scenarios at once: by
-#' calling it with lists of \linkS4class{EffectScenario} and [ExposureSeries]
+#' calling it with lists of [scenario] and [ExposureSeries]
 #' objects. The cartesian product of all scenarios and exposure series will
 #' be returned, iff the parameter `expand = TRUE` is set.
 #'
@@ -44,7 +44,7 @@
 #' exposure seres `g` and `h` will result in four scenarios `Ag`,`Ah`,`Bg`,
 #' and `Bh`.
 #'
-#' @param scenarios `vector` of \linkS4class{EffectScenario} objects
+#' @param scenarios `vector` of [scenarios]
 #' @param series `vector` of  [ExposureSeries] objects or a single `data.frame`
 #' @param reset_times `logical`, if `TRUE`, the exposure time-series' time points
 #'  will be set as output times. Defaults to `TRUE`
@@ -91,8 +91,11 @@ set_exposure_dfr <- function(scenarios, series, ...) {
   }
   # is it a data.frame containing a basic time-series?
   if(length(series) == 2) {
-    if(is.numeric(series[,1]) & is.numeric(series[,2]))
+    # coerce to data.frame to avoid issues with data.frame-like types
+    series <- as.data.frame(series)
+    if(is.numeric(series[,1]) & is.numeric(series[,2])) {
       return(set_exposure(scenarios, ExposureSeries(series), ...))
+    }
   }
   stop("data.frame does not contain a valid time-series")
 }
@@ -137,9 +140,9 @@ setMethod("set_exposure", c("list","ANY"), function(scenarios, series, ...) {
 #' The scenarios current exposure is replaced by a constant exposure time-series
 #' of value zero(`0.0`). Output times are unaffected.
 #'
-#' @param x vector of \linkS4class{EffectScenario} objects
+#' @param x vector of [scenarios]
 #'
-#' @return vector of \linkS4class{EffectScenario} objects
+#' @return vector of [scenarios]
 #' @export
 #'
 #' @examples

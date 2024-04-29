@@ -57,6 +57,7 @@ test_that("is_GUTS", {
   expect_true(is_GUTS(GUTS_RED_SD()))
   expect_equal(is_GUTS(c(GUTS_RED_IT(),GUTS_RED_IT())), c(TRUE,TRUE))
   # invalid arguments
+  expect_false(is_GUTS(list()))
   expect_false(is_GUTS(NA))
   expect_false(is_GUTS(NULL))
   expect_false(is_GUTS(1))
@@ -67,6 +68,7 @@ test_that("is_GUTS_IT", {
   expect_true(is_GUTS_IT(GUTS_RED_IT()))
   expect_equal(is_GUTS_IT(c(GUTS_RED_IT(),GUTS_RED_IT())), c(TRUE,TRUE))
   # invalid arguments
+  expect_false(is_GUTS_IT(list()))
   expect_false(is_GUTS_IT(GUTS_RED_SD()))
   expect_false(is_GUTS_IT(NA))
   expect_false(is_GUTS_IT(NULL))
@@ -78,6 +80,7 @@ test_that("is_GUTS_SD", {
   expect_true(is_GUTS_SD(GUTS_RED_SD()))
   expect_equal(is_GUTS_SD(c(GUTS_RED_SD(),GUTS_RED_SD())), c(TRUE,TRUE))
   # invalid arguments
+  expect_false(is_GUTS_SD(list()))
   expect_false(is_GUTS_SD(GUTS_RED_IT()))
   expect_false(is_GUTS_SD(NA))
   expect_false(is_GUTS_SD(NULL))
@@ -89,6 +92,7 @@ test_that("is_DEB", {
   expect_true(is_DEB(DEB_abj()))
   expect_equal(is_DEB(c(DEB_abj(),DEB_abj())), c(TRUE,TRUE))
   # invalid arguments
+  expect_false(is_DEB(list()))
   expect_false(is_DEB(GUTS_RED_IT()))
   expect_false(is_DEB(NA))
   expect_false(is_DEB(NULL))
@@ -102,6 +106,7 @@ test_that("is_Lemna", {
   expect_true(is_Lemna(Lemna_SETAC()))
   expect_equal(is_Lemna(c(Lemna_Schmitt(),Lemna_Schmitt())), c(TRUE,TRUE))
   # invalid arguments
+  expect_false(is_Lemna(list()))
   expect_false(is_Lemna(GUTS_RED_IT()))
   expect_false(is_Lemna(NA))
   expect_false(is_Lemna(NULL))
@@ -113,6 +118,7 @@ test_that("is_LemnaThreshold", {
   expect_true(is_LemnaThreshold(Lemna_SchmittThold()))
   expect_equal(is_LemnaThreshold(c(Lemna_SchmittThold(),Lemna_SchmittThold())), c(TRUE,TRUE))
   # invalid arguments
+  expect_false(is_LemnaThreshold(list()))
   expect_false(is_LemnaThreshold(Lemna_Schmitt()))
   expect_false(is_LemnaThreshold(NA))
   expect_false(is_LemnaThreshold(NULL))

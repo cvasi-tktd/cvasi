@@ -2,6 +2,7 @@
 % Please edit documentation in R/class-Lemna.R
 \name{Lemna-models}
 \alias{Lemna-models}
+\alias{Lemna-class}
 \title{Lemna models}
 \description{
 Overview of supported \emph{Lemna} models
@@ -34,4 +35,19 @@ intervals, the simulation must start at time point zero.
 
 \seealso{
 \link{Macrophyte-models}
+
+Other Lemna models: 
+\code{\link{Lemna_SETAC}()},
+\code{\link{Lemna_Schmitt}()}
+
+Other scenarios: 
+\code{\link{Algae-models}},
+\code{\link{DEB-models}},
+\code{\link{GUTS-RED-models}},
+\code{\link{Macrophyte-models}},
+\code{\link{Myriophyllum-models}},
+\code{\link{Scenarios}},
+\code{\link{Transferable}}
 }
+\concept{Lemna models}
+\concept{scenarios}

@@ -7,7 +7,7 @@
 cache_controls(x, windows, skipZeroExposure = FALSE, ...)
 }
 \arguments{
-\item{x}{vector of \linkS4class{EffectScenario} objects}
+\item{x}{vector of \link{scenario} objects}
 
 \item{windows}{\code{list} of window tuples}
 
@@ -17,7 +17,7 @@ not be included in calculations}
 \item{...}{additional parameters passed on to \code{\link[=effect]{effect()}}}
 }
 \value{
-Modified \linkS4class{EffectScenario} objects
+Modified \link{scenario} objects
 }
 \description{
 Cache control simulations

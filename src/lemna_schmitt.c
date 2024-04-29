@@ -89,8 +89,8 @@ static double const_Q10perm;
 #define actRad forc[2]
 
 // declare function headers
-double f_N();
-double f_P();
+double f_N(void);
+double f_P(void);
 
 // declare constants for toxico dynamic submodel selection
 #define TD_direct 0
@@ -155,13 +155,13 @@ double f_T_resp(double temp)
 }
 
 // Phosphorus
-double f_P()
+double f_P(void)
 {
   return pow(C_P,a_P)/(pow(C_P,a_P) + pow(CP50,a_P)) * KiP/(KiP + C_P);
 }
 
 // Nitrogen
-double f_N()
+double f_N(void)
 {
   return pow(C_N,a_N)/(pow(C_N,a_N) + pow(CN50,a_N)) * KiN/(KiN + C_N);
 }

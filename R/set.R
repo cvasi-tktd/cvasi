@@ -45,7 +45,7 @@ set_endpoints <- function(x, endpoints) {
 #' for more information.
 #'
 #' @seealso [simulate()]
-#' @param x vector of \linkS4class{EffectScenario} objects
+#' @param x vector of [scenarios]
 #' @param times `numerical` vector
 #' @return Vector of modified `ExposureScenario` objects
 #' @export
@@ -119,7 +119,7 @@ set_all <- function(x, tmpl) {
   if(is.vector(x))
     return(sapply(x, set_all, tmpl))
 
-  if(!is(x, "EffectScenario") | !is(tmpl, "EffectScenario"))
+  if(!is_scenario(x) | !is_scenario(tmpl))
     stop("argument is not an EffectScenario object")
 
   trgt_slots <- slotNames(x)
@@ -136,17 +136,27 @@ set_all <- function(x, tmpl) {
 }
 
 
-#' Set a scenario tag
+#' Set a tag
 #'
-#' @param x `vector` of or single `EffectScenario` object
-#' @param tag `vector`
+#' Sets the user-defined, custom tag of a scenario. Tags
+#' can be helpful to quickly distinguish scenarios of the same model type.
 #'
-#' @return `vector` of or single `EffectScenario` object
+#' @param x (vector of) `EffectScenario` objects
+#' @param tag vector of `character`
+#'
+#' @return (vector of) modified `EffectScenario` objects
+#' @seealso [get_tag()]
 #' @export
 #'
 #' @examples
-#' GUTS_RED_SD() %>%
-#'   set_tag("sample tag")
+#' # set a custom tag
+#' myscenario <- GUTS_RED_SD() %>% set_tag("My Custom Tag")
+#'
+#' # returns `My Custom Tag`
+#' get_tag(myscenario)
+#'
+#' # the tag also appears in the scenario overview
+#' myscenario
 set_tag <- function(x, tag) {
   if(is.vector(x)) {
     if(length(tag) == 1)
@@ -157,6 +167,8 @@ set_tag <- function(x, tag) {
       stop("mismatch of number of scenarios and tags", call.=FALSE)
   }
 
+  if(!is_scenario(x))
+    stop("argument is not an effect scenario", call.=FALSE)
   if(length(tag) > 1)
     stop("mismatch of number of scenarios and tags", call.=FALSE)
 

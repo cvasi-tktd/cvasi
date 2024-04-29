@@ -2,20 +2,40 @@
 % Please edit documentation in R/is.R
 \name{is_GUTS}
 \alias{is_GUTS}
-\title{Test if scenario/model is a GUTS model}
+\alias{is_GUTS_IT}
+\alias{is_GUTS_SD}
+\title{Test if argument is a GUTS model}
 \usage{
 is_GUTS(x)
+
+is_GUTS_IT(x)
+
+is_GUTS_SD(x)
 }
 \arguments{
 \item{x}{vector of \code{EffectScenario} objects}
 }
 \value{
-vector of logical values
+vector of \code{logical} values
 }
 \description{
-Test if scenario/model is a GUTS model
+Test if argument is a GUTS model
 }
+\section{Functions}{
+\itemize{
+\item \code{is_GUTS_IT()}: Test if argument is a GUTS-IT model
+
+\item \code{is_GUTS_SD()}: Test if argument is a GUTS-IT model
+
+}}
 \examples{
-is_GUTS(GUTS_RED_IT()) # returns TRUE
-is_GUTS(rep(c(GUTS_RED_IT()),3)) # returns c(TRUE,TRUE,TRUE)
+# returns `TRUE`
+is_GUTS(minnow_it)
+is_GUTS(GUTS_RED_IT())
+
+# returns `c(TRUE,TRUE,TRUE)`
+is_GUTS(c(minnow_it, minnow_it, minnow_it))
+
+# returns `FALSE`
+is_GUTS_SD(minnow_it)
 }

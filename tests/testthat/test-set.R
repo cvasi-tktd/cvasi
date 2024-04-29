@@ -181,6 +181,12 @@ test_that("set_exposure", {
   expect_equal(rs[[4]]@times, 1:3)
   expect_equal(rs[[4]]@name,  "b")
 
+  # check that data.frame-like types, such as tibbles, work
+  # as expected
+  tib <- tibble::tibble(t=0:3, c=0)
+  rs <- set_exposure(new("EffectScenario", name="a"), tib)
+  expect_equal(rs@exposure@series, as.data.frame(tib))
+
   ## invalid arguments
   # nonsense
   expect_error(set_exposure(sc, 1))

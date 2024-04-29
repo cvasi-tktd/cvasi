@@ -1,39 +1,23 @@
 Modeling Howto
 ================
 Nils Kehrein
-20 February, 2024
+29 April, 2024
 
-- <a href="#how-to-access-scenario-properties"
-  id="toc-how-to-access-scenario-properties">How to access scenario
-  properties</a>
-- <a href="#using-tidy-syntax" id="toc-using-tidy-syntax">Using
-  <em>tidy</em> syntax</a>
-- <a href="#predictions" id="toc-predictions">Predictions</a>
-- <a href="#moving-exposure-windows"
-  id="toc-moving-exposure-windows">Moving exposure windows</a>
-- <a href="#simulating-biomass-transfers"
-  id="toc-simulating-biomass-transfers">Simulating biomass transfers</a>
-- <a href="#fitting-model-parameters"
-  id="toc-fitting-model-parameters">Fitting model parameters</a>
-- <a href="#changes-in-parameter-values-over-time"
-  id="toc-changes-in-parameter-values-over-time">Changes in parameter
-  values over time</a>
-- <a href="#decrease-assessment-runtime"
-  id="toc-decrease-assessment-runtime">Decrease assessment runtime</a>
-- <a href="#implementing-custom-models"
-  id="toc-implementing-custom-models">Implementing custom models</a>
-- <a href="#complete-working-example"
-  id="toc-complete-working-example">Complete working example</a>
-  - <a href="#setting-up-the-model" id="toc-setting-up-the-model">setting up
-    the model</a>
-  - <a href="#retrieving-basic-information-from-the-model"
-    id="toc-retrieving-basic-information-from-the-model">retrieving basic
-    information from the model</a>
-  - <a href="#simulating-with-the-model-and-plotting"
-    id="toc-simulating-with-the-model-and-plotting">simulating with the
-    model, and plotting</a>
-  - <a href="#assessing-toxic-effects"
-    id="toc-assessing-toxic-effects">assessing toxic effects</a>
+- [How to access scenario
+  properties](#how-to-access-scenario-properties)
+- [Using *tidy* syntax](#using-tidy-syntax)
+- [Predictions](#predictions)
+- [Moving exposure windows](#moving-exposure-windows)
+- [Simulating biomass transfers](#simulating-biomass-transfers)
+- [Fitting model parameters](#fitting-model-parameters)
+- [Changes in parameter values over
+  time](#changes-in-parameter-values-over-time)
+- [Decrease assessment runtime](#decrease-assessment-runtime)
+- [Implementing custom models](#implementing-custom-models)
+- [Complete working example](#complete-working-example)
+  - [Setting up a scenario](#setting-up-a-scenario)
+  - [Simulating a scenario and
+    plotting](#simulating-a-scenario-and-plotting)
 
 This Howto provides instructions on how to address certain modeling
 challenges and offers additional details and context for certain
@@ -71,12 +55,12 @@ myscenario@control.req  # are control runs required for effect calculation?
 The previous example displays some of the default values of a
 *Lemna_Schmitt* scenario. The set of available slots depends on the
 model type and is documented in the package help. For instance, scenario
-properties shared by all models are documented in the `EffectScenario`
+properties shared by all models are documented in the effect scenario
 class:
 
 ``` r
-# Call the help page of the EffectScenario class
-?`EffectScenario-class`
+# Call the help page of effect scenarios class
+?scenarios
 ```
 
 A scenario class inherits all slots from its ancestors. A notable class
@@ -86,7 +70,8 @@ biomass transfers at defined time points during simulation. Details
 about its class slots and functionality are described in the help pages.
 
 ``` r
-?`Transferable-class`
+# Call the help page of the biomass transfer class
+?Transferable
 ```
 
 ## Using *tidy* syntax
@@ -146,8 +131,8 @@ assessment.
 # Calculation of EPx values for a complete concentration profile.
   set.seed(123)  # Setting a seed for reproducibility
 # Generating a random profile for 15 days with concentrations below 0.1
-  random_conc <- runif(15, min = 0, max = 0.1)
-  exposure_profile <- data.frame(t = 0:14, c = random_conc)
+  random_conc <- runif(15, min=0, max=0.1)
+  exposure_profile <- data.frame(t=0:14, c=random_conc)
 # run EPx calculations for full exposure profile
   metsulfuron %>%
     set_exposure(exposure_profile) %>%  # set a specific exposure scenario
@@ -168,6 +153,7 @@ set.seed(123)  # Setting a seed for reproducibility
 # Generating a random profile for 15 days with concentrations below 0.1
 random_conc <- runif(15, min = 0, max = 0.1)
 exposure_profile <- data.frame(time = 0:14, conc = random_conc)
+
 # run EPx calculations for a window length of 7 days and a step size of 1
 metsulfuron_epx_mtw <- metsulfuron %>%
   set_exposure(exposure_profile) %>%
@@ -175,9 +161,9 @@ metsulfuron_epx_mtw <- metsulfuron %>%
           window_interval = 1, 
           level = c(10))
 metsulfuron_epx_mtw
+
 # The result can be plotted with plot_EPx()
-plot_EPx(EPx_ts = metsulfuron_epx_mtw,
-         exposure_ts = exposure_profile)
+plot_epx(metsulfuron_epx_mtw, exposure_profile)
 ```
 
 `effect()` can report effect levels for all evaluated exposure windows
@@ -219,7 +205,7 @@ Option 1: regular intervals
   metsulfuron %>%
     set_init(c(BM=1)) %>%
     set_noexposure() %>%
-    set_transfer(interval = c(3), biomass = 1) %>%
+    set_transfer(interval=3, biomass=1) %>%
     simulate()
 ```
 
@@ -229,13 +215,13 @@ Option 2: custom time points and custom biomass
   metsulfuron %>%
     set_init(c(BM=1)) %>%
     set_noexposure() %>%
-    set_transfer(times = c(3,6), biomass = c(1,0.5)) %>%
+    set_transfer(times=c(3,6), biomass=c(1,0.5)) %>%
     simulate()
 ```
 
 ``` r
 # Call the help page of set_transfer
-?`set_transfer`
+?set_transfer
 ```
 
 ## Fitting model parameters
@@ -333,48 +319,70 @@ on a list of `CalibrationSets` Create list of CalibrationSets
 
 ``` r
 # get all the exposure scenarios from the Schmitt 2013 study
-list_eff_scen <- Schmitt2013 %>%
-  dplyr::group_by(ID) %>%
-  dplyr::group_map(~ metsulfuron %>%
-                     set_exposure(data.frame(.x$t, .x$conc)))
-# get all the observed effect data from the Schmitt 2013 study
-list_eff_data <- Schmitt2013 %>%
-  dplyr::group_by(ID) %>%
-  dplyr::group_map(~ data.frame(.x$t, .x$obs))
-list_calib_sets <- list()
-for (i in seq_along(list_eff_scen)) {
-  list_calib_sets[[i]] <- CalibrationSet(list_eff_scen[[i]], list_eff_data[[i]])
-}
+library(dplyr)
+Schmitt2013 %>%
+  group_by(ID) %>%
+  group_map(function(data, key) {
+    exp <- data %>% select(t, conc)
+    obs <- data %>% select(t, obs)
+    sc <- metsulfuron %>% set_exposure(exp)
+    CalibrationSet(sc, obs)
+  }) -> cs
+
 # Calibrate
 fit2 <- calibrate(
-  x = list_calib_sets,
-  par = c(k_phot_max = 5, k_resp = 0.8),
-  endpoint = "BM"
+  cs,
+  par=c(k_phot_max=5, k_resp=0.8),
+  endpoint="BM"
 )
 fit2
 ```
 
 ## Changes in parameter values over time
 
-ScenarioSequence() creates an object of the ScenarioSequence class,
-which contains a sequence of several EffectScenarios. Along this
-sequence of EffectScenarios, details of the experiment (i.e., the
-exposure scenario) can change. Indeed, sometimes, experimental
-conditions change during the course of the experiment, which should not
-be captured by the model (e.g., a pump failure, or the removal of some
-experimental organisms from the system to avoid overcrowding).
+`sequence()` creates an object which will represent a sequence of
+several scenarios. The sequence is treated as a single scenario and each
+scenario is simulated one after the other. Scenario sequences can be
+used to e.g. implement changes in model parameters over time.
+
+Sequences can be used to represent changing conditions over time, such
+as a change in model parameters which would otherwise be constant. This
+can be used to represent events such as a pump failure or change in
+temperature.
 
 ``` r
-# parameter change occurs at day 7
-seq7 <- list(metsulfuron %>% set_times(0:7),
-            metsulfuron %>% set_times(7:8),
-            metsulfuron %>% set_times(8:14))
-simulate(ScenarioSequence(seq7))
+# base scenario only valid until day 7
+sc1 <- metsulfuron %>%
+  set_times(0:7)
+
+# a parameter change occurs at day 7: global radiation decreases to 8,000 kJ/m2/d
+sc2 <- metsulfuron %>%
+  set_times(7:14) %>%
+  set_forcings(rad=8000)
+ 
+seq <- sequence(list(sc1, sc2))
+simulate(seq)
+#>    time       BM E     M_int      C_int  FrondNo
+#> 1     0 50.00000 1   0.00000 0.00000000 500000.0
+#> 2     1 52.15858 1 223.07447 0.25609887 521585.8
+#> 3     2 52.43495 1 369.63440 0.42211917 524349.5
+#> 4     3 52.33917 1 463.02605 0.52973924 523391.7
+#> 5     4 52.17923 1 521.89269 0.59891761 521792.3
+#> 6     5 52.00016 1 558.62681 0.64328081 520001.6
+#> 7     6 51.81403 1 581.21867 0.67170059 518140.3
+#> 8     7 51.63740 1 474.07158 0.54974731 516374.0
+#> 9     8 51.61806 1 301.84519 0.35015964 516180.6
+#> 10    9 52.32264 1 192.18727 0.21994721 523226.4
+#> 11   10 54.34850 1 122.36718 0.13482205 543485.0
+#> 12   11 57.08426 1  77.91217 0.08172830 570842.6
+#> 13   12 59.99459 1  49.60731 0.04951275 599945.9
+#> 14   13 62.96113 1  31.58537 0.03003980 629611.3
+#> 15   14 65.95879 1  20.11066 0.01825733 659587.9
 ```
 
 ``` r
-# Call the help page of ScenarioSequence
-?`ScenarioSequence-class`
+# Call the help page of `sequence`
+?sequence
 ```
 
 ## Decrease assessment runtime
@@ -383,13 +391,15 @@ There are ways to decrease the runtime of a simulation. One possibility
 is to reduce the maximum step length of the solver by setting the
 optional argument `hmax`. The larger `hmax`, the faster the simulations.
 But be careful, the larger hmax, the greater the risk that the results
-will be inaccurate. Especially for the simulation of long periods of
-time, such as annual exposure profiles, the results may be inaccurate.
-Oftentimes, it will be computational more efficient to adapt the
-solver’s error tolerances `atol` and `rtol` than reducing the step width
-`hmax` to achieve stable numerics. Start by decreasing deSolve’s default
-values by orders of ten until the simulation yields acceptable results,
-see e.g. ?deSolve::lsoda() for more information on error tolerances.
+will be inaccurate.
+
+Especially for the simulation of long periods of time, such as annual
+exposure profiles, the results may be inaccurate. Oftentimes, it will be
+computational more efficient to adapt the solver’s error tolerances
+`atol` and `rtol` than reducing the step width `hmax` to achieve stable
+numerics. Start by decreasing deSolve’s default values by orders of ten
+until the simulation yields acceptable results, see
+e.g. ?deSolve::lsoda() for more information on error tolerances.
 
 ``` r
 # Simulations with a maximum solver step length of hmax=0.01
@@ -499,7 +509,7 @@ use:
     |   |
     |   |__ Algae
     |       |__ AlgaeWeberScenario
-    |       |__ AlgaeScaledScenario
+    |       |__ AlgaeTKTDScenario
     |       |__ AlgaeSimpleScenario    
     |
     |__ GutsRedSd
@@ -686,7 +696,7 @@ The model will be parameterized with the values as described in the
 study. Then, the model will be inspected and used to make predictions
 for exposure scenarios, plot results, and get EPx calculations.
 
-### setting up the model
+### Setting up a scenario
 
 Setting up the model (i.e. creating an `EffectScenario`) involved
 defining the parameters, the environmental variables (external forcings
@@ -773,168 +783,7 @@ Lemna_Schmitt() %>%               # the Lemna model
 # variables, and save everything as an object
 ```
 
-### retrieving basic information from the model
-
-All scenario properties can be investigated (see help file for available
-properties: ?EffectScenario())
-
-``` r
-
-## overall summary
-metsulfuron
-#> EffectScenario object
-#> model: Lemna_Schmitt (#metsulfuron)
-#> param: Emax=0.784, AperBM=1000, Kbm=0.75, P_Temp=0, MolWeight=381, k_phot_fix=0, k_phot_max=0.47, k_resp=0.05, k_loss=0, Tmin=8, Tmax=40.5, Topt=26.7, t_ref=25, Q10=2, k_0=3, a_k=5e-05, C_P=0.3, CP50=0.0043, a_P=1, KiP=101, C_N=0.6, CN50=0.034, a_N=1, KiN=604, BM50=176, mass_per_frond=1e-04, BMw2BMd=16.7, EC50=0.3, b=4.16, P_up=0.0054
-#> init : BM=50, E=1, M_int=0
-#> endpt: BM, r
-#> times: [0,14] n=15, regular
-#> forcs: temp, rad
-#> expsr: none
-#>    time conc
-#> 1     0    1
-#> 2     1    1
-#> 3     2    1
-#> 4     3    1
-#> 5     4    1
-#> 6     5    1
-#> 7     6    1
-#> 8     7    0
-#> 9     8    0
-#> 10    9    0
-#>  [ reached 'max' / getOption("max.print") -- omitted 5 rows ]
-
-## Access specific scenario properties
-# names
-metsulfuron@name       # check model name 
-#> [1] "Lemna_Schmitt"
-metsulfuron@tag        # check tag for specific model implementation
-#> [1] "metsulfuron"
-# parameters and endpoints
-metsulfuron@param      # check parameters and their values
-#> $Emax
-#> [1] 0.784
-#> 
-#> $AperBM
-#> [1] 1000
-#> 
-#> $Kbm
-#> [1] 0.75
-#> 
-#> $P_Temp
-#> [1] FALSE
-#> 
-#> $MolWeight
-#> [1] 381
-#> 
-#> $k_phot_fix
-#> [1] FALSE
-#> 
-#> $k_phot_max
-#> [1] 0.47
-#> 
-#> $k_resp
-#> [1] 0.05
-#> 
-#> $k_loss
-#> [1] 0
-#> 
-#> $Tmin
-#> [1] 8
-#> 
-#> $Tmax
-#> [1] 40.5
-#> 
-#> $Topt
-#> [1] 26.7
-#> 
-#> $t_ref
-#> [1] 25
-#> 
-#> $Q10
-#> [1] 2
-#> 
-#> $k_0
-#> [1] 3
-#> 
-#> $a_k
-#> [1] 5e-05
-#> 
-#> $C_P
-#> [1] 0.3
-#> 
-#> $CP50
-#> [1] 0.0043
-#> 
-#> $a_P
-#> [1] 1
-#> 
-#> $KiP
-#> [1] 101
-#> 
-#> $C_N
-#> [1] 0.6
-#> 
-#> $CN50
-#> [1] 0.034
-#> 
-#> $a_N
-#> [1] 1
-#> 
-#> $KiN
-#> [1] 604
-#> 
-#> $BM50
-#> [1] 176
-#> 
-#> $mass_per_frond
-#> [1] 1e-04
-#> 
-#> $BMw2BMd
-#> [1] 16.7
-#> 
-#> $EC50
-#> [1] 0.3
-#> 
-#> $b
-#> [1] 4.16
-#> 
-#> $P_up
-#> [1] 0.0054
-metsulfuron@param.req  # check which parameters are required
-#>  [1] "Emax"           "EC50"           "b"              "P_up"           "AperBM"         "Kbm"            "P_Temp"         "MolWeight"      "k_phot_fix"     "k_phot_max"     "k_resp"        
-#> [12] "k_loss"         "Tmin"           "Tmax"           "Topt"           "t_ref"          "Q10"            "k_0"            "a_k"            "C_P"            "CP50"           "a_P"           
-#> [23] "KiP"            "C_N"            "CN50"           "a_N"            "KiN"            "BM50"           "mass_per_frond" "BMw2BMd"
-metsulfuron@endpoints
-#> [1] "BM" "r"
-# experimental conditions
-metsulfuron@forcings
-#> $temp
-#>   t tmp
-#> 1 0  12
-#> 
-#> $rad
-#>   t   rad
-#> 1 0 15000
-metsulfuron@exposure@series
-#>    time conc
-#> 1     0    1
-#> 2     1    1
-#> 3     2    1
-#> 4     3    1
-#> 5     4    1
-#> 6     5    1
-#> 7     6    1
-#> 8     7    0
-#> 9     8    0
-#> 10    9    0
-#> 11   10    0
-#> 12   11    0
-#> 13   12    0
-#> 14   13    0
-#> 15   14    0
-```
-
-### simulating with the model, and plotting
+### Simulating a scenario and plotting
 
 ``` r
 ## simulate with model, under a range of different exposure scenarios
@@ -956,7 +805,7 @@ plot_sd(
 )
 ```
 
-<img src="../doc/figures/howto-unnamed-chunk-28-1.png" width="75%" />
+<img src="../doc/figures/howto-unnamed-chunk-27-1.png" width="75%" />
 
 ``` r
 
@@ -975,22 +824,4 @@ plot_sd(
 )
 ```
 
-<img src="../doc/figures/howto-unnamed-chunk-28-2.png" width="75%" />
-
-### assessing toxic effects
-
-``` r
-## Calculation of EPx values for a complete concentration profile.
-set.seed(123)  # Setting a seed for reproducibility
-
-# run EPx calculations for full exposure profile
-metsulfuron %>%
-  set_exposure(exp_scen %>% # set a specific exposure scenario
-                 dplyr::filter(trial == "T5.6") %>% 
-                 dplyr::select(time,conc)) %>%  
-  epx(level = c(10,30))  # run EPx calculations
-#> # A tibble: 1 × 5
-#>   scenario   BM.EP10 r.EP10 BM.EP30 r.EP30
-#>   <list>       <dbl>  <dbl>   <dbl>  <dbl>
-#> 1 <LmnSchmS>  0.0673 0.0557   0.188 0.0870
-```
+<img src="../doc/figures/howto-unnamed-chunk-27-2.png" width="75%" />

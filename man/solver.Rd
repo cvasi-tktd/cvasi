@@ -77,7 +77,7 @@ solver(scenario, times, ...)
 )
 }
 \arguments{
-\item{scenario}{\linkS4class{EffectScenario} object}
+\item{scenario}{\link{scenario} object}
 
 \item{times}{numeric vector of output times, overrides any scenario setting}
 

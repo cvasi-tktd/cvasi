@@ -6,29 +6,30 @@
 \alias{get_tag,list-method}
 \alias{get_tag,EffectScenario-method}
 \alias{get_tag,parameter_set-method}
-\title{Returns a scenario tag}
+\title{Get scenario tag}
 \usage{
 get_tag(x)
-
-\S4method{get_tag}{ANY}(x)
-
-\S4method{get_tag}{list}(x)
-
-\S4method{get_tag}{EffectScenario}(x)
-
-\S4method{get_tag}{parameter_set}(x)
 }
 \arguments{
-\item{x}{\linkS4class{EffectScenario} or \code{\link{parameter_set}} objects}
+\item{x}{(vector of) \link{scenarios} or \code{\link{parameter_set}} objects}
 }
 \value{
-\code{character} custom tag identifying a scenario
+vector of \code{character}
 }
 \description{
-The function supports vectorized inputs. It will raise an error if
-non-supported objects are passed as arguments.
+Returns the user-defined, custom tag of a scenario, if available. Tags
+can be helpful to quickly distinguish scenarios of the same model type.
+The function supports vectorized inputs.
 }
 \examples{
 # returns `fathead minnow`
 get_tag(minnow_it)
+
+# update or set a tag
+myscenario <- minnow_it \%>\% set_tag("My Custom Tag")
+# returns `My Custom Tag`
+get_tag(myscenario)
+}
+\seealso{
+\code{\link[=set_tag]{set_tag()}}
 }

@@ -1,8 +1,8 @@
-#' Scenario extension: biomass transfer
+#' Biomass transfer class
 #'
-#' By inheriting from class `Transferable`, a model's behavior can be
+#' By inheriting from class `Transferable`, a scenario's behavior can be
 #' extended to support transfer and reset of biomass at dedicated points during
-#' the simulation.
+#' simulation.
 #'
 #' @section Biomass transfer:
 #' Models supporting biomass transfer can be instructed to move a fixed amount
@@ -22,7 +22,7 @@
 #' **before** the transfer. Be aware that in order to use transfers at regular
 #' intervals, the simulation must start at time point zero.
 #'
-#' @seealso [Lemna-models], [set_transfer()]
+#' @seealso [set_transfer()]
 #' @slot transfer.times  `numeric`, vector of time points at which transfers occur,
 #'  e.g. `c(7,10,14)`
 #' @slot transfer.interval `numeric`, interval length until frond transfer to new
@@ -32,8 +32,12 @@
 #'   biomass
 #' @slot transfer.comp.scaled `character` vector of state variable which will
 #'   be scaled 1:1 when biomass is modified, e.g. internal toxicant mass
+#' @name Transferable
+#' @family scenarios
+#' @aliases Biomass-transfer Transferable-class
+NULL
+
 #' @export
-#' @rdname Transferable
 setClass("Transferable",
          slots=list(
            transfer.times="numeric",

@@ -1,25 +1,25 @@
-#' Myriophyllum model class
+#' Myriophyllum models
 #'
-#' Only used for technical purposes
+#' Supported models:
+#' * [Myrio()], with exponential growth
+#' * [Myrio_log()], with logistic growth
 #'
+#' @name Myriophyllum-models
+#' @seealso [Lemna-models], [Transferable]
+#' @family Myriophyllum models
+#' @family scenarios
+#' @aliases Myriophyllum-class
+NULL
+
 #' @include class-Transferable.R
-#' @seealso \linkS4class{MyrioExpScenario}, \linkS4class{MyrioLogScenario}
 #' @export
 setClass("Myriophyllum", contains=c("Transferable","EffectScenario"))
 
-#' Myriophyllum model class
-#'
-#' Please refer to [Myrio()] for details about the model. Class slots are
-#' documented in \linkS4class{EffectScenario}.
-#'
+# Myriophyllum model class
 #' @export
 setClass("MyrioExpScenario", contains="Myriophyllum")
 
-#' Myriophyllum model class
-#'
-#' Please refer to [Myrio_log()] for details about the model. Class slots are
-#' documented in \linkS4class{EffectScenario}.
-#'
+# Myriophyllum model class
 #' @export
 setClass("MyrioLogScenario", contains="Myriophyllum")
 
@@ -86,18 +86,19 @@ setClass("MyrioLogScenario", contains="Myriophyllum")
 #'   - `dM_int`, mass of toxicant in plants derivative (mass per m2 d-1)
 #'
 #' @inheritSection Lemna_SETAC Effects
-#' @inheritSection Transferable-class Biomass transfer
+#' @inheritSection Transferable Biomass transfer
 #' @references
 #' Klein J., Cedergreen N., Heine S., Reichenberger S., Rendal C.,
 #' Schmitt W., Hommen U., 2021: *Refined description of the Lemna TKTD growth model
 #' based on Schmitt et al. (2013) - equation system and default parameters*.
 #' Report of the working group *Lemna* of the SETAC Europe Interest Group Effect
 #' Modeling. Version 1, uploaded on 22. Sept. 2021.
-#' https://www.setac.org/group/SEIGEffectModeling
+#' https://www.setac.org/group/effect-modeling.html
 #'
-#' @seealso [Macrophyte-models], \linkS4class{Transferable}, \linkS4class{EffectScenario}
+#' @seealso [Macrophyte-models], [Transferable], [Scenarios]
 #' @family Myriophyllum models
-#' @family macrophytes
+#' @family macrophyte models
+#' @aliases MyrioExpScenario-class
 #' @export
 Myrio <- function() {
   new("MyrioExpScenario",
@@ -149,12 +150,13 @@ Myrio <- function() {
 #' @inheritSection Myrio Environmental factors
 #' @inheritSection Myrio Simulation output
 #' @inheritSection Myrio Effects
-#' @inheritSection Transferable-class Biomass transfer
+#' @inheritSection Transferable Biomass transfer
 #' @inherit Myrio references
 #'
-#' @seealso [Macrophyte-models], \linkS4class{Transferable}, \linkS4class{EffectScenario}
+#' @seealso [Transferable], [Scenarios]
 #' @family Myriophyllum models
-#' @family macrophytes
+#' @family macrophyte models
+#' @aliases MyrioLogScenario-class
 #' @export
 Myrio_log <- function() {
   new("MyrioLogScenario",

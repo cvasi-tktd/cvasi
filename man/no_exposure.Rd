@@ -2,7 +2,7 @@
 % Please edit documentation in R/class-ExposureSeries.R
 \name{no_exposure}
 \alias{no_exposure}
-\title{Zero exposure series}
+\title{Zero exposure}
 \usage{
 no_exposure()
 }

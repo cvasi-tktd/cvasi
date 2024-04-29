@@ -1,116 +1,114 @@
 #' Fit model parameters to experimental data
 #'
-#' @description The function `calibrate()`performs the calibration (fitting) of model parameters to observed data.
-#' Two options are available: One can either calibrate a single \linkS4class{EffectScenario} (with corresponding observations on effect data),
-#' or one can fit to a list of one or more \linkS4class{CalibrationSet} objects (i.e., a combiation of `EffectScenario`
-#' and effect data joined together into a `CalibrationSet` object). The latter allows one to combine the results from several experiments
-#' within one fitting process.
+#' The function `calibrate()`performs the calibration (fitting) of model
+#' parameters to observed data. Two options are available:
+#' 1) Either a single [scenario] is fitted to a single dataset.
+#'   The dataset must represent a time-series of an output variable of the
+#'   model, e.g. observed biomass over time (effect data).
+#' 2) Or a scenario is fitted to one or multiple datasets at once. Each
+#'   dataset is represented by a \linkS4class{CalibrationSet} which also
+#'   contains a scenario which describes the conditions during observation,
+#'   such as exposure and environmental properties. Each `CalibrationSet`
+#'   can also be given a weight to be considered in the fitting. By default,
+#'   the total sum of squared errors is used as the target function which is
+#'   minimized.
 #'
-#' Effect data should be supplied in long format with 2 columns: the timepoints and the observations. Effect data can contain replicates as extra rows.
+#' Effect data must be supplied as a `data.frame` in long format with two
+#' columns: the first column contains timestamps and the second column
+#' the observed property. The effect data may contain replicates as extra rows.
 #'
 #' @param x either a single `EffectScenario` or a list of `CalibrationSet` objects to be fitted
 #' @param par named numeric vector with parameters to fit and their start values
 #' @param endpoint `character`, name of model output column to optimize on
 #' @param hessian `logical`, if `TRUE` the Hessian is returned by the optimization routine
-#' @param metric.fun vectorized function to calculate an error term that is
+#' @param metric_fun vectorized function to calculate an error term that is
 #' minimized during optimization, defaults to sum of squared errors
-#' @param as.tibble `logical`, if `TRUE` a tibble with scenario and optimization
+#' @param as_tibble `logical`, if `TRUE` a tibble with scenario and optimization
 #'  result is returned, else only the optimization result is returned
-#' @param catch.errors `logical`, if `TRUE` simulation errors due to e.g. out of
+#' @param catch_errors `logical`, if `TRUE` simulation errors due to e.g. out of
 #' bounds parameters are caught and optimization continues, else optimization fails
 #' @param verbose `logical`, if `TRUE` then debug outputs are displayed during
 #' optimization
 #' @param ... additional parameters passed on to `stats::optim()` and `simulate()`
 #'
 #' @examples
-#' # Example with Lemna ----------------------------------------------
-#' # 1st option: with an EffectScenario ----------------------------
-#' # EffectScenario
-#' is(metsulfuron)
-#' # Effect data
-#' obs32 <- Schmitt2013 %>%
-#'   dplyr::filter(ID == "T0.32") %>%
-#'   dplyr::select(t, obs) # can only contain t and conc
-#' # calibrate with an ExposureScenario and corresponding effect data
-#' calib_scen <- calibrate(
-#'   x = metsulfuron,
-#'   par = c(k_phot_max = 1, k_resp = 0.1 ),
-#'   data = obs32,
-#'   endpoint = "BM",
-#'  )
-#' # check return
-#' is(calib_scen)
-#' calib_scen
-#' # plot
-#' obs32$trial <- "trail1"
-#' colnames(obs32) <- c("time", "obs", "trial")
-#' plot_sd(model_base = metsulfuron,
-#'   treatments = metsulfuron@exposure@series,
-#'   rs_mean = obs32)
+#' ## 1st option: Fit scenario parameters using a single dataset
+#' metsulfuron
 #'
-#' # 2nd option: with list of CalibrationSets ----------------------
-#' # step 1. list of EffectScenarios
-#' list_of_eff_scen <- Schmitt2013 %>%
-#'   dplyr::group_by(ID) %>%
-#'   dplyr::group_map(~ metsulfuron %>% set_exposure(data.frame(.x$t, .x$conc)))
-#' # step 2. list of effect data
-#' list_of_eff_data <- Schmitt2013 %>%
-#'   dplyr::group_by(ID) %>%
-#'   dplyr::group_map(~data.frame(.x$t, .x$obs))
-#' # step 3. combined into list of CalibrationSets
-#' list_of_calib_sets <- list()
-#' for(i in 1:length(list_of_eff_scen)){
-#'   list_of_calib_sets[[i]] <- CalibrationSet(list_of_eff_scen[[i]], list_of_eff_data[[i]])
-#' }
-#' # 4. calibrate
-#' calib_scen_list <- calibrate(
-#'  x = list_of_calib_sets, # list of calibration sets
-#'  par = c(k_phot_max = 1),
-#'  endpoint = "BM",
+#' # Observed biomass from Schmitt et al. 2013 experiment
+#' obs32 <- data.frame(
+#'   time=c(0, 3, 5, 7, 7.01, 10, 12, 14),
+#'   obs=c(12, 25, 30, 33, 33, 64, 127, 300)
 #' )
-#'  # check return
-#' is(calib_scen_list)
-#' calib_scen_list$scenario[[1]]
 #'
+#' # calibrate with an ExposureScenario and corresponding effect data
+#' metsulfuron %>%
+#'   calibrate(
+#'     par=c(k_phot_max=1, k_resp=0.1 ),
+#'     data=obs32,
+#'     endpoint="BM",
+#'   )
+#'
+#' # plot trial data
+#' obs32$trial <- "conc=1.0"
+#' plot_sd(treatments=metsulfuron@exposure@series, rs_mean=obs32)
+#'
+#' ## 2nd option: Fit scenario parameters using CalibrationSets
+#'
+#' # Create one CalibrationSet for each observed exposure level and time-series
+#' # from Schmitt et al. (2013) dataset
+#' library(dplyr)
+#' Schmitt2013 %>%
+#'   group_by(ID) %>%
+#'   group_map(function(data, key) {
+#'     exp <- data %>% select(t, conc)
+#'     obs <- data %>% select(t, obs)
+#'     sc <- metsulfuron %>% set_exposure(exp)
+#'     CalibrationSet(sc, obs)
+#'   }) -> cs
+#' # Fit parameters
+#' calibrate(cs, par=c(k_phot_max=1), endpoint="BM")
+#'
+#' @param data `data.frame` with two or more columns with experimental data,
+#' 1st column contains time points, 2nd and following columns contain values
+#' which the scenario is fitted to.
+#' @param metric_total vectorized function to aggregate multiple error terms to a
+#' single value, defaults to `sum()`
 #'
 #' @return By default, a list of fitted parameters (as produced by [stats::optim()])
-#' is returned. Alternatively, when setting the argument as.tibble = TRUE,
+#' is returned. Alternatively, when setting the argument as_tibble = TRUE,
 #' a `tibble` is returned with 2 columns, the first column lists the
 #' scenario and the 2nd column the list of fitted parameters.
 #'
 #' @export
+#' @aliases calibrate,EffectScenario-method calibrate,list-method
 #' @include class-EffectScenario.R
 setGeneric("calibrate", function(x,...) standardGeneric("calibrate"), signature="x")
 
-#' @param data `data.frame` with two or more columns with experimental data,
-#' 1st column contains time points, 2nd and following columns contain values
-#' which the scenario is fitted to.
-#' @rdname calibrate
 #' @export
+#' @describeIn calibrate Fit a single scenario
 setMethod("calibrate", "EffectScenario",
-  function(x, par, data, endpoint, hessian=TRUE, metric.fun=sse,
-           as.tibble=FALSE, catch.errors=TRUE, verbose=FALSE, ...) {
+  function(x, par, data, endpoint, hessian=TRUE, metric_fun=sse,
+           as_tibble=FALSE, catch_errors=TRUE, verbose=FALSE, ...) {
     calibrate_scenario(x=x, par=par, data=data, endpoint=endpoint, hessian=hessian,
-                       metric.fun=metric.fun, as.tibble=as.tibble, catch.errors=catch.errors,
+                       metric_fun=metric_fun, as_tibble=as_tibble, catch_errors=catch_errors,
                        verbose=verbose, ...)
   }
 )
 
-#' @param metric.total vectorized function to aggregate multiple error terms to a
-#' single value, defaults to `sum()`
-#' @rdname calibrate
 #' @export
+#' @describeIn calibrate Fit using a [CalibrationSet]
 setMethod("calibrate", "list",
-  function(x, par, endpoint, hessian=TRUE, metric.fun=sse, metric.total=sum,
-           as.tibble=FALSE, catch.errors=TRUE, verbose=FALSE, ...)
+  function(x, par, endpoint, hessian=TRUE, metric_fun=sse, metric_total=sum,
+           as_tibble=FALSE, catch_errors=TRUE, verbose=FALSE, ...)
     calibrate_set(x=x, par=par, endpoint=endpoint, hessian=hessian,
-                  metric.fun=metric.fun, metric.total=metric.total,
-                  as.tibble=as.tibble, catch.errors=catch.errors,
+                  metric_fun=metric_fun, metric_total=metric_total,
+                  as_tibble=as_tibble, catch_errors=catch_errors,
                   verbose=verbose, ...)
 )
 
-calibrate_scenario <- function(x, par, data, endpoint, hessian, metric.fun=sse,
-                     as.tibble, catch.errors, verbose, ...) {
+calibrate_scenario <- function(x, par, data, endpoint, hessian, metric_fun=sse,
+                               as_tibble, catch_errors, verbose, ...) {
   if(!is.numeric(par) | !is.vector(par))
     stop("par is not numeric vector")
   if(length(names(par)) < length(par))
@@ -134,36 +132,36 @@ calibrate_scenario <- function(x, par, data, endpoint, hessian, metric.fun=sse,
     message(paste("  time points:",paste(data[,1],collapse=",")))
   }
   # parameter names have to be re-set for Brent method in each iteration
-  par.names <- names(par)
+  par_names <- names(par)
 
   stats::optim(par=par,
                fn=optim_scenario,
                hessian=hessian,
                scenario=x,
-               par.names=par.names,
+               par_names=par_names,
                data=data,
                endpoint=endpoint,
-               metric.fun=metric.fun,
-               catch.errors=catch.errors,
+               metric_fun=metric_fun,
+               catch_errors=catch_errors,
                verbose=verbose,
                ...) -> fit
 
-  names(fit$par) <- par.names # re-set names in case method 'Brent' dropped them
+  names(fit$par) <- par_names # re-set names in case method 'Brent' dropped them
   if(fit$convergence>0)
     warning(paste("possible convergence problem: optim gave code =",fit$convergence,
                   ifelse(is.null(fit$message),"",paste("\n",fit$message))))
 
   # return updated scenario + fit data as tibble
   x <- set_param(x, fit$par)
-  if(as.tibble) {
+  if(as_tibble) {
     tibble::tibble(scenario=c(x),fit=list(fit))
   } else {
     fit
   }
 }
 
-calibrate_set <- function(x, par, endpoint, hessian, metric.fun, metric.total,
-                          as.tibble, catch.errors, verbose, data, ...) {
+calibrate_set <- function(x, par, endpoint, hessian, metric_fun, metric_total,
+                          as_tibble, catch_errors, verbose, data, ...) {
   if(!missing(data))
     stop("parameter 'data' must not be set when using CalibrationSets")
   if(!all(sapply(x,function(y)is(y,"CalibrationSet"))))
@@ -184,29 +182,29 @@ calibrate_set <- function(x, par, endpoint, hessian, metric.fun, metric.total,
     message(paste("  set contains",length(x), "trials"))
   }
   # parameter names have to be re-set for Brent method in each iteration
-  par.names <- names(par)
+  par_names <- names(par)
 
   stats::optim(par=par,
                fn=optim_set,
                hessian=hessian,
                sets=x,
-               par.names=par.names,
+               par_names=par_names,
                endpoint=endpoint,
-               metric.fun=metric.fun,
-               metric.total=metric.total,
-               catch.errors=catch.errors,
+               metric_fun=metric_fun,
+               metric_total=metric_total,
+               catch_errors=catch_errors,
                verbose=verbose,
                ...) -> fit
 
-  names(fit$par) <- par.names # re-set names in case method 'Brent' dropped them
+  names(fit$par) <- par_names # re-set names in case method 'Brent' dropped them
   if(fit$convergence>0)
     warning(paste("possible convergence problem: optim gave code =",
                   fit$convergence,ifelse(is.null(fit$message),"",paste("\n",fit$message))))
 
   # return updated scenario + fit data as tibble
-  if(as.tibble) {
+  if(as_tibble) {
     x <- purrr::map(x, ~.x@scenario %>% set_param(fit$par))
-    tibble::tibble(scenario=c(x),fit=list(fit))
+    tibble::tibble(scenario=c(x), fit=list(fit))
   } else {
     fit
   }
@@ -219,14 +217,14 @@ calibrate_set <- function(x, par, endpoint, hessian, metric.fun, metric.total,
 # @param scenario `EffectScenario` object
 # @param data `data.frame` with (measured) calibration data
 # @param endpoint `character` or `numeric` value identifying the relevant model output
-# @param metric.fun `function` to calculate error metrics
+# @param metric_fun `function` to calculate error metrics
 # @param ... additional parameters passed on to `simulate()`
 #
 # @return `numeric` value, error metric
-optim_scenario <- function(par, scenario, par.names, data, endpoint, metric.fun,
-                          catch.errors=catch.errors, verbose=verbose, ode.method, ...) {
+optim_scenario <- function(par, scenario, par_names, data, endpoint, metric_fun,
+                           catch_errors=catch_errors, verbose=verbose, ode_method, ...) {
   # set parameters supplied by optimization routine
-  if(is.null(names(par))) names(par) <- par.names # req for Brent method
+  if(is.null(names(par))) names(par) <- par_names # req for Brent method
   scenario <- set_param(scenario, par)
   # comparison table, measured vs. simulated
   df.cmp <- data.frame(m=numeric(),s=numeric())
@@ -234,58 +232,60 @@ optim_scenario <- function(par, scenario, par.names, data, endpoint, metric.fun,
   # cycle through all data sets/columns
   for(i in seq(length(data)-1)) {
     # run simulation
-    if(missing(ode.method))
+    if(missing(ode_method))
       out <- try(simulate(scenario,times=data[,1],...), silent=TRUE)
     else
-      out <- try(simulate(scenario,times=data[,1],method=ode.method,...), silent=TRUE)
+      out <- try(simulate(scenario,times=data[,1],method=ode_method,...), silent=TRUE)
 
-    if(catch.errors & is(out,"try-error")) {
+    if(catch_errors & is(out,"try-error")) {
       if(verbose)
-        message(paste(" -- Invalid param:",paste(par.names,par,sep="=",collapse=",")," Err: 1e15"))
+        message(paste(" -- Invalid param:",paste(par_names,par,sep="=",collapse=",")," Err: 1e15"))
       return(1e15) # penalize invalid parameters, requires a finite value for 'L-BFGS-B' to work
     }
     df.cmp <- rbind(df.cmp, list(ref=data[,i+1],fit=out[,endpoint]))
   }
 
   if(verbose)
-    message(paste("Param:",paste(par.names,par,sep="=",collapse=",")," Err:",metric.fun(df.cmp[,1],df.cmp[,2])))
+    message(paste("Param:",paste(par_names,par,sep="=",collapse=",")," Err:",metric_fun(df.cmp[,1], df.cmp[,2])))
 
   # error term
-  metric.fun(df.cmp[,1],df.cmp[,2])
+  metric_fun(df.cmp[,1],df.cmp[,2])
 }
 
 
-optim_set <- function(par, sets, par.names, endpoint, metric.fun, metric.total,
-                      catch.errors=catch.errors, verbose=verbose, ode.method, ...) {
+optim_set <- function(par, sets, par_names, endpoint, metric_fun, metric_total,
+                      catch_errors=catch_errors, verbose=verbose, ode_method, ...) {
   # error term
   err <- c()
   # cycle through all calibration sets, i.e. scenario/data combination
   for(i in seq(length(sets))) {
     # current calibration set and scenario object
     set <- sets[[i]]
+    # coerce fit data to data.frame to avoid issues with data.frame-like types
+    data <- as.data.frame(set@data)
     # set parameters supplied by optimization routine
-    if(is.null(names(par))) names(par) <- par.names # req for Brent method
+    if(is.null(names(par))) names(par) <- par_names # req for Brent method
     scenario <- set_param(set@scenario, par)
 
     # run simulation
-    if(missing(ode.method))
-      out <- try(simulate(scenario,times=set@data[,1],...), silent=TRUE)
+    if(missing(ode_method))
+      out <- try(simulate(scenario,times=data[,1],...), silent=TRUE)
     else
-      out <- try(simulate(scenario,times=set@data[,1],method=ode.method,...), silent=TRUE)
-    if(catch.errors & is(out,"try-error")) {
+      out <- try(simulate(scenario,times=data[,1],method=ode_method,...), silent=TRUE)
+    if(catch_errors & is(out,"try-error")) {
       if(verbose)
-        message(paste(" -- Invalid param:",paste(par.names,par,sep="=",collapse=",")," Err: 1e15"))
+        message(paste(" -- Invalid param:",paste(par_names,par,sep="=",collapse=",")," Err: 1e15"))
         message(out)
       return(1e15) # penalize invalid parameters, requires a finite value for 'L-BFGS-B' to work
     }
     if(!(endpoint %in% names(out)))
       stop("endpoint not present in simulation results")
-    err <- c(err, metric.fun(set@data[,2],out[,endpoint]) * set@weight)
+    err <- c(err, metric_fun(data[,2],out[,endpoint]) * set@weight)
   }
 
-  err.total <- metric.total(err)
+  err.total <- metric_total(err)
   if(verbose)
-    message(paste("Param:",paste(par.names,par,sep="=",collapse=",")," Err:",err.total))
+    message(paste("Param:",paste(par_names,par,sep="=",collapse=",")," Err:",err.total))
 
   err.total
 }

@@ -25,7 +25,7 @@ set_exposure(scenarios, series, ...)
 \S4method{set_exposure}{list,ANY}(scenarios, series, ...)
 }
 \arguments{
-\item{scenarios}{\code{vector} of \linkS4class{EffectScenario} objects}
+\item{scenarios}{\code{vector} of \link{scenarios}}
 
 \item{series}{\code{vector} of  \link{ExposureSeries} objects or a single \code{data.frame}}
 
@@ -77,7 +77,7 @@ be lost. If this behavior is undesired, set the function argument
 \subsection{Multiple exposure series and scenarios}{
 
 The functions supports modifying multiple scenarios at once: by
-calling it with lists of \linkS4class{EffectScenario} and \link{ExposureSeries}
+calling it with lists of \link{scenario} and \link{ExposureSeries}
 objects. The cartesian product of all scenarios and exposure series will
 be returned, iff the parameter \code{expand = TRUE} is set.
 

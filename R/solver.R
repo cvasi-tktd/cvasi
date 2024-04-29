@@ -3,7 +3,7 @@
 #' Please refer to the *Modeling Howto* vignette on how to implement custom
 #' models by overloading the `solver` function.
 #'
-#' @param scenario \linkS4class{EffectScenario} object
+#' @param scenario [scenario] object
 #' @param times numeric vector of output times, overrides any scenario setting
 #' @param ... additional parameters passed on to [deSolve::ode()]
 #' @param approx string, interpolation method of exposure series, see [stats::approxfun()]

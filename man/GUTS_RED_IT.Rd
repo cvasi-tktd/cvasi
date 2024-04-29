@@ -2,6 +2,7 @@
 % Please edit documentation in R/class-GutsRed.R
 \name{GUTS_RED_IT}
 \alias{GUTS_RED_IT}
+\alias{GutsRedIt-class}
 \title{GUTS-RED-IT scenario}
 \usage{
 GUTS_RED_IT(param, init)
@@ -12,10 +13,11 @@ GUTS_RED_IT(param, init)
 \item{init}{optional named numeric \code{vector} to use as initial state}
 }
 \value{
-a \linkS4class{GutsRedIt} object
+GUTS_RED_IT scenario
 }
 \description{
-Constructor to create a \emph{GUTS-RED-IT} scenario object
+Reduced \emph{General Unified Threshold models of Survival} (GUTS) with
+individual tolerance (\emph{IT}).
 }
 \section{State variables}{
 
@@ -57,5 +59,8 @@ regulatory risk assessment of pesticides for aquatic organisms}. EFSA Journal 20
 16(8):5377, 188 pp. \doi{10.2903/j.efsa.2018.5377}
 }
 \seealso{
-\link{GUTS-RED-models}, \code{\link[=GUTS_RED_SD]{GUTS_RED_SD()}}
+Other GUTS-RED models: 
+\code{\link{GUTS-RED-models}},
+\code{\link{GUTS_RED_SD}()}
 }
+\concept{GUTS-RED models}

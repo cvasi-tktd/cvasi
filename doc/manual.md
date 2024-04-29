@@ -1,33 +1,23 @@
 User Manual
 ================
 Nils Kehrein
-09 April, 2024
+29 April, 2024
 
-- <a href="#required-skills" id="toc-required-skills">Required skills</a>
-- <a href="#how-to-install" id="toc-how-to-install">How to install</a>
-- <a href="#modeling-and-assessment-workflow"
-  id="toc-modeling-and-assessment-workflow">Modeling and assessment
-  workflow</a>
-  - <a href="#overview" id="toc-overview">Overview</a>
-  - <a href="#setting-up-a-scenario" id="toc-setting-up-a-scenario">Setting
-    up a scenario</a>
-  - <a href="#running-a-simulation" id="toc-running-a-simulation">Running a
-    simulation</a>
-  - <a href="#deriving-assessment-endpoints"
-    id="toc-deriving-assessment-endpoints">Deriving assessment endpoints</a>
-- <a href="#data-format-of-model-inputs"
-  id="toc-data-format-of-model-inputs">Data format of model inputs</a>
-- <a href="#how-to-derive-model-inputs"
-  id="toc-how-to-derive-model-inputs">How to derive model inputs</a>
-- <a href="#description-of-model-outputs"
-  id="toc-description-of-model-outputs">Description of model outputs</a>
-  - <a href="#model-fitting-results" id="toc-model-fitting-results">Model
-    fitting results</a>
-  - <a href="#simulation-results" id="toc-simulation-results">Simulation
-    results</a>
-  - <a href="#effect-levels" id="toc-effect-levels">Effect levels</a>
-  - <a href="#effect-profiles" id="toc-effect-profiles">Effect profiles</a>
-- <a href="#references" id="toc-references">References</a>
+- [Required skills](#required-skills)
+- [How to install](#how-to-install)
+- [Modeling and assessment workflow](#modeling-and-assessment-workflow)
+  - [Overview](#overview)
+  - [Setting up a scenario](#setting-up-a-scenario)
+  - [Running a simulation](#running-a-simulation)
+  - [Deriving assessment endpoints](#deriving-assessment-endpoints)
+- [Data format of model inputs](#data-format-of-model-inputs)
+- [How to derive model inputs](#how-to-derive-model-inputs)
+- [Description of model outputs](#description-of-model-outputs)
+  - [Model fitting results](#model-fitting-results)
+  - [Simulation results](#simulation-results)
+  - [Effect levels](#effect-levels)
+  - [Effect profiles](#effect-profiles)
+- [References](#references)
 
 The *cvasi* package is a software library that extends the features of
 the programming language [*R*](https://www.r-project.org/) by routines
@@ -92,7 +82,7 @@ install.packages("cvasi", dependencies=TRUE)
 ```
 
 The package and its source code is also available on
-[GitHub](https://github.com/Bayer-Group/cvasi/).
+[GitHub](https://github.com/cvasi-tktd/cvasi/).
 
 # Modeling and assessment workflow
 
@@ -868,7 +858,7 @@ allowed range.
   growth model based on Schmitt et al. (2013) – equation system and
   default parameters*. Report of the working group *Lemna* of the SETAC
   Europe Interest Group Effect Modeling. Version 1, uploaded on 22.
-  Sept. 2021. <https://www.setac.org/group/SEIGEffectModeling>
+  Sept. 2021. <https://www.setac.org/group/effect-modeling.html>
 - Schmitt W., Bruns E., Dollinger M., and Sowig P., 2013: *Mechanistic
   TK/TD-model simulating the effect of growth inhibitors on Lemna
   populations*. Ecol Model 255, pp. 1-10. DOI:

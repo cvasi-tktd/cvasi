@@ -2,6 +2,7 @@
 % Please edit documentation in R/class-Algae.R
 \name{Algae-models}
 \alias{Algae-models}
+\alias{Algae-class}
 \title{Algae models}
 \description{
 Overview of supported \emph{Algae} models
@@ -33,3 +34,30 @@ occurs, simulation results of that time point will report the model state
 intervals, the simulation must start at time point zero.
 }
 
+\references{
+Weber D, Schaeffer D, Dorgerloh M, Bruns E, Goerlitz G, Hammel K, Preuss TG
+and Ratte HT, 2012. Combination of a higher-tier flow-through system and
+population modeling to assess the effects of time-variable exposure of
+isoproturon on the green algae Desmodesmus subspictatus and
+Pseudokirchneriella subcapitata. Environmental Toxicology and
+Chemistry, 31, 899–908. \doi{10.1002/etc.1765}
+}
+\seealso{
+\link{Lemna-models}, \link{Transferable}
+
+Other algae models: 
+\code{\link{Algae_Simple}()},
+\code{\link{Algae_TKTD}()},
+\code{\link{Algae_Weber}()}
+
+Other scenarios: 
+\code{\link{DEB-models}},
+\code{\link{GUTS-RED-models}},
+\code{\link{Lemna-models}},
+\code{\link{Macrophyte-models}},
+\code{\link{Myriophyllum-models}},
+\code{\link{Scenarios}},
+\code{\link{Transferable}}
+}
+\concept{algae models}
+\concept{scenarios}

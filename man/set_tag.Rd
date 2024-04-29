@@ -2,22 +2,32 @@
 % Please edit documentation in R/set.R
 \name{set_tag}
 \alias{set_tag}
-\title{Set a scenario tag}
+\title{Set a tag}
 \usage{
 set_tag(x, tag)
 }
 \arguments{
-\item{x}{\code{vector} of or single \code{EffectScenario} object}
+\item{x}{(vector of) \code{EffectScenario} objects}
 
-\item{tag}{\code{vector}}
+\item{tag}{vector of \code{character}}
 }
 \value{
-\code{vector} of or single \code{EffectScenario} object
+(vector of) modified \code{EffectScenario} objects
 }
 \description{
-Set a scenario tag
+Sets the user-defined, custom tag of a scenario. Tags
+can be helpful to quickly distinguish scenarios of the same model type.
 }
 \examples{
-GUTS_RED_SD() \%>\%
-  set_tag("sample tag")
+# set a custom tag
+myscenario <- GUTS_RED_SD() \%>\% set_tag("My Custom Tag")
+
+# returns `My Custom Tag`
+get_tag(myscenario)
+
+# the tag also appears in the scenario overview
+myscenario
+}
+\seealso{
+\code{\link[=get_tag]{get_tag()}}
 }

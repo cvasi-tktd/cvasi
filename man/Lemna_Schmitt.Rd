@@ -2,6 +2,7 @@
 % Please edit documentation in R/class-Lemna.R
 \name{Lemna_Schmitt}
 \alias{Lemna_Schmitt}
+\alias{LemnaSchmittScenario-class}
 \alias{Lemna_SchmittThold}
 \title{Lemna model (Schmitt et al. 2013)}
 \usage{
@@ -17,9 +18,9 @@ Lemna_SchmittThold(param, init)
 \description{
 The model is a mechanistic combined toxicokinetic-toxicodynamic (TK/TD) and
 growth model for the aquatic macrophytes \emph{Lemna spp.}
-The model simulates the development of Lemna biomass under laboratory and
-environmental conditions and was developed by Schmitt et al. (2013). Growth
-of the Lemna population is simulated on basis of photosynthesis and respiration
+The model simulates the development of \emph{Lemna} biomass under laboratory and
+environmental conditions and was developed by Schmitt \emph{et al.} (2013). Growth
+of the \emph{Lemna} population is simulated on basis of photosynthesis and respiration
 rates which are functions of environmental conditions.
 The toxicodynamic sub-model describes the effects of growth-inhibiting
 substances by a respective reduction in the photosynthesis rate based on
@@ -28,7 +29,7 @@ internal concentrations.
 \details{
 Constructors to ease creation of scenarios based on the \emph{Lemna} model by
 Schmitt \emph{et al.} (2013).
-A variant of this Lemna model, \code{Lemna_SchmittThold()}, provides an additional
+A variant of this \emph{Lemna} model, \code{Lemna_SchmittThold()}, provides an additional
 cumulative exposure threshold parameter. The Lemna biomass stops growing
 if the integral of exposure over time exceeds the threshold. The integral
 of exposure is internally accounted for by an additional state variable
@@ -129,7 +130,7 @@ columns. The first for time and the second for the environmental factor in quest
 
 Entries of the \code{data.frame} need to be ordered chronologically. A time-series
 can consist of only a single row; in this case it will represent constant
-environmental conditions. See \linkS4class{EffectScenario} for more details.
+environmental conditions. See \link{scenarios} for more details.
 }
 
 \section{Effects}{
@@ -218,16 +219,17 @@ Schmitt W., Bruns E., Dollinger M., and Sowig P., 2013:
 Lemna populations}. Ecol Model 255, pp. 1-10. \doi{10.1016/j.ecolmodel.2013.01.017}
 }
 \seealso{
-\link{Lemna-models}, \link{Macrophyte-models}, \linkS4class{Transferable}, \linkS4class{EffectScenario}
+\link{Lemna-models}, \link{Macrophyte-models}, \link{Transferable}, \link{Scenarios}
 
 Other Lemna models: 
+\code{\link{Lemna-models}},
 \code{\link{Lemna_SETAC}()}
 
-Other macrophytes: 
+Other macrophyte models: 
 \code{\link{Lemna_SETAC}()},
 \code{\link{Macrophyte-models}},
-\code{\link{Myrio_log}()},
-\code{\link{Myrio}()}
+\code{\link{Myrio}()},
+\code{\link{Myrio_log}()}
 }
 \concept{Lemna models}
-\concept{macrophytes}
+\concept{macrophyte models}

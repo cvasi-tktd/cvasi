@@ -34,12 +34,22 @@ intervals, the simulation must start at time point zero.
 }
 
 \seealso{
-\linkS4class{EffectScenario}
+\link{Scenarios}
 
-Other macrophytes: 
+Other macrophyte models: 
 \code{\link{Lemna_SETAC}()},
 \code{\link{Lemna_Schmitt}()},
-\code{\link{Myrio_log}()},
-\code{\link{Myrio}()}
+\code{\link{Myrio}()},
+\code{\link{Myrio_log}()}
+
+Other scenarios: 
+\code{\link{Algae-models}},
+\code{\link{DEB-models}},
+\code{\link{GUTS-RED-models}},
+\code{\link{Lemna-models}},
+\code{\link{Myriophyllum-models}},
+\code{\link{Scenarios}},
+\code{\link{Transferable}}
 }
-\concept{macrophytes}
+\concept{macrophyte models}
+\concept{scenarios}

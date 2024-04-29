@@ -7,7 +7,7 @@
 pull_metadata(x, model = TRUE, exposure = TRUE)
 }
 \arguments{
-\item{x}{an \linkS4class{EffectScenario} vector or a \code{data.frame} containing a column
+\item{x}{vector of \link{scenarios} or a \code{data.frame} containing a column
 \code{scenario} with \code{EffectScenario} objects}
 
 \item{model}{\code{logical}, if \code{TRUE} then model metadata is pulled}

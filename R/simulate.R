@@ -9,7 +9,7 @@
 #' Simulation results are returned as a time-series for each state
 #' variable. Some models provide additional properties describing the model state,
 #' e.g. the internal concentration of a toxicant within the organism. Refer
-#' to the respective \linkS4class{EffectScenario} for more information.
+#' to the respective [scenario] for more information.
 #'
 #' Additional arguments to `simulate()` will be passed on to [deSolve::ode()]
 #' which enables control of the numerical integration parameters.
@@ -54,7 +54,7 @@
 #' for details on available ODE solvers.
 #'
 #'
-#' @param x \linkS4class{EffectScenario} scenario to simulate
+#' @param x [scenario] to simulate
 # @param times optional `numeric` vector of time points for which results are returned,
 # overrides settings of the scenario
 #' @param ... additional parameters passed on to ODE solver

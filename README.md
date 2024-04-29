@@ -5,15 +5,14 @@
 
 <!-- badges: start -->
 <!--[![CRAN status](https://www.r-pkg.org/badges/version/cvasi)](https://cran.r-project.org/package=cvasi)-->
-
-[![R-CMD-check](https://github.com/Bayer-Group/cvasi/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Bayer-Group/cvasi/actions/workflows/R-CMD-check.yaml)
+<!--[![R-CMD-check](https://github.com/cvasi-tktd/cvasi/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/cvasi-tktd/cvasi/actions/workflows/R-CMD-check.yaml)-->
 <!--[![Codecov test coverage](https://codecov.io/gh/xy/cvasi/branch/main/graph/badge.svg)](https://app.codecov.io/gh/xy/cvasi?branch=main)-->
 <!-- badges: end -->
 
 The `cvasi` package aims to ease the use of ecotox effect models by
 providing an intuitive workflow. Model inputs and parameters are
-encapsulated in `EffectScenario` objects which can be piped to other
-functions. Operations can be chained using the `tidyr` syntax. The most
+encapsulated in scenario objects which can be piped to other functions.
+Operations can be chained using the `tidyr` syntax. The most
 time-consuming processes can be run in parallel if requested.
 
 The package provides facilities to
@@ -26,7 +25,7 @@ The package provides facilities to
 - import fitted parameters from *morse*
 - and more
 
-Please have a look at the [CHANGELOG](CHANGELOG.md) for an overview of
+Please have a look at the [Changelog](NEWS.md) for an overview of
 user-facing updates and changes.
 
 ## Documentation
@@ -53,20 +52,22 @@ Install latest version from GitHub:
 
 ``` r
 install.packages("remotes", dependencies=TRUE)
-remotes::install_github("Bayer-Group/cvasi", dependencies=TRUE, upgrade="never")
+remotes::install_github("cvasi-tktd/cvasi", dependencies=TRUE, upgrade="never")
 ```
 
-## Example
+## Examples
 
 Basic usage:
 
 ``` r
 library(cvasi)
+#> Warning: package 'cvasi' was built under R version 4.5.0
 
 # create and parameterize a GUTS-RED-IT scenario
 GUTS_RED_IT() %>%
-  set_param(c(kd=0.0005,hb=0,alpha=0.4,beta=1.5)) %>%
-  set_exposure(data.frame(t=c(0,100,101,200,201,400),pec=c(0,0,0.1,0.1,0,0))) -> scenario
+  set_param(c(kd=0.0005, hb=0, alpha=0.4, beta=1.5)) %>%
+  set_exposure(data.frame(time=c(0, 100, 101, 200, 201, 400),
+                          conc=c(0, 0, 0.1, 0.1, 0, 0))) -> scenario
 
 # simulate scenario
 scenario %>%
@@ -91,7 +92,7 @@ scenario %>% effect()
 #>   <list>       <dbl>       <dbl>     <dbl>
 #> 1 <GutsRdIt> 0.00135           0       400
 
-# create a dose response curve
+# create a dose-response curve
 scenario %>% dose_response() -> drc
 head(drc)
 #>   endpoint        mf      effect
@@ -102,6 +103,7 @@ head(drc)
 #> 5        L  9.576567 0.038355140
 #> 6        L 12.056184 0.053336114
 
+# plot the dose-response curve
 library(ggplot2)
 ggplot(drc) + geom_point(aes(mf,effect)) + scale_x_log10()
 ```
@@ -121,9 +123,24 @@ Multiple scenarios can be processed in parallel without modifications to
 the workflow:
 
 ``` r
+# enable parallel processing
 future::plan(future::multisession)
 
-c(GUTS_RED_IT(),GUTS_RED_SD()) %>%
-  set_param(morse("path/to/fitted.RData")) %>%
-  epx()
+# derive EPx for a list of 100 scenarios in parallel
+rep(c(scenario), 100) %>% epx()
+
+# disable parallel processing
+future::plan(future::sequential)
 ```
+
+## Contributing
+
+Contributions to the project are welcome! Please have a look at the
+[Contribution
+Guidelines](https://github.com/cvasi-tktd/cvasi/blob/main/CONTRIBUTING.md)
+before submitting a Pull Request.
+
+## Acknowledgements
+
+Financial support for creation and release of this software project was
+provided by Bayer Crop Science.

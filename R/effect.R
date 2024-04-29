@@ -138,7 +138,7 @@ calc_effect <- function(sim, control) {
 
 #' Generic to calculate effects for a particular scenario
 #'
-#' @param scenario \linkS4class{EffectScenario} object
+#' @param scenario [scenario] object
 #' @param ... additional parameters
 #' @return numeric named vector
 #' @export

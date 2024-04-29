@@ -2,16 +2,19 @@
 % Please edit documentation in R/is.R
 \name{is_LemnaThreshold}
 \alias{is_LemnaThreshold}
-\title{Test if scenario/model is a LemnaThreshold model}
+\title{Test if argument is a LemnaThreshold model}
 \usage{
 is_LemnaThreshold(x)
 }
 \arguments{
-\item{x}{vector of \linkS4class{EffectScenario} objects}
+\item{x}{vector of \link{scenarios} objects}
 }
 \value{
-vector of logical values
+vector of \code{logical} values
 }
 \description{
-Test if scenario/model is a LemnaThreshold model
+Test if argument is a LemnaThreshold model
+}
+\seealso{
+\code{\link[=is_Lemna]{is_Lemna()}}
 }

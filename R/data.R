@@ -85,7 +85,7 @@
 #'   based on *Schmitt et al.* (2013) – equation system and default parameters.
 #'   Report of the working group *Lemna* of the SETAC Europe Interest Group Effect
 #'   Modeling. Version 1, uploaded on 22. Sept. 2021.
-#'   <https://www.setac.org/group/SEIGEffectModeling>
+#'   <https://www.setac.org/group/effect-modeling.html>
 #'
 #' Schmitt W., Bruns E., Dollinger M., Sowig P., 2013: Mechanistic TK/TD-model
 #'   simulating the effect of growth inhibitors on *Lemna* populations. Ecol Model
@@ -133,10 +133,10 @@
 #'
 #' @seealso [Algae_TKTD]
 #' @references
-#'Weber D, Schaeffer D, Dorgerloh M, Bruns E, Goerlitz G, Hammel K, Preuss TG
-#'and Ratte HT, 2012. Combination of a higher-tier flow-through system and
-#'population modeling to assess the effects of time-variable exposure of
-#'isoproturon on the green algae Desmodesmus subspictatus and
-#'Pseudokirchneriella subcapitata. Environmental Toxicology and
-#'Chemistry, 31, 899–908. https://doi.org/10.1002/etc.1765
+#' Weber D, Schaeffer D, Dorgerloh M, Bruns E, Goerlitz G, Hammel K, Preuss TG
+#' and Ratte HT, 2012. Combination of a higher-tier flow-through system and
+#' population modeling to assess the effects of time-variable exposure of
+#' isoproturon on the green algae Desmodesmus subspictatus and
+#' Pseudokirchneriella subcapitata. Environmental Toxicology and
+#' Chemistry, 31, 899–908. \doi{10.1002/etc.1765}
 "Rsubcapitata"

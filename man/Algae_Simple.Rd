@@ -2,6 +2,7 @@
 % Please edit documentation in R/class-Algae.R
 \name{Algae_Simple}
 \alias{Algae_Simple}
+\alias{AlgaeSimpleScenario-class}
 \title{Algae model with exponential growth but without additional forcings}
 \usage{
 Algae_Simple()
@@ -66,8 +67,14 @@ and Ratte HT, 2012. Combination of a higher-tier flow-through system and
 population modeling to assess the effects of time-variable exposure of
 isoproturon on the green algae Desmodesmus subspictatus and
 Pseudokirchneriella subcapitata. Environmental Toxicology and
-Chemistry, 31, 899–908.
-
-\linkS4class{Transferable},
-\linkS4class{EffectScenario}
+Chemistry, 31, 899–908. \doi{10.1002/etc.1765}
 }
+\seealso{
+\link{Scenarios}, \link{Transferable}
+
+Other algae models: 
+\code{\link{Algae-models}},
+\code{\link{Algae_TKTD}()},
+\code{\link{Algae_Weber}()}
+}
+\concept{algae models}

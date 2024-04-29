@@ -21,6 +21,8 @@ morsemf <- function(fit, X) {
 }
 
 test_that("GUTS-RED constant exposure", {
+  skip_on_cran()
+
   # GUTS model verification as conducted in
   # EFSA Scientific Opinion on TKTD models, pp. 36
   # doi:10.2903/j.efsa.2018.5377
@@ -77,6 +79,8 @@ test_that("GUTS-RED constant exposure", {
 })
 
 test_that("GUTS-RED extreme cases", {
+  skip_on_cran()
+
   # GUTS model verification as conducted in
   # EFSA Scientific Opinion on TKTD models, pp. 36
   # doi:10.2903/j.efsa.2018.5377
@@ -154,11 +158,15 @@ test_that("GUTS-RED extreme cases", {
 })
 
 test_that("GUTS-RED ring-test C", {
+  # the morse rds files are too large to put them in a CRAN source package
+  rds_file <- test_path(file.path("..", "minnow_fit.sd.rds"))
+  skip_if_not(file.exists(rds_file), "morse GUTS-RED-SD parameter file unavailable")
+
   # allowed tolerance between morse's MFx estimates and ours.
   tol <- 1e-3
 
   # GUTS-RED-SD
-  fit <- readRDS("../minnow_fit.sd.rds")
+  fit <- readRDS(rds_file)
   msd <- minnow_sd
   msd@param$hb <- 0 # for compatibility reasons
   expect_equal(0.05, gutsef(msd, morsemf(fit, 5)), tolerance=tol)
@@ -166,8 +174,12 @@ test_that("GUTS-RED ring-test C", {
   expect_equal(0.2, gutsef(msd, morsemf(fit, 20)), tolerance=tol)
   expect_equal(0.5, gutsef(msd, morsemf(fit, 50)), tolerance=tol)
 
+  # the morse rds files are too large to put them in a CRAN source package
+  rds_file <- test_path(file.path("..", "minnow_fit.it.rds"))
+  skip_if_not(file.exists(rds_file), "morse GUTS-RED-IT parameter file unavailable")
+
   # GUTS-RED-IT
-  fit <- readRDS("../minnow_fit.it.rds")
+  fit <- readRDS(rds_file)
   mit <- minnow_it
   mit@param$hb <- 0 # for compatibility reasons
 
@@ -179,11 +191,15 @@ test_that("GUTS-RED ring-test C", {
 
 
 test_that("GUTS-RED ring-test C", {
+  # the morse rds files are too large to put them in a CRAN source package
+  rds_file <- test_path(file.path("..", "minnow_fit.sd.rds"))
+  skip_if_not(file.exists(rds_file), "morse GUTS-RED-SD parameter file unavailable")
+
   # allowed tolerance between morse's MFx estimates and ours.
   tol <- 0.001
 
   # GUTS-RED-SD
-  fit <- readRDS("../minnow_fit.sd.rds")
+  fit <- readRDS(rds_file)
   msd <- minnow_sd
   msd@param$hb <- 0 # for compatibility reasons
 
@@ -192,8 +208,12 @@ test_that("GUTS-RED ring-test C", {
   expect_equal(morsemf(fit, 20), gutsmf(msd, 20), tolerance=tol)
   expect_equal(morsemf(fit, 50), gutsmf(msd, 50), tolerance=tol)
 
+  # the morse rds files are too large to put them in a CRAN source package
+  rds_file <- test_path(file.path("..", "minnow_fit.it.rds"))
+  skip_if_not(file.exists(rds_file), "morse GUTS-RED-SD parameter file unavailable")
+
   # GUTS-RED-IT
-  fit <- readRDS("../minnow_fit.it.rds")
+  fit <- readRDS(rds_file)
   mit <- minnow_it
   mit@param$hb <- 0 # for compatibility reasons
 

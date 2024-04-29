@@ -1,13 +1,13 @@
 
 #' Cache control simulations
 #'
-#' @param x vector of \linkS4class{EffectScenario} objects
+#' @param x vector of [scenario] objects
 #' @param windows `list` of window tuples
 #' @param skipZeroExposure `logical`, if `TRUE`, windows with zero exposure will
 #'  not be included in calculations
 #' @param ... additional parameters passed on to [effect()]
 #'
-#' @return Modified \linkS4class{EffectScenario} objects
+#' @return Modified [scenario] objects
 #' @export
 # TODO improve doc
 cache_controls <- function(x,windows,skipZeroExposure=FALSE,...) {

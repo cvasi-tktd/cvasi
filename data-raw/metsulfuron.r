@@ -1,6 +1,6 @@
 ##
 ## Lemna model fitted to metsulfuron-methyl exposure by Schmitt et al. (2013)
-## doi.org: 10.1016/j.ecolmodel.2013.01.017
+## doi.org/10.1016/j.ecolmodel.2013.01.017
 ##
 
 

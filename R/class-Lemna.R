@@ -6,11 +6,12 @@
 #' - [Lemna][Lemna-models]
 #' - [Myriophyllum][Myrio()]
 #'
-#' @inheritSection Transferable-class Biomass transfer
+#' @inheritSection Transferable Biomass transfer
 #'
 #' @name Macrophyte-models
-#' @family macrophytes
-#' @seealso \linkS4class{EffectScenario}
+#' @family macrophyte models
+#' @family scenarios
+#' @seealso [Scenarios]
 NULL
 
 #' Lemna models
@@ -20,31 +21,24 @@ NULL
 #' - [Lemna_Schmitt()] by Schmitt *et al.* (2013)
 #' - [Lemna_SETAC()] by Klein *et al.* (2021)
 #'
-#' @inheritSection Transferable-class Biomass transfer
+#' @inheritSection Transferable Biomass transfer
 #' @name Lemna-models
+#' @family Lemna models
+#' @family scenarios
 #' @seealso [Macrophyte-models]
+#' @aliases Lemna-class
 NULL
 
-#' Generic Lemna class
-#'
-#' Only used for technical purposes
-#'
+# Generic Lemna class
 #' @include class-Transferable.R
-#' @seealso \linkS4class{LemnaSchmittScenario}, \linkS4class{LemnaSetacScenario}
 #' @export
 setClass("Lemna", contains=c("Transferable","EffectScenario"))
 
-#' Lemna model class (Schmitt et al. 2013)
-#'
-#' Please refer to [Lemna_Schmitt()] for details about the model. Class slots are
-#' documented in \linkS4class{EffectScenario}.
+# Lemna model class (Schmitt et al. 2013)
 #' @export
 setClass("LemnaSchmittScenario", contains="Lemna")
 
-#' Lemna model class (Klein et al. 2021)
-#'
-#' Please refer to [Lemna_SETAC()] for details about the model. Class slots are
-#' documented in \linkS4class{EffectScenario}.
+# Lemna model class (Klein et al. 2021)
 #' @export
 setClass("LemnaSetacScenario", contains="Lemna")
 
@@ -52,9 +46,9 @@ setClass("LemnaSetacScenario", contains="Lemna")
 #'
 #' The model is a mechanistic combined toxicokinetic-toxicodynamic (TK/TD) and
 #' growth model for the aquatic macrophytes *Lemna spp.*
-#' The model simulates the development of Lemna biomass under laboratory and
-#' environmental conditions and was developed by Schmitt et al. (2013). Growth
-#' of the Lemna population is simulated on basis of photosynthesis and respiration
+#' The model simulates the development of *Lemna* biomass under laboratory and
+#' environmental conditions and was developed by Schmitt *et al.* (2013). Growth
+#' of the *Lemna* population is simulated on basis of photosynthesis and respiration
 #' rates which are functions of environmental conditions.
 #' The toxicodynamic sub-model describes the effects of growth-inhibiting
 #' substances by a respective reduction in the photosynthesis rate based on
@@ -62,7 +56,7 @@ setClass("LemnaSetacScenario", contains="Lemna")
 #'
 #' Constructors to ease creation of scenarios based on the *Lemna* model by
 #' Schmitt *et al.* (2013).
-#' A variant of this Lemna model, `Lemna_SchmittThold()`, provides an additional
+#' A variant of this *Lemna* model, `Lemna_SchmittThold()`, provides an additional
 #' cumulative exposure threshold parameter. The Lemna biomass stops growing
 #' if the integral of exposure over time exceeds the threshold. The integral
 #' of exposure is internally accounted for by an additional state variable
@@ -131,7 +125,7 @@ setClass("LemnaSetacScenario", contains="Lemna")
 #'
 #' Entries of the `data.frame` need to be ordered chronologically. A time-series
 #' can consist of only a single row; in this case it will represent constant
-#' environmental conditions. See \linkS4class{EffectScenario} for more details.
+#' environmental conditions. See [scenarios] for more details.
 #'
 #' @section Effects:
 #' Supported effect endpoints include *BM* (biomass) and *r* (average
@@ -173,19 +167,20 @@ setClass("LemnaSetacScenario", contains="Lemna")
 #'   * `d E/dt`, current change in effect
 #'   * `d M_int/dt`, current change in internal toxicant mass
 #'
-#' @inheritSection Transferable-class Biomass transfer
+#' @inheritSection Transferable Biomass transfer
 #'
 #' @param param optional named `list` or `vector` of model parameters
 #' @param init optional named numeric `vector` of initial state values
 #'
-#' @seealso [Lemna-models], [Macrophyte-models], \linkS4class{Transferable}, \linkS4class{EffectScenario}
+#' @seealso [Lemna-models], [Macrophyte-models], [Transferable], [Scenarios]
 #' @references
 #' Schmitt W., Bruns E., Dollinger M., and Sowig P., 2013:
 #' *Mechanistic TK/TD-model simulating the effect of growth inhibitors on
 #' Lemna populations*. Ecol Model 255, pp. 1-10. \doi{10.1016/j.ecolmodel.2013.01.017}
 #'
 #' @family Lemna models
-#' @family macrophytes
+#' @family macrophyte models
+#' @aliases LemnaSchmittScenario-class
 #' @export
 Lemna_Schmitt <- function(param, init) {
   new("LemnaSchmittScenario",
@@ -307,7 +302,7 @@ Lemna_SchmittThold <- function(param, init) {
 #'
 #' Entries of the `data.frame` need to be ordered chronologically. A time-series
 #' can consist of only a single row; in this case it will represent constant
-#' environmental conditions. See \linkS4class{EffectScenario} for more details.
+#' environmental conditions. See [scenarios] for more details.
 #'
 #' @section Effects:
 #' Supported effect endpoints include *BM* (biomass) and *r* (average
@@ -347,7 +342,7 @@ Lemna_SchmittThold <- function(param, init) {
 #'   - `dBM`, biomass derivative (g dw m-2 d-1)
 #'   - `dM_int`, mass of toxicant in plants derivative (mass per m2 d-1)
 #'
-#' @inheritSection Transferable-class Biomass transfer
+#' @inheritSection Transferable Biomass transfer
 #'
 #' @references
 #' Klein J., Cedergreen N., Heine S., Reichenberger S., Rendal C.,
@@ -355,10 +350,17 @@ Lemna_SchmittThold <- function(param, init) {
 #' based on Schmitt et al. (2013) – equation system and default parameters*.
 #' Report of the working group *Lemna* of the SETAC Europe Interest Group Effect
 #' Modeling. Version 1, uploaded on 22. Sept. 2021.
-#' https://www.setac.org/group/SEIGEffectModeling
-#' @seealso [Lemna-models], [Macrophyte-models], \linkS4class{Transferable}, \linkS4class{EffectScenario}
+#' https://www.setac.org/group/effect-modeling.html
+#'
+#'
+#' Schmitt W., Bruns E., Dollinger M., and Sowig P., 2013:
+#' *Mechanistic TK/TD-model simulating the effect of growth inhibitors on
+#' Lemna populations*. Ecol Model 255, pp. 1-10. \doi{10.1016/j.ecolmodel.2013.01.017}
+#'
+#' @seealso [Lemna-models], [Macrophyte-models], [Transferable], [Scenarios]
 #' @family Lemna models
-#' @family macrophytes
+#' @family macrophyte models
+#' @aliases LemnaSetacScenario-class
 #' @export
 Lemna_SETAC <- function() {
   if(!requireNamespace("lemna", quietly=TRUE))

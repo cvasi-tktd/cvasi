@@ -7,7 +7,7 @@
 set_times(x, times)
 }
 \arguments{
-\item{x}{vector of \linkS4class{EffectScenario} objects}
+\item{x}{vector of \link{scenarios}}
 
 \item{times}{\code{numerical} vector}
 }

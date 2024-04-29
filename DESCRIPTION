@@ -1,15 +1,19 @@
 Package: cvasi
 Type: Package
-Title: Calibration, Validation, and Simulation of TKTD models in R
-Version: 0.9.0
+Title: Calibration, Validation, and Simulation of TKTD Models in R
+Version: 0.10.3
 Authors@R: c(
     person("Nils", "Kehrein", email="nils.kehrein@gmail.com", role=c("aut", "cre")),
+    person("Dirk", "Nickisch", role="aut"),
     person("Johannes", "Witt", role="ctb"),
     person("Andre", "Gergs", role="ctb")
     )
-Description: Package to ease the use of ecotox effect models. Supports the use of
-    tidyr workflows employing the pipe symbol. Time-consuming tasks can be
-    parallelized using the future package.
+Description: Eases the use of ecotox effect models. Can simulate common
+    effect models such as GUTS and Lemna; can derive effects and
+    effect profiles (EPx) from scenarios. It supports the use of tidyr workflows
+    employing the pipe symbol. Time-consuming tasks can be parallelized.
+URL: https://github.com/cvasi-tktd/cvasi
+BugReports: https://github.com/cvasi-tktd/cvasi/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -33,7 +37,7 @@ Imports:
     lubridate,
     attempt,
     units
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd",
     "roxyglobals::global_roclet"))
 Config/testthat/edition: 3

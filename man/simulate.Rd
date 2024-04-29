@@ -16,7 +16,7 @@ simulate(x, ...)
 \S4method{simulate}{ScenarioSequence}(x, ...)
 }
 \arguments{
-\item{x}{\linkS4class{EffectScenario} scenario to simulate}
+\item{x}{\link{scenario} to simulate}
 
 \item{...}{additional parameters passed on to ODE solver}
 }
@@ -34,7 +34,7 @@ for each model when \code{simulate()} is called.
 Simulation results are returned as a time-series for each state
 variable. Some models provide additional properties describing the model state,
 e.g. the internal concentration of a toxicant within the organism. Refer
-to the respective \linkS4class{EffectScenario} for more information.
+to the respective \link{scenario} for more information.
 
 Additional arguments to \code{simulate()} will be passed on to \code{\link[deSolve:ode]{deSolve::ode()}}
 which enables control of the numerical integration parameters.

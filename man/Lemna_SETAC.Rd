@@ -2,6 +2,7 @@
 % Please edit documentation in R/class-Lemna.R
 \name{Lemna_SETAC}
 \alias{Lemna_SETAC}
+\alias{LemnaSetacScenario-class}
 \title{Lemna model (Klein et al. 2021)}
 \usage{
 Lemna_SETAC()
@@ -98,7 +99,7 @@ columns. The first for time and the second for the environmental factor in quest
 
 Entries of the \code{data.frame} need to be ordered chronologically. A time-series
 can consist of only a single row; in this case it will represent constant
-environmental conditions. See \linkS4class{EffectScenario} for more details.
+environmental conditions. See \link{scenarios} for more details.
 }
 
 \section{Effects}{
@@ -183,19 +184,24 @@ Schmitt W., Hommen U., 2021: \emph{Refined description of the Lemna TKTD growth 
 based on Schmitt et al. (2013) – equation system and default parameters}.
 Report of the working group \emph{Lemna} of the SETAC Europe Interest Group Effect
 Modeling. Version 1, uploaded on 22. Sept. 2021.
-https://www.setac.org/group/SEIGEffectModeling
+https://www.setac.org/group/effect-modeling.html
+
+Schmitt W., Bruns E., Dollinger M., and Sowig P., 2013:
+\emph{Mechanistic TK/TD-model simulating the effect of growth inhibitors on
+Lemna populations}. Ecol Model 255, pp. 1-10. \doi{10.1016/j.ecolmodel.2013.01.017}
 }
 \seealso{
-\link{Lemna-models}, \link{Macrophyte-models}, \linkS4class{Transferable}, \linkS4class{EffectScenario}
+\link{Lemna-models}, \link{Macrophyte-models}, \link{Transferable}, \link{Scenarios}
 
 Other Lemna models: 
+\code{\link{Lemna-models}},
 \code{\link{Lemna_Schmitt}()}
 
-Other macrophytes: 
+Other macrophyte models: 
 \code{\link{Lemna_Schmitt}()},
 \code{\link{Macrophyte-models}},
-\code{\link{Myrio_log}()},
-\code{\link{Myrio}()}
+\code{\link{Myrio}()},
+\code{\link{Myrio_log}()}
 }
 \concept{Lemna models}
-\concept{macrophytes}
+\concept{macrophyte models}

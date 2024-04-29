@@ -1,7 +1,8 @@
-#' Set forcings time-series
+#' Set time-dependent parameters
 #'
-#' *Forcings* generally refer to model parameters that change over time as part of an
-#' external function such as a time-series of environmental temperature.
+#' Parameters which change their value over time are referred to as *forcings*.
+#' If and what parameters can vary over time depends on the model in question.
+#' In many cases, *forcings* represent time-series of environmental properties.
 #'
 #' Forcing time-series are always represented by a
 #' `data.frame` containing two columns. The first column representing time,
@@ -20,10 +21,10 @@
 #' Forcing time-series should be kept as short as possible and as complex as
 #' needed for optimal computational efficiency.
 #'
-#' @param x `EffectScenario` object or vector thereof
-#' @param ... named argument list to set forcing series
+#' @param x (vector of) [scenario] objects
+#' @param ... named argument list to set as forcings
 #'
-#' @return A modified `EffectScenario` objects
+#' @return Modified [scenarios]
 #' @export
 #' @include class-EffectScenario.R
 #' @rdname set_forcings
@@ -32,8 +33,8 @@
 #' Lemna_Schmitt() %>% set_forcings(temp=20) -> lemna
 #' lemna@forcings
 #'
-#' # setting multiple forcings at one
-#' df <- data.frame(t=0:14,tmp=20+rnorm(15)) # random noisy series
+#' # setting multiple forcings at once
+#' df <- data.frame(t=0:14, temp=rnorm(15, mean=20)) # random temperature series
 #' Lemna_Schmitt() %>% set_forcings(temp=df, rad=15000) -> lemna
 #' lemna@forcings
 #'

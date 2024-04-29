@@ -36,7 +36,7 @@ Returns a \code{data.frame} with points on the dose response curve for the given
 effect scenario.
 }
 \details{
-Derives a dose response curve from an \linkS4class{EffectScenario}. The result will
+Derives a dose response curve from a \link{scenario}. The result will
 cover the requested range of effect levels. The tested multiplication factors
 can be chosen by different strategies, i.e. a \code{vanilla} approach using a
 fixed set of factors, or \code{decadic} and \code{exponential} approaches

@@ -7,10 +7,10 @@
 set_noexposure(x)
 }
 \arguments{
-\item{x}{vector of \linkS4class{EffectScenario} objects}
+\item{x}{vector of \link{scenarios}}
 }
 \value{
-vector of \linkS4class{EffectScenario} objects
+vector of \link{scenarios}
 }
 \description{
 The scenarios current exposure is replaced by a constant exposure time-series

@@ -14,9 +14,9 @@ calibrate(x, ...)
   data,
   endpoint,
   hessian = TRUE,
-  metric.fun = sse,
-  as.tibble = FALSE,
-  catch.errors = TRUE,
+  metric_fun = sse,
+  as_tibble = FALSE,
+  catch_errors = TRUE,
   verbose = FALSE,
   ...
 )
@@ -26,10 +26,10 @@ calibrate(x, ...)
   par,
   endpoint,
   hessian = TRUE,
-  metric.fun = sse,
-  metric.total = sum,
-  as.tibble = FALSE,
-  catch.errors = TRUE,
+  metric_fun = sse,
+  metric_total = sum,
+  as_tibble = FALSE,
+  catch_errors = TRUE,
   verbose = FALSE,
   ...
 )
@@ -49,85 +49,91 @@ which the scenario is fitted to.}
 
 \item{hessian}{\code{logical}, if \code{TRUE} the Hessian is returned by the optimization routine}
 
-\item{metric.fun}{vectorized function to calculate an error term that is
+\item{metric_fun}{vectorized function to calculate an error term that is
 minimized during optimization, defaults to sum of squared errors}
 
-\item{as.tibble}{\code{logical}, if \code{TRUE} a tibble with scenario and optimization
+\item{as_tibble}{\code{logical}, if \code{TRUE} a tibble with scenario and optimization
 result is returned, else only the optimization result is returned}
 
-\item{catch.errors}{\code{logical}, if \code{TRUE} simulation errors due to e.g. out of
+\item{catch_errors}{\code{logical}, if \code{TRUE} simulation errors due to e.g. out of
 bounds parameters are caught and optimization continues, else optimization fails}
 
 \item{verbose}{\code{logical}, if \code{TRUE} then debug outputs are displayed during
 optimization}
 
-\item{metric.total}{vectorized function to aggregate multiple error terms to a
+\item{metric_total}{vectorized function to aggregate multiple error terms to a
 single value, defaults to \code{sum()}}
 }
 \value{
 By default, a list of fitted parameters (as produced by \code{\link[stats:optim]{stats::optim()}})
-is returned. Alternatively, when setting the argument as.tibble = TRUE,
+is returned. Alternatively, when setting the argument as_tibble = TRUE,
 a \code{tibble} is returned with 2 columns, the first column lists the
 scenario and the 2nd column the list of fitted parameters.
 }
 \description{
-The function \code{calibrate()}performs the calibration (fitting) of model parameters to observed data.
-Two options are available: One can either calibrate a single \linkS4class{EffectScenario} (with corresponding observations on effect data),
-or one can fit to a list of one or more \linkS4class{CalibrationSet} objects (i.e., a combiation of \code{EffectScenario}
-and effect data joined together into a \code{CalibrationSet} object). The latter allows one to combine the results from several experiments
-within one fitting process.
-
-Effect data should be supplied in long format with 2 columns: the timepoints and the observations. Effect data can contain replicates as extra rows.
+The function \code{calibrate()}performs the calibration (fitting) of model
+parameters to observed data. Two options are available:
+\enumerate{
+\item Either a single \link{scenario} is fitted to a single dataset.
+The dataset must represent a time-series of an output variable of the
+model, e.g. observed biomass over time (effect data).
+\item Or a scenario is fitted to one or multiple datasets at once. Each
+dataset is represented by a \linkS4class{CalibrationSet} which also
+contains a scenario which describes the conditions during observation,
+such as exposure and environmental properties. Each \code{CalibrationSet}
+can also be given a weight to be considered in the fitting. By default,
+the total sum of squared errors is used as the target function which is
+minimized.
 }
+}
+\details{
+Effect data must be supplied as a \code{data.frame} in long format with two
+columns: the first column contains timestamps and the second column
+the observed property. The effect data may contain replicates as extra rows.
+}
+\section{Methods (by class)}{
+\itemize{
+\item \code{calibrate(EffectScenario)}: Fit a single scenario
+
+\item \code{calibrate(list)}: Fit using a \link{CalibrationSet}
+
+}}
 \examples{
-# Example with Lemna ----------------------------------------------
-# 1st option: with an EffectScenario ----------------------------
-# EffectScenario
-is(metsulfuron)
-# Effect data
-obs32 <- Schmitt2013 \%>\%
-  dplyr::filter(ID == "T0.32") \%>\%
-  dplyr::select(t, obs) # can only contain t and conc
-# calibrate with an ExposureScenario and corresponding effect data
-calib_scen <- calibrate(
-  x = metsulfuron,
-  par = c(k_phot_max = 1, k_resp = 0.1 ),
-  data = obs32,
-  endpoint = "BM",
- )
-# check return
-is(calib_scen)
-calib_scen
-# plot
-obs32$trial <- "trail1"
-colnames(obs32) <- c("time", "obs", "trial")
-plot_sd(model_base = metsulfuron,
-  treatments = metsulfuron@exposure@series,
-  rs_mean = obs32)
+## 1st option: Fit scenario parameters using a single dataset
+metsulfuron
 
-# 2nd option: with list of CalibrationSets ----------------------
-# step 1. list of EffectScenarios
-list_of_eff_scen <- Schmitt2013 \%>\%
-  dplyr::group_by(ID) \%>\%
-  dplyr::group_map(~ metsulfuron \%>\% set_exposure(data.frame(.x$t, .x$conc)))
-# step 2. list of effect data
-list_of_eff_data <- Schmitt2013 \%>\%
-  dplyr::group_by(ID) \%>\%
-  dplyr::group_map(~data.frame(.x$t, .x$obs))
-# step 3. combined into list of CalibrationSets
-list_of_calib_sets <- list()
-for(i in 1:length(list_of_eff_scen)){
-  list_of_calib_sets[[i]] <- CalibrationSet(list_of_eff_scen[[i]], list_of_eff_data[[i]])
-}
-# 4. calibrate
-calib_scen_list <- calibrate(
- x = list_of_calib_sets, # list of calibration sets
- par = c(k_phot_max = 1),
- endpoint = "BM",
+# Observed biomass from Schmitt et al. 2013 experiment
+obs32 <- data.frame(
+  time=c(0, 3, 5, 7, 7.01, 10, 12, 14),
+  obs=c(12, 25, 30, 33, 33, 64, 127, 300)
 )
- # check return
-is(calib_scen_list)
-calib_scen_list$scenario[[1]]
 
+# calibrate with an ExposureScenario and corresponding effect data
+metsulfuron \%>\%
+  calibrate(
+    par=c(k_phot_max=1, k_resp=0.1 ),
+    data=obs32,
+    endpoint="BM",
+  )
+
+# plot trial data
+obs32$trial <- "conc=1.0"
+plot_sd(treatments=metsulfuron@exposure@series, rs_mean=obs32)
+
+## 2nd option: Fit scenario parameters using CalibrationSets
+
+# Create one CalibrationSet for each observed exposure level and time-series
+# from Schmitt et al. (2013) dataset
+library(dplyr)
+Schmitt2013 \%>\%
+  group_by(ID) \%>\%
+  group_map(function(data, key) {
+    exp <- data \%>\% select(t, conc)
+    obs <- data \%>\% select(t, obs)
+    sc <- metsulfuron \%>\% set_exposure(exp)
+    CalibrationSet(sc, obs)
+  }) -> cs
+# Fit parameters
+calibrate(cs, par=c(k_phot_max=1), endpoint="BM")
 
 }

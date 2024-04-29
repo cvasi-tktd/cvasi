@@ -43,7 +43,7 @@ Schmitt W., Hommen U., 2021: Refined description of the \emph{Lemna} TKTD growth
 based on \emph{Schmitt et al.} (2013) – equation system and default parameters.
 Report of the working group \emph{Lemna} of the SETAC Europe Interest Group Effect
 Modeling. Version 1, uploaded on 22. Sept. 2021.
-\url{https://www.setac.org/group/SEIGEffectModeling}
+\url{https://www.setac.org/group/effect-modeling.html}
 
 Schmitt W., Bruns E., Dollinger M., Sowig P., 2013: Mechanistic TK/TD-model
 simulating the effect of growth inhibitors on \emph{Lemna} populations. Ecol Model

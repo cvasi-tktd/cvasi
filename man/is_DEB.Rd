@@ -2,7 +2,7 @@
 % Please edit documentation in R/is.R
 \name{is_DEB}
 \alias{is_DEB}
-\title{Test if scenario/model is a DEB type}
+\title{Test if argument is a DEB model}
 \usage{
 is_DEB(x)
 }
@@ -10,8 +10,8 @@ is_DEB(x)
 \item{x}{vector of \code{EffectScenario} objects}
 }
 \value{
-vector of logical values
+vector of \code{logical} values
 }
 \description{
-Test if scenario/model is a DEB type
+Test if argument is a DEB model
 }

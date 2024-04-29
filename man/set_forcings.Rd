@@ -4,7 +4,7 @@
 \alias{set_forcings}
 \alias{set_forcings,EffectScenario-method}
 \alias{set_forcings,list-method}
-\title{Set forcings time-series}
+\title{Set time-dependent parameters}
 \usage{
 set_forcings(x, ...)
 
@@ -13,16 +13,17 @@ set_forcings(x, ...)
 \S4method{set_forcings}{list}(x, ...)
 }
 \arguments{
-\item{x}{\code{EffectScenario} object or vector thereof}
+\item{x}{(vector of) \link{scenario} objects}
 
-\item{...}{named argument list to set forcing series}
+\item{...}{named argument list to set as forcings}
 }
 \value{
-A modified \code{EffectScenario} objects
+Modified \link{scenarios}
 }
 \description{
-\emph{Forcings} generally refer to model parameters that change over time as part of an
-external function such as a time-series of environmental temperature.
+Parameters which change their value over time are referred to as \emph{forcings}.
+If and what parameters can vary over time depends on the model in question.
+In many cases, \emph{forcings} represent time-series of environmental properties.
 }
 \details{
 Forcing time-series are always represented by a
@@ -47,8 +48,8 @@ needed for optimal computational efficiency.
 Lemna_Schmitt() \%>\% set_forcings(temp=20) -> lemna
 lemna@forcings
 
-# setting multiple forcings at one
-df <- data.frame(t=0:14,tmp=20+rnorm(15)) # random noisy series
+# setting multiple forcings at once
+df <- data.frame(t=0:14, temp=rnorm(15, mean=20)) # random temperature series
 Lemna_Schmitt() \%>\% set_forcings(temp=df, rad=15000) -> lemna
 lemna@forcings
 

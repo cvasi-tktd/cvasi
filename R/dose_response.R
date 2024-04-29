@@ -3,7 +3,7 @@
 #' Returns a `data.frame` with points on the dose response curve for the given
 #' effect scenario.
 #'
-#' Derives a dose response curve from an \linkS4class{EffectScenario}. The result will
+#' Derives a dose response curve from a [scenario]. The result will
 #' cover the requested range of effect levels. The tested multiplication factors
 #' can be chosen by different strategies, i.e. a `vanilla` approach using a
 #' fixed set of factors, or `decadic` and `exponential` approaches

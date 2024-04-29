@@ -41,6 +41,8 @@ setClass("ExposureSeries",
 ExposureSeries <- function(series, dates, file, meta, context) {
   if(!is.data.frame(series))
     stop("time-series is not a data.frame")
+  # coerce to data.frame to avoid issues with data.frame-like types
+  series <- as.data.frame(series)
   if(ncol(series)!=2)
     stop("time-series must have two columns")
   if(any(!is.numeric(series[,1])) | any(!is.numeric(series[,2])))
@@ -63,7 +65,7 @@ ExposureSeries <- function(series, dates, file, meta, context) {
   )
 }
 
-#' Zero exposure series
+#' Zero exposure
 #'
 #' Creates an \linkS4class{ExposureSeries} with zero concentration. When setting
 #' the zero exposure, pay attention not to accidentally reset the output times

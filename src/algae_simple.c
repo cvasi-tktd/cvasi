@@ -1,6 +1,7 @@
 #include <R.h>
 #include <Rinternals.h>
 #include <math.h>
+#include <stdio.h>
 
 /*******************************************************************
  *
@@ -22,6 +23,10 @@ static double parms[6];
  * Array values get updated by the ODE solver in every time step.
  */
 static double forc[2];
+/*
+ * Constant helper value
+ */
+static double log_EC50;
 /*
  * Define aliases
  */
@@ -46,7 +51,7 @@ static double forc[2];
 #define dose_response ((parms[5] != 0.0) ? 1 : 0) //0 = logit, 1 = probit
 // Forcings by environmental variables
 #define Cw    forc[0]
-#define f_growth forc[1] //constant growth not observed in lab study
+#define f_growth forc[1] //if constant growth was not observed in lab study
 
 /**
  * Parameter initializer
@@ -55,6 +60,8 @@ void algae_simple_init(void (*odeparms)(int *, double *))
 {
   int N = 6;
   odeparms(&N, parms);
+
+  log_EC50 = log(EC_50);
 }
 
 /**
@@ -62,28 +69,26 @@ void algae_simple_init(void (*odeparms)(int *, double *))
  */
 void algae_simple_forc(void (*odeforcs)(int *, double *))
 {
-  int N = 2;
-  odeforcs(&N, forc);
+    int N = 2;
+    odeforcs(&N, forc);
 }
 
 /*
  * Functions for calculating reduction factors for growth rate
  */
 
-// Probit function
-double probit_simple(double x) {
-  return 0.5 * (1 + erf(x / sqrt(2.0)));
-}
-
-// Effect of concentration on growth using probit
+// Effect of concentration on growth using probit (OECD 54, page 67)
 double f_C_probit(double C_param) {
-  return 1 - probit_simple((log(C_param / EC_50) + b) / sqrt(2.0));
+  //return gsl_cdf_ugaussian_P(-b * (log(C_param) - log(EC_50)));
+  //Function to calculate the cumulative distribution function (CDF) of the standard normal distribution
+  double z = -b * (log(C_param) - log_EC50);
+  return 0.5 * erfc(-z / sqrt(2));
 }
 
-// Effect of concentration on growth using logit
+// Effect of concentration on growth using logit (OECD 54, page 67)
 double f_C_logit(double C_param)
 {
-  return 1 / (1 + ((C_param / EC_50) * exp(-b)));
+  return 1 / (1 + exp(b * (log(C_param) - log_EC50)));
 }
 
 /**
@@ -103,19 +108,28 @@ void algae_simple_func(int *neq, double *t, double *y, double *ydot, double *you
     }
   } else {
     // Biomass
+    dDw = 0;
     if(dose_response == 0) {
-      dA = (mu_max * f_C_logit(Cw)) * A;
+      dA = (mu_max * f_growth * f_C_logit(Cw)) * A;
     } else {
-      dA = (mu_max * f_C_probit(Cw)) * A;
+      dA = (mu_max * f_growth * f_C_probit(Cw)) * A;
     }
   }
 
-  // derivatives as additional output
-  if(*ip >= 1) {
-    yout[0] = dose_response;
+  if (Dw < 0) {
+    Dw = 0;
   }
-  if(*ip >= 3) {
-    yout[1] = dA;
-    yout[2] = dDw;
+
+  // derivatives as additional output
+  if(*ip >= 2) {
+    yout[0] = dA;
+    yout[1] = dDw;
+  }
+  // settings as additional output
+  if(*ip >= 6) {
+    yout[2] = dose_response;
+    yout[3] = scaled;
+    yout[4] = f_growth;
+    yout[5] = log(A);
   }
 }

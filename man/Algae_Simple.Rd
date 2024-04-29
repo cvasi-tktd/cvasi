@@ -25,6 +25,7 @@ The model has two state variables:
 \item Growth model
 \itemize{
 \item \code{mu_max}, Maximum growth rate (d-1)
+\item \code{const_growth}, constant growth over time (0 = no, 1 = yes)
 }
 \item Concentration response (Toxicodynamics)
 \itemize{

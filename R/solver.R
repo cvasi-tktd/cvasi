@@ -8,6 +8,7 @@
 #' @param ... additional parameters passed on to [deSolve::ode()]
 #' @param approx string, interpolation method of exposure series, see [stats::approxfun()]
 #' @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
+#' @param rule how to handle data points outside of time-series, see [deSolve::forcings]
 #' @param method string, numerical solver used by [deSolve::ode()]
 #' @param hmax numeric, maximum step length in time, see [deSolve::ode()]
 #' @return `data.frame` with simulation results
@@ -413,18 +414,19 @@ solver_DEB_Daphnia <- function(scenario, times, approx=c("linear", "constant"),
 setMethod("solver", "DebDaphnia", solver_DEB_Daphnia)
 
 
+# Solver function for Algae_Weber models
 # @param scenario Scenario object
 # @param times numeric vector, time points for result set
 # @param approx string, interpolation method of exposure series, see [stats::approxfun()]
 # @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
-# @param nout `numeric`, number of additional output variables, `nout=1` appends
-#   the internal concentration `C_int`, the maximum number is 13
+# @param rule how to handle data points outside of time-series, see [deSolve::forcings]
 # @param method string, numerical solver used by [deSolve::ode()]
 # @param hmax numeric, maximum step length in time, see [deSolve::ode()]
 # @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
 solver_Algae_Weber <- function(scenario, times, approx = c("linear","constant"),
-                                 f = 1, method = "lsoda", hmax = 0.1, ...) {
+                                 rule = 2, f = 1, method = "lsoda", hmax = 0.1,
+                               ...) {
   # use time points from scenario if nothing else is provided
   if(missing(times))
     times <- scenario@times
@@ -445,6 +447,9 @@ solver_Algae_Weber <- function(scenario, times, approx = c("linear","constant"),
   # reorder parameters for deSolve
   params <- params[params.req]
 
+  if(is.list(params)) params <- unlist(params)
+  approx <- match.arg(approx)
+
   # create forcings list
   forcings <- list(
     scenario@exposure@series,
@@ -459,6 +464,7 @@ solver_Algae_Weber <- function(scenario, times, approx = c("linear","constant"),
     initforc = "algae_forc",
     parms = params,
     forcings = forcings,
+    fcontrol = list(rule = rule, method = approx, f = f, ties = "ordered"),
     dllname = "cvasi",
     method = method,
     hmax = hmax,
@@ -469,9 +475,19 @@ solver_Algae_Weber <- function(scenario, times, approx = c("linear","constant"),
 #' @describeIn solver numerically integrates Algae_Weber models
 setMethod("solver", "AlgaeWeberScenario", solver_Algae_Weber)
 
+# Solver function for Algae_TKTD models
+# @param scenario Scenario object
+# @param times numeric vector, time points for result set
+# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
+# @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
+# @param rule how to handle data points outside of time-series, see [deSolve::forcings]
+# @param method string, numerical solver used by [deSolve::ode()]
+# @param hmax numeric, maximum step length in time, see [deSolve::ode()]
+# @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
 solver_Algae_TKTD <- function(scenario, times, approx = c("linear","constant"),
-                               f = 1, method = "lsoda", hmax = 0.1, ...) {
+                               rule = 2, f = 1, method = "lsoda", hmax = 0.1,
+                              ...) {
   # use time points from scenario if nothing else is provided
   if(missing(times))
     times <- scenario@times
@@ -499,17 +515,21 @@ solver_Algae_TKTD <- function(scenario, times, approx = c("linear","constant"),
     scenario@forcings$T_act
   )
 
+  if(is.list(params)) params <- unlist(params)
+  approx <- match.arg(approx)
+
   # run solver
   as.data.frame(ode(y = scenario@init, times,
-                    initfunc = "algae_TKTD_init",
-                    func = "algae_TKTD_func",
-                    initforc = "algae_TKTD_forc",
-                    parms = params,
-                    forcings = forcings,
-                    dllname = "cvasi",
-                    method = method,
-                    hmax = hmax,
-                    ...))
+    initfunc = "algae_TKTD_init",
+    func = "algae_TKTD_func",
+    initforc = "algae_TKTD_forc",
+    parms = params,
+    forcings = forcings,
+    fcontrol = list(rule = rule, method = approx, f = f, ties = "ordered"),
+    dllname = "cvasi",
+    method = method,
+    hmax = hmax,
+    ...))
 }
 
 #' @include class-Algae.R
@@ -517,9 +537,19 @@ solver_Algae_TKTD <- function(scenario, times, approx = c("linear","constant"),
 setMethod("solver", "AlgaeTKTDScenario", solver_Algae_TKTD)
 
 
+# Solver function for Algae_Weber models
+# @param scenario Scenario object
+# @param times numeric vector, time points for result set
+# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
+# @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
+# @param rule how to handle data points outside of time-series, see [deSolve::forcings]
+# @param method string, numerical solver used by [deSolve::ode()]
+# @param hmax numeric, maximum step length in time, see [deSolve::ode()]
+# @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
 solver_Algae_Simple <- function(scenario, times, approx = c("linear","constant"),
-                                f = 1, method = "lsoda", hmax = 0.1, ...) {
+                                rule = 2, f = 1, method = "ode45", hmax = 0.01,
+                                ...) {
   # use time points from scenario if nothing else is provided
   if(missing(times))
     times <- scenario@times
@@ -527,31 +557,44 @@ solver_Algae_Simple <- function(scenario, times, approx = c("linear","constant")
   if(length(times)<2)
     stop("times vector is not an interval")
 
-  params.req = c("mu_max",
-                 "EC_50", "b", "kD", "scaled", "dose_response"
-  )
-
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
 
+  # create forcings list
+  if (scenario@param$const_growth == TRUE){
+    if (!is.null(scenario@forcings$f_growth) && length(scenario@forcings$f_growth) > 0){
+      warning("Constant growth enabled, disregarding growth forcings")
+    }
+    df_growth=data.frame(time = 0, f_growth = 1)
+    forcings <- list(scenario@exposure@series, df_growth)
+  } else {
+    forcings <- list(scenario@exposure@series, scenario@forcings$f_growth)
+  }
+
+  #required for C code
+  params.req = c("mu_max",
+                 "EC_50", "b", "kD",
+                 "scaled", "dose_response"
+  )
   # reorder parameters for deSolve
   params <- params[params.req]
 
-  # create forcings list
-  forcings <- list(scenario@exposure@series, scenario@forcings$f_growth)
+  if(is.list(params)) params <- unlist(params)
+  approx <- match.arg(approx)
 
   # run solver
   as.data.frame(ode(y = scenario@init, times,
-                    initfunc = "algae_simple_init",
-                    func = "algae_simple_func",
-                    initforc = "algae_simple_forc",
-                    parms = params,
-                    forcings = forcings,
-                    dllname = "cvasi",
-                    method = method,
-                    hmax = hmax,
-                    ...))
+    initfunc = "algae_simple_init",
+    func = "algae_simple_func",
+    initforc = "algae_simple_forc",
+    parms = params,
+    forcings = forcings,
+    fcontrol = list(rule = rule, method = approx, f = f, ties = "ordered"),
+    dllname = "cvasi",
+    method = method,
+    hmax = hmax,
+    ...))
 }
 
 #' @include class-Algae.R

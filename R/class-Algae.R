@@ -243,6 +243,7 @@ Algae_TKTD <- function() {
 #' @section Model parameters:
 #' - Growth model
 #'   - `mu_max`, Maximum growth rate (d-1)
+#'   - `const_growth`, constant growth over time (0 = no, 1 = yes)
 #'
 #' - Concentration response (Toxicodynamics)
 #'   - `EC_50`, Effect concentration of 50% inhibition of growth rate (ug L-1)
@@ -278,15 +279,18 @@ Algae_TKTD <- function() {
 Algae_Simple <- function() {
   new("AlgaeSimpleScenario",
       name = "Algae_Simple",
-      param.req = c("mu_max", "EC_50", "b", "kD", "dose_response", "scaled"
+      param.req = c("mu_max", "const_growth",
+                    "EC_50", "b", "kD",
+                    "dose_response", "scaled"
       ),
       # default values as defined by Weber et al. (2012)
-      param = list(mu_max = 1.7380,
+      param = list(mu_max = 1.7380, const_growth = TRUE,
                    EC_50 = 115, b = 1.268, kD = 0.1,
                    dose_response = 0, scaled = 0
       ),
       endpoints = c("A", "r"),
-      forcings.req=c("C_in", "f_growth"),
+      forcings.req = c("f_growth"),
+      #forcings = list(f_growth = data.frame(time = 0, f_growth = 1)),
       control.req = TRUE,
       init = c(A = 1, Dw = 0),
       transfer.interval = -1,

@@ -15,6 +15,9 @@ Lemna_SchmittThold(param, init)
 
 \item{init}{optional named numeric \code{vector} of initial state values}
 }
+\value{
+an S4 object of type \linkS4class{LemnaSchmittScenario}
+}
 \description{
 The model is a mechanistic combined toxicokinetic-toxicodynamic (TK/TD) and
 growth model for the aquatic macrophytes \emph{Lemna spp.}

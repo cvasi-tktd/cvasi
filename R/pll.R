@@ -7,6 +7,7 @@
 #' problems within the data or algorithm.
 #'
 #' @param state `logical`, if `TRUE` then parallelization is disabled
+#' @return no return value
 #' @export
 pll_debug <- function(state=TRUE) {
   if(state)

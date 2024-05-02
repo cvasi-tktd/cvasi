@@ -6,8 +6,11 @@
 \usage{
 no_exposure()
 }
+\value{
+an S4 object of type \linkS4class{ExposureSeries}
+}
 \description{
-Creates an \linkS4class{ExposureSeries} with zero concentration. When setting
+Creates an \link{ExposureSeries} with zero concentration. When setting
 the zero exposure, pay attention not to accidentally reset the output times
 of your scenario as the zero exposure series contains only a single time point.
 See the examples.
@@ -15,10 +18,11 @@ See the examples.
 \examples{
 # this will reset the output times of the sample scenario,
 # simulate() will quit with an error
-\dontrun{
-minnow_it \%>\%
-  set_exposure(no_exposure()) \%>\%
-  simulate()}
+try(
+  minnow_it \%>\%
+    set_exposure(no_exposure()) \%>\%
+    simulate()
+)
 
 # set zero exposure, but keep original output times
 minnow_it \%>\%

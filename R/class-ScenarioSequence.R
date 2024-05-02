@@ -18,7 +18,7 @@
 #'
 #' Only simulation of sequences are supported, at the moment.
 #' Effects and effect profiles (EPx values) cannot be derived, yet.
-#'
+#' @return an S4 object of type [ScenarioSequence-class]
 #' @examples
 #' # create two scenarios that need to be simulated one after the other
 #' scen1 <- minnow_it %>% set_times(0:3)
@@ -34,8 +34,9 @@
 # effect(sq)
 #'
 #' @name sequence
-#' @aliases ScenarioSequence-class scenario<-,ScenarioSequence-method scenarios,ScenarioSequence-method
-#'   scenarios<-,ScenarioSequence-method
+#' @aliases ScenarioSequence-class sequence
+# @aliases ScenarioSequence-class scenario<-,ScenarioSequence-method scenarios,ScenarioSequence-method
+#   scenarios<-,ScenarioSequence-method sequence
 NULL
 
 # Scenario sequence class

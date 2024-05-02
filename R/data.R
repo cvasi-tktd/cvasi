@@ -82,7 +82,7 @@
 #'
 #' Klein J., Cedergreen N., Heine S., Reichenberger S., Rendal C.,
 #'   Schmitt W., Hommen U., 2021: Refined description of the *Lemna* TKTD growth model
-#'   based on *Schmitt et al.* (2013) – equation system and default parameters.
+#'   based on *Schmitt et al.* (2013) - equation system and default parameters.
 #'   Report of the working group *Lemna* of the SETAC Europe Interest Group Effect
 #'   Modeling. Version 1, uploaded on 22. Sept. 2021.
 #'   <https://www.setac.org/group/effect-modeling.html>
@@ -138,5 +138,5 @@
 #' population modeling to assess the effects of time-variable exposure of
 #' isoproturon on the green algae Desmodesmus subspictatus and
 #' Pseudokirchneriella subcapitata. Environmental Toxicology and
-#' Chemistry, 31, 899–908. \doi{10.1002/etc.1765}
+#' Chemistry, 31, 899-908. \doi{10.1002/etc.1765}
 "Rsubcapitata"

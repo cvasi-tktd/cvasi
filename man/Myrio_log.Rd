@@ -7,6 +7,9 @@
 \usage{
 Myrio_log()
 }
+\value{
+an S4 object of type \linkS4class{MyrioLogScenario}
+}
 \description{
 The \emph{Myriophyllum} model is derived from the \emph{Lemna} TKTD model
 by Klein \emph{et al.} (2021).

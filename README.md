@@ -25,21 +25,11 @@ The package provides facilities to
 - import fitted parameters from *morse*
 - and more
 
+A graphical user interface implemented in
+[Shiny](https://www.rstudio.com/products/shiny/) is also available, see
+the *[cvasi.ui](https://github.com/cvasi-tktd/cvasi.ui/)* package.
 Please have a look at the [Changelog](NEWS.md) for an overview of
 user-facing updates and changes.
-
-## Documentation
-
-The package contains the following vignettes
-
-- [User Manual](doc/manual.md)
-- [Modeling Howto](doc/howto.md)
-
-They can also be accessed locally by executing an *R* statement such as:
-
-``` r
-vignette("manual", package="cvasi")
-```
 
 ## Installation
 
@@ -52,16 +42,15 @@ Install latest version from GitHub:
 
 ``` r
 install.packages("remotes", dependencies=TRUE)
-remotes::install_github("cvasi-tktd/cvasi", dependencies=TRUE, upgrade="never")
+remotes::install_github("cvasi-tktd/cvasi", dependencies=TRUE)
 ```
 
-## Examples
+## Usage
 
 Basic usage:
 
 ``` r
 library(cvasi)
-#> Warning: package 'cvasi' was built under R version 4.5.0
 
 # create and parameterize a GUTS-RED-IT scenario
 GUTS_RED_IT() %>%
@@ -133,6 +122,30 @@ rep(c(scenario), 100) %>% epx()
 future::plan(future::sequential)
 ```
 
+## Documentation
+
+The package contains the following vignettes
+
+- [User Manual](doc/manual.md)
+- [Modeling Howto](doc/howto.md)
+
+They can also be accessed locally by executing an *R* statement such as:
+
+``` r
+vignette("manual", package="cvasi")
+```
+
+## License
+
+The package and its source code is free and open-source software
+available under the [GPL-3.0
+license](https://github.com/cvasi-tktd/cvasi/blob/main/LICENSE.md).
+
+## Issues
+
+If you find any issues or bugs within the package, please create a [new
+issue](https://github.com/cvasi-tktd/cvasi/issues) on GitHub.
+
 ## Contributing
 
 Contributions to the project are welcome! Please have a look at the
@@ -143,4 +156,10 @@ before submitting a Pull Request.
 ## Acknowledgements
 
 Financial support for creation and release of this software project was
-provided by Bayer Crop Science.
+provided by Bayer Crop Science. This R package started as an internal
+project at Bayer Crop Science and the project owners would like to thank
+the people who have contributed (in no particular order):
+
+Nils Kehrein, Johannes Witt, André Gergs, Thomas Preuss, Julian
+Heinrich, Zhenglei Gao, Tjalling Jager, Dirk Nickisch, Torben Wittwer,
+and Peter Vermeiren.

@@ -1,11 +1,11 @@
 Modeling Howto
 ================
 Nils Kehrein
-29 April, 2024
+02 May, 2024
 
 - [How to access scenario
   properties](#how-to-access-scenario-properties)
-- [Using *tidy* syntax](#using-tidy-syntax)
+- [Using *tidyr* syntax](#using-tidyr-syntax)
 - [Predictions](#predictions)
 - [Moving exposure windows](#moving-exposure-windows)
 - [Simulating biomass transfers](#simulating-biomass-transfers)
@@ -28,23 +28,44 @@ example. For a more general overview, please refer to the
 ## How to access scenario properties
 
 The package provides a number of `set*()` functions to modify scenario
-properties but generally no dedicated functions to inspect or retrieve
-properties from a scenario object exist. Although these `get*()` are not
-present, all scenario properties can be accessed at any time.
-
-Scenario properties are stored in so-called *slots* within the scenario
-objects. A *slot* is the name for an object attribute in *R*. The slots
-of an object can be accessed by using the `@` operator. It behaves
-similar to the `$` operator on named lists:
+properties such as `set_param()` and `set_times()`. Analogous `set*`
+functions are not provided because, generally, it should not be
+necessary to retrieve data from scenarios. However, it is possible (but
+not recommended) to access all scenario settings via objects *slots*. A
+*slot* is the name for an object attribute in *R*. The slots of an
+object can be accessed by using the `@` operator. It behaves similar to
+the `$` operator on named lists:
 
 ``` r
 # Create a new scenario object
 myscenario <- Lemna_Schmitt()
 
-# Access scenario slots and their default values
-myscenario@name         # model name
+# Get model name
+get_model(myscenario)
 #> [1] "Lemna_Schmitt"
-myscenario@forcings.req   # forcings required for effect calculations
+
+# Set a custom tag to identify the scenario
+myscenario %>%
+  set_tag("Lab experiment #1") -> myscenario
+
+# Get custom tag
+get_tag(myscenario)
+#> [1] "Lab experiment #1"
+
+# The tag is also displayed when printing scenario properties
+myscenario
+#> 'Lemna_Schmitt' scenario
+#> tag  : Lab experiment #1
+#> param: Emax=1, AperBM=1000, Kbm=1, P_Temp=0, MolWeight=390.4, k_phot_fix=1, k_phot_max=0.47, k_resp=0.05, k_loss=0, Tmin=8, Tmax=40.5, Topt=26.7, t_ref=25, Q10=2, k_0=3, a_k=5e-05, C_P=0.3, CP50=0.0043, a_P=1, KiP=101, C_N=0.6, CN50=0.034, a_N=1, KiN=604, BM50=176, mass_per_frond=1e-04, BMw2BMd=16.7
+#> init : BM=0, E=1, M_int=0
+#> endpt: BM, r
+#> times: none
+#> forcs: none
+#> expsr: none
+#> >> exposure series is empty
+
+# Accessing scenario slots and their default values
+myscenario@forcings.req # forcings required for effect calculations
 #> [1] "temp" "rad"
 myscenario@endpoints    # available effect endpoints
 #> [1] "BM" "r"
@@ -74,21 +95,21 @@ about its class slots and functionality are described in the help pages.
 ?Transferable
 ```
 
-## Using *tidy* syntax
+## Using *tidyr* syntax
 
-The tidy syntax, popularized by the tidyverse packages in R, provides a
-coherent and efficient approach to data manipulation and analysis. The
-tidyverse, which includes, for example, the widely used dplyr and
-ggplot2 packages, follows a standardized grammar that makes the code
-more readable and intuitive. Tidy syntax emphasizes the use of functions
+The *tidyr* syntax, popularized by the *tidyverse* packages in R,
+provides a coherent and efficient approach to data manipulation and
+analysis. The *tidyverse*, which includes the widely used *dplyr* and
+*ggplot2* packages, follows a standardized grammar that makes code more
+readable and intuitive. *tidyr* syntax emphasizes the use of functions
 with clear and descriptive names. This makes it easier for users to
 understand and reproduce analyses. The `%>%` (pipe) operator is a key
-component of tidy syntax and enables fluent and expressive concatenation
-of operations. Overall, the introduction of tidy syntax in R improves
-code readability, reproducibility, and collaboration, resulting in
-maintainable data analysis pipelines.
+component of *tidyr* syntax and enables fluent and expressive
+concatenation of operations. Overall, the introduction of *tidyr* syntax
+improves code readability, reproducibility, and collaboration, resulting
+in maintainable data analysis pipelines.
 
-In brief, the advantages of *tidy R* syntax are:
+In brief, the advantages of *tidyr* syntax are:
 
 - a series of statements can be combined to an intuitive workflow using
   the pipeline (`%>%`) operator
@@ -101,13 +122,29 @@ In brief, the advantages of *tidy R* syntax are:
   extending the output data to a table
 
 ``` r
-# Create the results of a control run for an existing Lemna model called 
-# metsulfuron with a starting biomass value of 50, which corresponds to 
-# 50000 fronds.
+# The example scenario `metsulfuron` based on the Lemna model by Schmitt et al. (2013)
+# is modified by setting a new exposure series and initial state. Then, it is
+# simulated.
   metsulfuron %>%
     set_noexposure() %>%  # set no exposure (i.e., a control run)
     set_init(c(BM = 50)) %>%  # set initial biomass
     simulate()
+#>    time       BM E M_int C_int  FrondNo
+#> 1     0 50.00000 1     0     0 500000.0
+#> 2     1 52.79250 1     0     0 527925.0
+#> 3     2 55.64673 1     0     0 556467.3
+#> 4     3 58.55411 1     0     0 585541.1
+#> 5     4 61.50533 1     0     0 615053.3
+#> 6     5 64.49048 1     0     0 644904.8
+#> 7     6 67.49918 1     0     0 674991.8
+#> 8     7 70.52071 1     0     0 705207.1
+#> 9     8 73.54416 1     0     0 735441.6
+#> 10    9 76.55861 1     0     0 765586.1
+#> 11   10 79.55324 1     0     0 795532.4
+#> 12   11 82.51755 1     0     0 825175.5
+#> 13   12 85.44144 1     0     0 854414.4
+#> 14   13 88.31537 1     0     0 883153.7
+#> 15   14 91.13051 1     0     0 911305.1
 ```
 
 ## Predictions
@@ -128,63 +165,113 @@ includes the calculation of exposure profile specific LPx/EPx values
 assessment.
 
 ``` r
-# Calculation of EPx values for a complete concentration profile.
-  set.seed(123)  # Setting a seed for reproducibility
-# Generating a random profile for 15 days with concentrations below 0.1
-  random_conc <- runif(15, min=0, max=0.1)
-  exposure_profile <- data.frame(t=0:14, c=random_conc)
-# run EPx calculations for full exposure profile
-  metsulfuron %>%
-    set_exposure(exposure_profile) %>%  # set a specific exposure scenario
-    epx()  # run EPx calculations
+# Initialize the random numbers generator
+set.seed(123)
+# Generating a random exposure series spanning 14 days
+random_conc <- runif(15, min=0, max=0.1)
+exposure_profile <- data.frame(time=0:14, conc=random_conc)
+# Run EPx calculations
+minnow_it %>%
+  set_exposure(exposure_profile) %>%  # set a specific exposure scenario
+  epx()  # run EPx calculations
+#> # A tibble: 1 × 3
+#>   scenario   L.EP10 L.EP50
+#>   <list>      <dbl>  <dbl>
+#> 1 <GutsRdIt>   67.0   111.
 ```
 
 ## Moving exposure windows
 
 A moving time window is a computing technique used in data analysis.
-Data is systematically analysed within a window of fixed size that moves
-or slides through the data set in our case an exposure profile. The
-window captures a subset of successive data points, and as it moves
-through the data, calculations are performed in each window.
-
-``` r
-# Calculation of EPx values for a complete concentration profile.
-set.seed(123)  # Setting a seed for reproducibility
-# Generating a random profile for 15 days with concentrations below 0.1
-random_conc <- runif(15, min = 0, max = 0.1)
-exposure_profile <- data.frame(time = 0:14, conc = random_conc)
-
-# run EPx calculations for a window length of 7 days and a step size of 1
-metsulfuron_epx_mtw <- metsulfuron %>%
-  set_exposure(exposure_profile) %>%
-  epx_mtw(window_length = 7, 
-          window_interval = 1, 
-          level = c(10))
-metsulfuron_epx_mtw
-
-# The result can be plotted with plot_EPx()
-plot_epx(metsulfuron_epx_mtw, exposure_profile)
-```
+Data is systematically analysed within a window of fixed length that
+moves or slides through the data set, in our case an exposure
+time-series. The window captures a subset of successive data points, and
+as it moves through the data; simulations and effect calculations are
+performed for each window.
 
 `effect()` can report effect levels for all evaluated exposure windows
 on demand:
 
 ``` r
 # Derive effect levels of all exposure windows
-metsulfuron %>% effect(max_only=FALSE)
+metsulfuron %>% 
+  set_window(length=7, interval=1) %>%
+  effect(max_only=FALSE)
+#> # A tibble: 8 × 5
+#>   scenario          BM         r dat.start dat.end
+#>   <list>         <dbl>     <dbl>     <dbl>   <dbl>
+#> 1 <LmnSchmS>  2.68e- 1  9.06e- 1         0       7
+#> 2 <LmnSchmS>  2.65e- 1  8.95e- 1         1       8
+#> 3 <LmnSchmS>  2.48e- 1  8.29e- 1         2       9
+#> 4 <LmnSchmS>  2.05e- 1  6.69e- 1         3      10
+#> 5 <LmnSchmS>  1.47e- 1  4.63e- 1         4      11
+#> 6 <LmnSchmS>  7.39e- 2  2.23e- 1         5      12
+#> 7 <LmnSchmS>  3.15e- 3  9.18e- 3         6      13
+#> 8 <LmnSchmS> -6.66e-16 -1.78e-15         7      14
 ```
 
 The resulting table describes how effect levels change when the exposure
 window moves along the exposure series. It is also possible to specify
 the marginal effect threshold of reported results (this prevents
-overinterpretation of spurious effect levels originating from minuscule
+overinterpretation of spurious effect levels originating from marginal
 numerical errors introduced during simulation), as in the following
 example:
 
 ``` r
 # Only report effect levels larger than 1e-5 = 0.001%
-metsulfuron %>% effect(max_only=FALSE, marginal_effect=1e-5)
+metsulfuron %>% 
+  set_window(length=7, interval=1) %>%
+  effect(max_only=FALSE, marginal_effect=1e-5)
+#> # A tibble: 8 × 5
+#>   scenario        BM       r dat.start dat.end
+#>   <list>       <dbl>   <dbl>     <dbl>   <dbl>
+#> 1 <LmnSchmS> 0.268   0.906           0       7
+#> 2 <LmnSchmS> 0.265   0.895           1       8
+#> 3 <LmnSchmS> 0.248   0.829           2       9
+#> 4 <LmnSchmS> 0.205   0.669           3      10
+#> 5 <LmnSchmS> 0.147   0.463           4      11
+#> 6 <LmnSchmS> 0.0739  0.223           5      12
+#> 7 <LmnSchmS> 0.00315 0.00918         6      13
+#> 8 <LmnSchmS> 0       0               7      14
 ```
+
+The effect over all moving windows can be visualized using `ggplot`:
+
+``` r
+set.seed(123)
+# Generate a random exposure series spanning 14 days
+ts <- data.frame(time = 0:14,
+                 conc = runif(15, min=0, max=0.1))
+
+# Run EPx calculations for a window length of 7 days and a step size of 1 day
+metsulfuron %>%
+  set_exposure(ts) %>%
+  set_window(length=7, interval=1) %>%
+  effect(max_only=FALSE) -> results
+results
+#> # A tibble: 8 × 5
+#>   scenario          BM        r dat.start dat.end
+#>   <list>         <dbl>    <dbl>     <dbl>   <dbl>
+#> 1 <LmnSchmS> 0.000113  0.000327         0       7
+#> 2 <LmnSchmS> 0.000115  0.000333         1       8
+#> 3 <LmnSchmS> 0.000109  0.000317         2       9
+#> 4 <LmnSchmS> 0.0000971 0.000283         3      10
+#> 5 <LmnSchmS> 0.000104  0.000302         4      11
+#> 6 <LmnSchmS> 0.000119  0.000346         5      12
+#> 7 <LmnSchmS> 0.000136  0.000394         6      13
+#> 8 <LmnSchmS> 0.000116  0.000337         7      14
+
+# Create a plot of effects over time
+library(ggplot2)
+ggplot(results) +
+  geom_point(aes(dat.start, BM*100)) +
+  labs(x="Start of window (day)", y="Effect on biomass (%)")
+```
+
+![](../doc/figures/howto-unnamed-chunk-9-1.png)<!-- --> The effect plot
+shows the effect for the time point where each window starts. Effects
+are not available, and therefore not plotted, for time points where the
+window exceeds the simulated timeframe.
 
 ## Simulating biomass transfers
 
@@ -199,25 +286,56 @@ of compartments depending on biomass, such as internal toxicant mass, is
 necessary to correctly reflect mass balances and concentrations over
 time.
 
-Option 1: regular intervals
+Option 1: Regular intervals
 
 ``` r
-  metsulfuron %>%
-    set_init(c(BM=1)) %>%
-    set_noexposure() %>%
-    set_transfer(interval=3, biomass=1) %>%
-    simulate()
+metsulfuron %>%
+  set_init(c(BM=1)) %>%
+  set_noexposure() %>%
+  set_transfer(interval=3, biomass=1) %>%
+  simulate() -> result
+result
+#>    time       BM E M_int C_int  FrondNo
+#> 1     0 1.000000 1     0     0 10000.00
+#> 2     1 1.088182 1     0     0 10881.82
+#> 3     2 1.184076 1     0     0 11840.76
+#> 4     3 1.288342 1     0     0 12883.42
+#> 5     4 1.088182 1     0     0 10881.82
+#> 6     5 1.184076 1     0     0 11840.76
+#> 7     6 1.288342 1     0     0 12883.42
+#> 8     7 1.088182 1     0     0 10881.82
+#> 9     8 1.184076 1     0     0 11840.76
+#> 10    9 1.288342 1     0     0 12883.42
+#> 11   10 1.088182 1     0     0 10881.82
+#> 12   11 1.184076 1     0     0 11840.76
+#> 13   12 1.288342 1     0     0 12883.42
+#> 14   13 1.088182 1     0     0 10881.82
+#> 15   14 1.184076 1     0     0 11840.76
+
+library(ggplot2)
+ggplot(result) +
+  geom_line(aes(time, BM)) +
+  labs(x="Time (days)", y="Biomass (g_dw/m2)", title="Biomass transfer every three days")
 ```
 
-Option 2: custom time points and custom biomass
+![](../doc/figures/howto-unnamed-chunk-10-1.png)<!-- -->
+
+Option 2: Custom time points and custom biomass
 
 ``` r
-  metsulfuron %>%
-    set_init(c(BM=1)) %>%
-    set_noexposure() %>%
-    set_transfer(times=c(3,6), biomass=c(1,0.5)) %>%
-    simulate()
+metsulfuron %>%
+  set_init(c(BM=1)) %>%
+  set_noexposure() %>%
+  set_transfer(times=c(3, 6), biomass=c(1, 0.5)) %>%
+  simulate() -> result2
+
+library(ggplot2)
+ggplot(result2) +
+  geom_line(aes(time, BM)) +
+  labs(x="Time (days)", y="Biomass (g_dw/m2)", title="Biomass transfer at custom time points")
 ```
+
+![](../doc/figures/howto-unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
 # Call the help page of set_transfer
@@ -227,158 +345,189 @@ Option 2: custom time points and custom biomass
 ## Fitting model parameters
 
 Parameters of a model can be fitted (calibrated) against observed effect
-data.
+data. To fit a scenario to observed effect data:
 
-The calibration routines are not yet par of the package, but can be
-downloaded from Github.
-
-The current workflow for calibration is:
-
-1.  Combine the necessary inputs (model, exposure scenario, effect
+1.  Combine the necessary inputs (model, exposure time-series, effect
     data).
-2.  Fit the model for the given exposure scenario(s) and corresponding
-    effect dataset(s).
+2.  Fit the scenario for the given parameters and observed effect data.
 
 For the first step, two options are available:
 
 - When only one exposure level (e.g., one experimental treatment) and
   corresponding effect dataset (effect data only contain observations
-  corresponding to one exposure scenario) are of interest, then the
-  `EffectScenario` (which includes the model and one exposure scenario)
-  and the effect data can directly be entered into the `calibrate()`
-  function.
+  corresponding to one exposure scenario) are of interest, then a
+  scenario consisting of model parameters and exposure time-series can
+  directly be fitted to effect data using the `calibrate()` function.
 
-- Alternatively, one can combine the `EffectScenario` and effect data
-  into a `CalibrationSet` object first using the `CalibrationSet()`
-  function, and subsequently do the fitting of the model using the
-  `calibrate()` function with one or more `CalibrationSet` objects
-  (organised into a list) as input.
+- As a more complex and versatile option, scenarios and effect data are
+  combined into one or more *calibration sets*. Each *calibration set*
+  has exactly one scenario that describes the parameters of the
+  experiment. If more than one *calibration set* is defined, scenario
+  parameters can differ between set, but don’t have to, A numerical
+  weight can be assigned to each *calibration set* to control its impact
+  on the calculated error term and derived fitting procedure. All
+  *calibration sets* are then passed to the `calibrate()` function.
 
-After calibration, one can, for example, inspect the updated parameter
-values, simulate with the updated model, and plot results of these new
-simulations
+The following describes an example which fits selected parameters of the
+*Lemna* model by Schmitt *et al.* (2013) to observed frond numbers from
+experiments with the herbicide *metsulfuron*:
+
+Option 1: direct calibration with one scenario and one effect dataset
 
 ``` r
-# Create Effect Scenario
-# Get exposure data in the highest treatment level of the Schmitt 2013 study
-exp_df <- Schmitt2013 %>%
-  dplyr::filter(ID == "T5.6") %>%
-  dplyr::select(t, conc)
-# Create exposure scenario containing the exposure data in the highest treatment level
-exp_scen <- metsulfuron %>%
-  set_exposure(exp_df)
-# Get corresponding effect data from the Schmitt 2013 study
-# Observed effects in the highest treatment level
-eff_df <- Schmitt2013 %>%
-  dplyr::filter(ID == "T5.6") %>%
+library(dplyr)
+# No exposure in control scenario
+exposure <- data.frame(time=0:14, conc=0)
+
+# set k_phot_fix, k_resp and Emax to the defaults recommended in Klein et al. (2022)
+# for Tier 2C studies. Set initial biomass to 12.0 (original data is in fronds
+# rather than biomass, but for sake of simplicity, no conversion was performed).
+control <- metsulfuron %>% 
+  set_param(c(k_phot_fix=TRUE, k_resp=0, Emax=1)) %>% 
+  set_init(c(BM=12)) %>%
+  set_exposure(exposure)
+# `metsulfuron` is an example scenario based on Schmitt et al. (2013) and therefore
+# uses the historical, superseded nomenclature by Schmitt et al. We recommend using
+# the newer SETAC Lemna model by Klein et al. (2022) for current applications,
+# see `Lemna_SETAC()` for details.
+
+# Get control data from Schmitt et al. (2013)
+obs_control <- Schmitt2013 %>%
+  dplyr::filter(ID == "T0") %>%
   dplyr::select(t, obs)
-```
 
-Option 1: direct calibration with 1 EffectScenario + 1 effect dataset
-
-``` r
-# Option 1: direct calibration with 1 EffectScenario + 1 effect dataset
+# Fit parameter `k_phot_max` to observed data
 fit1 <- calibrate(
-  x = exp_scen,  # exposure scenario containing the exposure of the Schmitt 2013 study 
-  par = c(k_phot_max = 1, k_resp = 0.1),
-  data = eff_df, # observed effect data from the Schmitt 2013 study
-  endpoint = "BM"
+  x = control,
+  par = c(k_phot_max=1),
+  data = obs_control,
+  endpoint = "BM",
+  method="Brent", lower=0, upper=0.5 # Brent is recommended for one-dimensional optimization
 )
 fit1$par
-# Update exposure scenario  with new parameter values
-metsulfuron2 <- metsulfuron %>%
+#> k_phot_max 
+#>  0.3860241
+
+# Update the scenario with fitted parameter and simulate it
+fitted_growth <- control %>% 
   set_param(fit1$par)
-# Look at new parameters of the exposure scenario
-metsulfuron2@param$k_phot_max
-metsulfuron2@param$k_resp
-# simulate with updated model
-# treatments in long format
-treatments <- data.frame(time = Schmitt2013$t,
-                         trial = Schmitt2013$ID,
-                         conc = Schmitt2013$conc)
-rs_mean <- simulate_batch(
-  model_base = metsulfuron2,
-  treatments = treatments,
-  param_sample = NULL
-)
-# observations in long format
-obs_mean <- data.frame(time = Schmitt2013$t,
-                       trial = Schmitt2013$ID,
-                       data = Schmitt2013$obs)
-# plot results
+sim_mean <- fitted_growth %>%
+  simulate() %>%
+  mutate(trial="control")
+
+# Exposure and observations in long format for plotting
+treatments <- exposure %>%
+  mutate(trial="control")
+obs_mean <- obs_control %>%
+  mutate(trial="control") %>%
+  select(time=t, trial, data=obs)
+
+# Plot results
 plot_sd(
-  model_base = metsulfuron2,
+  model_base = fitted_growth,
+  treatments = treatments,
+  rs_mean = sim_mean,
+  obs_mean = obs_mean
+)
+```
+
+![](../doc/figures/howto-unnamed-chunk-13-1.png)<!-- -->
+
+Option 2: Create a list of *calibration sets* and then fit TK/TD model
+parameters on all datasets and exposure levels at the same time:
+
+``` r
+# get all the trials and exposure series from Schmitt et al. (2013) and create
+# a list of calibration sets
+Schmitt2013 %>%
+  group_by(ID) %>%
+  group_map(function(data, key) {
+    exp <- data %>% select(t, conc)
+    obs <- data %>% select(t, obs)
+    sc <- fitted_growth %>% set_exposure(exp) 
+    CalibrationSet(sc, obs)
+  }) -> cs
+
+# Fit parameters on results of all trials at once
+fit2 <- calibrate(
+  cs,
+  par=c(EC50=0.3, b=4.16, P_up=0.005),
+  endpoint="BM",
+  method="L-BFGS-B", lower=c(0, 0.1), upper=c(1000, 10)
+)
+fit2$par
+#>       EC50          b       P_up 
+#> 0.50690096 4.16140491 0.01365827
+
+# Update the scenario with fitted parameter and simulate all trials
+fitted_tktd <- fitted_growth %>%
+  set_param(fit2$par)
+
+treatments <- Schmitt2013 %>% select(time=t, trial=ID, conc)
+rs_mean <- simulate_batch(
+  model_base = fitted_tktd,
+  treatments = treatments
+)
+# Observations in long format for plotting
+obs_mean <- Schmitt2013 %>%
+  select(time=t, trial=ID, data=obs)
+
+# Plot results
+plot_sd(
+  model_base = fitted_tktd,
   treatments = treatments,
   rs_mean = rs_mean,
   obs_mean = obs_mean
 )
 ```
 
-Option 2: create `CalibrationSet` before calibration, and then calibrate
-on a list of `CalibrationSets` Create list of CalibrationSets
+![](../doc/figures/howto-unnamed-chunk-14-1.png)<!-- -->
 
-``` r
-# get all the exposure scenarios from the Schmitt 2013 study
-library(dplyr)
-Schmitt2013 %>%
-  group_by(ID) %>%
-  group_map(function(data, key) {
-    exp <- data %>% select(t, conc)
-    obs <- data %>% select(t, obs)
-    sc <- metsulfuron %>% set_exposure(exp)
-    CalibrationSet(sc, obs)
-  }) -> cs
-
-# Calibrate
-fit2 <- calibrate(
-  cs,
-  par=c(k_phot_max=5, k_resp=0.8),
-  endpoint="BM"
-)
-fit2
-```
+The resulting scenario with fitted parameters shows a very good fit with
+the observed effects from experiments.
 
 ## Changes in parameter values over time
-
-`sequence()` creates an object which will represent a sequence of
-several scenarios. The sequence is treated as a single scenario and each
-scenario is simulated one after the other. Scenario sequences can be
-used to e.g. implement changes in model parameters over time.
 
 Sequences can be used to represent changing conditions over time, such
 as a change in model parameters which would otherwise be constant. This
 can be used to represent events such as a pump failure or change in
 temperature.
 
+The function `sequence()` creates an object which represents a sequence
+of several scenarios. The sequence is treated as a single scenario and
+each scenario is simulated one after the other.
+
 ``` r
 # base scenario only valid until day 7
 sc1 <- metsulfuron %>%
   set_times(0:7)
 
-# a parameter change occurs at day 7: global radiation decreases to 8,000 kJ/m2/d
+# a parameter change occurs at day 7: k_loss increases from 0 to 0.1 d-1
 sc2 <- metsulfuron %>%
   set_times(7:14) %>%
-  set_forcings(rad=8000)
+  set_param(c(k_loss=0.1))
  
 seq <- sequence(list(sc1, sc2))
 simulate(seq)
-#>    time       BM E     M_int      C_int  FrondNo
-#> 1     0 50.00000 1   0.00000 0.00000000 500000.0
-#> 2     1 52.15858 1 223.07447 0.25609887 521585.8
-#> 3     2 52.43495 1 369.63440 0.42211917 524349.5
-#> 4     3 52.33917 1 463.02605 0.52973924 523391.7
-#> 5     4 52.17923 1 521.89269 0.59891761 521792.3
-#> 6     5 52.00016 1 558.62681 0.64328081 520001.6
-#> 7     6 51.81403 1 581.21867 0.67170059 518140.3
-#> 8     7 51.63740 1 474.07158 0.54974731 516374.0
-#> 9     8 51.61806 1 301.84519 0.35015964 516180.6
-#> 10    9 52.32264 1 192.18727 0.21994721 523226.4
-#> 11   10 54.34850 1 122.36718 0.13482205 543485.0
-#> 12   11 57.08426 1  77.91217 0.08172830 570842.6
-#> 13   12 59.99459 1  49.60731 0.04951275 599945.9
-#> 14   13 62.96113 1  31.58537 0.03003980 629611.3
-#> 15   14 65.95879 1  20.11066 0.01825733 659587.9
+#>    time       BM E      M_int      C_int  FrondNo
+#> 1     0 50.00000 1   0.000000 0.00000000 500000.0
+#> 2     1 52.15858 1 223.074470 0.25609887 521585.8
+#> 3     2 52.43495 1 369.634402 0.42211917 524349.5
+#> 4     3 52.33917 1 463.026054 0.52973924 523391.7
+#> 5     4 52.17923 1 521.892686 0.59891761 521792.3
+#> 6     5 52.00016 1 558.626807 0.64328081 520001.6
+#> 7     6 51.81403 1 581.218666 0.67170059 518140.3
+#> 8     7 51.63740 1 474.071576 0.54974731 516374.0
+#> 9     8 46.72570 1 273.120825 0.35001169 467257.0
+#> 10    9 42.94600 1 157.349626 0.21939489 429460.0
+#> 11   10 40.59758 1  90.651838 0.13370880 405975.8
+#> 12   11 38.94561 1  52.226090 0.08029945 389456.1
+#> 13   12 37.48893 1  30.088353 0.04805946 374889.3
+#> 14   13 36.12872 1  17.334420 0.02873031 361287.2
+#> 15   14 34.84676 1   9.986659 0.01716095 348467.6
 ```
+
+For more information:
 
 ``` r
 # Call the help page of `sequence`
@@ -387,19 +536,13 @@ simulate(seq)
 
 ## Decrease assessment runtime
 
-There are ways to decrease the runtime of a simulation. One possibility
-is to reduce the maximum step length of the solver by setting the
-optional argument `hmax`. The larger `hmax`, the faster the simulations.
-But be careful, the larger hmax, the greater the risk that the results
-will be inaccurate.
-
-Especially for the simulation of long periods of time, such as annual
-exposure profiles, the results may be inaccurate. Oftentimes, it will be
-computational more efficient to adapt the solver’s error tolerances
-`atol` and `rtol` than reducing the step width `hmax` to achieve stable
-numerics. Start by decreasing deSolve’s default values by orders of ten
-until the simulation yields acceptable results, see
-e.g. ?deSolve::lsoda() for more information on error tolerances.
+There are multiple ways to decrease the runtime of a simulation. One
+option is to increase the maximum step length of the solver, `hmax`. It
+is an optional argument which can be passed to either `simulate()`,
+`effect()`, or `epx()`. The larger `hmax`, the faster the simulation
+generally completes. However, be careful: The larger `hmax`, the greater
+the risk that simulation results will be inaccurate and simulations may
+even fail due to numerical issues.
 
 ``` r
 # Simulations with a maximum solver step length of hmax=0.01
@@ -417,13 +560,36 @@ metsulfuron %>%
 #> 8    7 51.63740 1 474.0716 0.5497473 516374.0
 ```
 
+The calculation of *EPx* values may take a lot of time if one or more of
+the following conditions apply:
+
+1)  a large number of scenarios is assessed
+2)  the simulated exposure time-series are very long
+3)  moving exposure windows are considered which are very small in
+    comparison to the length of the exposure series
+
+The `epx()` function is implemented in a way that it can parallelize
+calculations by using more than one CPU. To enable parallel processing,
+a command like the following needs to preceed the call to `epx()`:
+
+``` r
+future::plan(future::multisession)
+```
+
+If the computer running the calculation has `n` physical CPU cores, then
+the time necessary to calculate *EPx* values will (in the best case)
+decrease by the same factor. For more information on how to make use of
+parallelization in R, please refer to the `future` package:
+
+``` r
+vignette("future-1-overview", package="future")
+```
+
 ## Implementing custom models
 
-The set of supported models can be extended as needed. Additional models
-can be added to the package itself if they are considered mature and are
-not expected to evolve over time. By contrast, experimental or one-time
-use models can be implemented in a user’s script and inserted into the
-package’s workflow as well.
+The set of supported models can be extended by users as needed.
+Experimental or one-time use models can be implemented in a user’s
+script and inserted into the package’s workflow.
 
 The starting point to add a new model is an implementation of the
 model’s rules and dynamics in *R* code. In most cases, this will be a
@@ -541,8 +707,7 @@ new("MyGuts", name="My custom model") %>%
   set_endpoints("L") -> myscenario
 
 myscenario
-#> EffectScenario object
-#> model: My custom model 
+#> 'My custom model' scenario
 #> param: kd=22, hb=0.01, z=0.5, kk=0.08
 #> init : Dw=0, H=0
 #> endpt: L
@@ -590,7 +755,7 @@ solver_myguts <- function(scenario, times, ...) {
   as.data.frame(deSolve::ode(y=init, times=times, parms=paramx, func=sd_ode, ...))
 }
 
-## Overload the simulate() function ##
+## Overload the solver() function ##
 # The functions signature, i.e. the number and names of its arguments, must stay as is
 setMethod("solver", "MyGuts", function(scenario, times, ...) solver_myguts(scenario, times, ...))
 ```
@@ -698,16 +863,16 @@ for exposure scenarios, plot results, and get EPx calculations.
 
 ### Setting up a scenario
 
-Setting up the model (i.e. creating an `EffectScenario`) involved
-defining the parameters, the environmental variables (external forcings
-and chemical exposure), and the initial conditions. Further, a tag can
-be given to easily identify and retrieve the `EffectScenario` by name.
-Also, for primary producer models, a transfer of biomass can be defined
-matching with the experimental design of the study.
+Setting up the model (i.e. creating a scenario) involves defining the
+parameters, the environmental variables (external forcings and chemical
+exposure), and the initial conditions. Further, a tag can be assigned to
+easily identify the scenario by name. Also, for primary producer models,
+a transfer of biomass can be defined to match the experimental design of
+the study.
 
 ``` r
 ## Get all model parameters
-# algae model parameters taken from file 'mm2.r' included
+# Lemna model parameters taken from file 'mm2.r' included
 # in supporting material of Schmitt et al. (2013)
 param_study <- list(
   #     - Effect -
@@ -773,8 +938,8 @@ init <- c(
   M_int    = 0       # [ug]   Amount of toxicant in biomass
 )
 
-## create an EffectScenario object, containing the model (with parameters) and the exposure scenario
-Lemna_Schmitt() %>%               # the Lemna model
+## create a scenario object, containing the model (with parameters) and the exposure time-series
+Lemna_Schmitt() %>%               # the Lemna model by Schmitt et al. (2013)
   set_tag("metsulfuron") %>%      # set a tage for the specific implementation of the model
   set_init(init) %>%              # set the starting values (as prepared above)
   set_param(param_study) %>%      # set the parameters (as prepared above)
@@ -805,7 +970,7 @@ plot_sd(
 )
 ```
 
-<img src="../doc/figures/howto-unnamed-chunk-27-1.png" width="75%" />
+<img src="../doc/figures/howto-unnamed-chunk-28-1.png" width="100%" />
 
 ``` r
 
@@ -824,4 +989,4 @@ plot_sd(
 )
 ```
 
-<img src="../doc/figures/howto-unnamed-chunk-27-2.png" width="75%" />
+<img src="../doc/figures/howto-unnamed-chunk-28-2.png" width="100%" />

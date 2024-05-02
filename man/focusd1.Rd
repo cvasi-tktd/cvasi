@@ -40,7 +40,7 @@ Products. Integr Environ Assess Manag 12(1), pp. 82-95.
 
 Klein J., Cedergreen N., Heine S., Reichenberger S., Rendal C.,
 Schmitt W., Hommen U., 2021: Refined description of the \emph{Lemna} TKTD growth model
-based on \emph{Schmitt et al.} (2013) – equation system and default parameters.
+based on \emph{Schmitt et al.} (2013) - equation system and default parameters.
 Report of the working group \emph{Lemna} of the SETAC Europe Interest Group Effect
 Modeling. Version 1, uploaded on 22. Sept. 2021.
 \url{https://www.setac.org/group/effect-modeling.html}

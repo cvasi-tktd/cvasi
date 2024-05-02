@@ -6,6 +6,9 @@
 \usage{
 log_envir()
 }
+\value{
+no return value
+}
 \description{
 Log R environment properties
 }

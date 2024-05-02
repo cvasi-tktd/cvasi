@@ -1,17 +1,3 @@
-#' Exposure time-series
-#'
-#' The `ExposureSeries` class encapsulates an exposure time-series with its
-#' metadata, such as formatted datetime strings and file name where the
-#' series was loaded from. The constructor `ExposureSeries()` can be used to
-#' ease object creation. `no_exposure()` is shorthand to create a time-series
-#' of constant zero exposure.
-#'
-#' @slot dates original time points of time-series, e.g. time stamps of the form `2000-01-01 12:00`
-#' @slot file `character`, file name where data originates from, may be empty
-#' @slot meta `list`, contains metadata
-#' @slot context `list`, contains contextual metadata, such as project ids
-#' @slot series `data.frame` containing the actual time-series
-#' @rdname ExposureSeries
 #' @export
 setClass("ExposureSeries",
          slots=list(
@@ -25,18 +11,27 @@ setClass("ExposureSeries",
 
 
 
-#' ExposureSeries constructor
+#' Exposure time-series
 #'
-#' Eases the creation of \linkS4class{ExposureSeries} objects. Can be used
-#' to initialize the object's slots.
+#' Creates an object that encapsulates an exposure time-series with its
+#' metadata, such as formatted datetime strings and file name where the
+#' series was loaded from. [no_exposure()] is shorthand to create a time-series
+#' of constant zero exposure.
 #'
+#' @slot dates original time points of time-series, e.g. time stamps of the form `2000-01-01 12:00`
+#' @slot file `character`, file name where data originates from, may be empty
+#' @slot meta `list`, contains metadata
+#' @slot context `list`, contains contextual metadata, such as project ids
+#' @slot series `data.frame` containing the actual time-series
 #' @param series `data.frame` with two columns containing a time-series
 #' @param dates `vector`, optional original list of time stamps
 #' @param file `character`, optional file name where data originates from
 #' @param meta `list`, optional metadata
 #' @param context `list` optional contextual metadata such as project ids
+#' @return an S4 object of type [ExposureSeries-class]
 #'
-#' @rdname ExposureSeries
+#' @seealso [no_exposure()]
+#' @aliases ExposureSeries-class
 #' @export
 ExposureSeries <- function(series, dates, file, meta, context) {
   if(!is.data.frame(series))
@@ -65,21 +60,25 @@ ExposureSeries <- function(series, dates, file, meta, context) {
   )
 }
 
+
 #' Zero exposure
 #'
-#' Creates an \linkS4class{ExposureSeries} with zero concentration. When setting
+#' Creates an [ExposureSeries] with zero concentration. When setting
 #' the zero exposure, pay attention not to accidentally reset the output times
 #' of your scenario as the zero exposure series contains only a single time point.
 #' See the examples.
+#'
+#' @return  an S4 object of type [ExposureSeries-class]
 #' @seealso [set_noexposure()]
 #' @export
 #' @examples
 #' # this will reset the output times of the sample scenario,
 #' # simulate() will quit with an error
-#' \dontrun{
-#' minnow_it %>%
-#'   set_exposure(no_exposure()) %>%
-#'   simulate()}
+#' try(
+#'   minnow_it %>%
+#'     set_exposure(no_exposure()) %>%
+#'     simulate()
+#' )
 #'
 #' # set zero exposure, but keep original output times
 #' minnow_it %>%

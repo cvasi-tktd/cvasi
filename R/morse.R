@@ -15,14 +15,14 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # import all parameter fits
-#' morse("path/to/morse_fit.RData")
+#' try(morse("path/to/morse_fit.RData"))
+#'
 #' # import parameters for a specific model
-#' morse("path/to/morse_fit.RData", find.IT=TRUE, find.SD=FALSE)
+#' try(morse("path/to/morse_fit.RData", find.IT=TRUE, find.SD=FALSE))
+#'
 #' # modify model objects
-#' models %>% set_param(morse("path/to/morse_fit.RData"))
-#' }
+#' try(models %>% set_param(morse("path/to/morse_fit.RData")))
 morse <- function(file, find.SD=TRUE, find.IT=TRUE, reset.hb=TRUE, params=c("estim","all"), mcmc.size) {
   if(missing(mcmc.size))
     mcmc.size <- -1 # load all by default

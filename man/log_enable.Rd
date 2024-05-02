@@ -18,6 +18,9 @@ otherwise the log file will be replaced}
 \item{envir}{log will be automatically disabled if \code{environment} is exited,
 set to \code{NULL} to disable}
 }
+\value{
+no return value
+}
 \description{
 Start and stop logging
 }

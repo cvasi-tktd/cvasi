@@ -14,7 +14,7 @@
 #' population modeling to assess the effects of time-variable exposure of
 #' isoproturon on the green algae Desmodesmus subspictatus and
 #' Pseudokirchneriella subcapitata. Environmental Toxicology and
-#' Chemistry, 31, 899–908. \doi{10.1002/etc.1765}
+#' Chemistry, 31, 899-908. \doi{10.1002/etc.1765}
 #'
 #' @name Algae-models
 #' @family algae models
@@ -98,7 +98,7 @@ setClass("AlgaeSimpleScenario", contains = "Algae")
 #' population modeling to assess the effects of time-variable exposure of
 #' isoproturon on the green algae Desmodesmus subspictatus and
 #' Pseudokirchneriella subcapitata. Environmental Toxicology and
-#' Chemistry, 31, 899–908. \doi{10.1002/etc.1765}
+#' Chemistry, 31, 899-908. \doi{10.1002/etc.1765}
 #'
 #' EFSA PPR Panel (EFSA Panel on Plant Protection Products and their Residues),
 #' Ockleford C, Adriaanse P, Berny P, Brock T, Duquesne S, Grilli S,
@@ -110,6 +110,7 @@ setClass("AlgaeSimpleScenario", contains = "Algae")
 #' of pesticides for aquatic organisms. EFSA Journal, 16(8), 5377.
 #' \doi{10.2903/j.efsa.2018.5377}
 #'
+#' @return an S4 object of type [AlgaeWeberScenario-class]
 #' @seealso [Scenarios], [Transferable]
 #' @family algae models
 #' @export
@@ -143,9 +144,9 @@ Algae_Weber <- function() {
 
 #' Algae model with exponential growth, forcings (P, I) and scaled damage
 #'
-#' Constructor to ease creation of *Algae* ‘EffectScenario’s. Model is a variant
-#' of the `Algae_Weber` model (Weber 2012) as cited in EFSA TKTD opinion (2018).
-#' This Algae model, `Algae_TKTD()`, a) provides an additional
+#' Creates an *Algae* scenario. The model is a variant
+#' of the [Algae_Weber()] model (Weber 2012) as cited in EFSA TKTD opinion (2018).
+#' This Algae model, [Algae_TKTD()], a) provides an additional
 #' possibility to simulate the dose-response curve (probit) and b) considers an
 #' scaled internal damage instead of the external concentration.
 #'
@@ -196,8 +197,9 @@ Algae_Weber <- function() {
 #' population modeling to assess the effects of time-variable exposure of
 #' isoproturon on the green algae Desmodesmus subspictatus and
 #' Pseudokirchneriella subcapitata. Environmental Toxicology and
-#' Chemistry, 31, 899–908. \doi{10.1002/etc.1765}
+#' Chemistry, 31, 899-908. \doi{10.1002/etc.1765}
 #'
+#' @return an S4 object of type [AlgaeTKTDScenario-class]
 #' @seealso [Scenarios], [Transferable]
 #' @family algae models
 #' @export
@@ -275,8 +277,9 @@ Algae_TKTD <- function() {
 #' population modeling to assess the effects of time-variable exposure of
 #' isoproturon on the green algae Desmodesmus subspictatus and
 #' Pseudokirchneriella subcapitata. Environmental Toxicology and
-#' Chemistry, 31, 899–908. \doi{10.1002/etc.1765}
+#' Chemistry, 31, 899-908. \doi{10.1002/etc.1765}
 #'
+#' @return an S4 object of type [AlgaeSimpleScenario-class]
 #' @seealso [Scenarios], [Transferable]
 #' @family algae models
 #' @export

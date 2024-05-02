@@ -8,7 +8,7 @@
 DEB_Daphnia()
 }
 \value{
-A \code{DEB_Daphnia} scenario
+an S4 object of type \linkS4class{DebDaphnia}
 }
 \description{
 Creates a  \emph{DEBtox Daphnia} scemarop.

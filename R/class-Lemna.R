@@ -172,6 +172,7 @@ setClass("LemnaSetacScenario", contains="Lemna")
 #' @param param optional named `list` or `vector` of model parameters
 #' @param init optional named numeric `vector` of initial state values
 #'
+#' @return an S4 object of type [LemnaSchmittScenario-class]
 #' @seealso [Lemna-models], [Macrophyte-models], [Transferable], [Scenarios]
 #' @references
 #' Schmitt W., Bruns E., Dollinger M., and Sowig P., 2013:
@@ -232,8 +233,8 @@ Lemna_SchmittThold <- function(param, init) {
 #' Lemna model (Klein et al. 2021)
 #'
 #' The model was described and published by the SETAC Europe Interest Group
-#' Effect Modeling (Klein et al. 2022). The *Lemna* model based on the *Lemna*
-#' model by Schmitt (2013). The model is a mechanistic combined
+#' Effect Modeling (Klein et al. 2022). It is based on the *Lemna* model
+#' by Schmitt (2013). The model is a mechanistic combined
 #' toxicokinetic-toxicodynamic (TK/TD) and growth model for the aquatic
 #' macrophytes *Lemna spp.*. The model simulates the development of Lemna biomass
 #' under laboratory and environmental conditions. Growth of the Lemna population
@@ -347,7 +348,7 @@ Lemna_SchmittThold <- function(param, init) {
 #' @references
 #' Klein J., Cedergreen N., Heine S., Reichenberger S., Rendal C.,
 #' Schmitt W., Hommen U., 2021: *Refined description of the Lemna TKTD growth model
-#' based on Schmitt et al. (2013) – equation system and default parameters*.
+#' based on Schmitt et al. (2013) - equation system and default parameters*.
 #' Report of the working group *Lemna* of the SETAC Europe Interest Group Effect
 #' Modeling. Version 1, uploaded on 22. Sept. 2021.
 #' https://www.setac.org/group/effect-modeling.html
@@ -357,6 +358,7 @@ Lemna_SchmittThold <- function(param, init) {
 #' *Mechanistic TK/TD-model simulating the effect of growth inhibitors on
 #' Lemna populations*. Ecol Model 255, pp. 1-10. \doi{10.1016/j.ecolmodel.2013.01.017}
 #'
+#' @return an S4 object of type [LemnaSetacScenario-class]
 #' @seealso [Lemna-models], [Macrophyte-models], [Transferable], [Scenarios]
 #' @family Lemna models
 #' @family macrophyte models

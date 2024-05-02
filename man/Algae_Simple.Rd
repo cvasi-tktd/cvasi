@@ -7,6 +7,9 @@
 \usage{
 Algae_Simple()
 }
+\value{
+an S4 object of type \linkS4class{AlgaeSimpleScenario}
+}
 \description{
 The model is a mechanistic combined toxicokinetic-toxicodynamic (TK/TD) and
 growth model for algae. The model simulates the development of algal biomass.
@@ -67,7 +70,7 @@ and Ratte HT, 2012. Combination of a higher-tier flow-through system and
 population modeling to assess the effects of time-variable exposure of
 isoproturon on the green algae Desmodesmus subspictatus and
 Pseudokirchneriella subcapitata. Environmental Toxicology and
-Chemistry, 31, 899–908. \doi{10.1002/etc.1765}
+Chemistry, 31, 899-908. \doi{10.1002/etc.1765}
 }
 \seealso{
 \link{Scenarios}, \link{Transferable}

@@ -7,10 +7,13 @@
 \usage{
 Lemna_SETAC()
 }
+\value{
+an S4 object of type \linkS4class{LemnaSetacScenario}
+}
 \description{
 The model was described and published by the SETAC Europe Interest Group
-Effect Modeling (Klein et al. 2022). The \emph{Lemna} model based on the \emph{Lemna}
-model by Schmitt (2013). The model is a mechanistic combined
+Effect Modeling (Klein et al. 2022). It is based on the \emph{Lemna} model
+by Schmitt (2013). The model is a mechanistic combined
 toxicokinetic-toxicodynamic (TK/TD) and growth model for the aquatic
 macrophytes \emph{Lemna spp.}. The model simulates the development of Lemna biomass
 under laboratory and environmental conditions. Growth of the Lemna population
@@ -181,7 +184,7 @@ intervals, the simulation must start at time point zero.
 \references{
 Klein J., Cedergreen N., Heine S., Reichenberger S., Rendal C.,
 Schmitt W., Hommen U., 2021: \emph{Refined description of the Lemna TKTD growth model
-based on Schmitt et al. (2013) – equation system and default parameters}.
+based on Schmitt et al. (2013) - equation system and default parameters}.
 Report of the working group \emph{Lemna} of the SETAC Europe Interest Group Effect
 Modeling. Version 1, uploaded on 22. Sept. 2021.
 https://www.setac.org/group/effect-modeling.html

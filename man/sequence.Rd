@@ -3,10 +3,10 @@
 \name{sequence}
 \alias{sequence}
 \alias{ScenarioSequence-class}
-\alias{scenario<-,ScenarioSequence-method}
-\alias{scenarios,ScenarioSequence-method}
-\alias{scenarios<-,ScenarioSequence-method}
 \title{Sequence of scenarios}
+\value{
+an S4 object of type \linkS4class{ScenarioSequence}
+}
 \description{
 A sequence of scenarios is treated as a single scenario and each scenario
 is simulated one after the other. If scenario \code{n} in a sequence was simulated,

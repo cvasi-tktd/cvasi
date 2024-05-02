@@ -9,6 +9,9 @@ pll_debug(state = TRUE)
 \arguments{
 \item{state}{\code{logical}, if \code{TRUE} then parallelization is disabled}
 }
+\value{
+no return value
+}
 \description{
 In certain cases it might be beneficial to disable parallel execution
 of e.g. effect profile calculations. By disabling, all processes run

@@ -1,7 +1,7 @@
 User Manual
 ================
 Nils Kehrein
-29 April, 2024
+02 May, 2024
 
 - [Required skills](#required-skills)
 - [How to install](#how-to-install)
@@ -13,7 +13,6 @@ Nils Kehrein
 - [Data format of model inputs](#data-format-of-model-inputs)
 - [How to derive model inputs](#how-to-derive-model-inputs)
 - [Description of model outputs](#description-of-model-outputs)
-  - [Model fitting results](#model-fitting-results)
   - [Simulation results](#simulation-results)
   - [Effect levels](#effect-levels)
   - [Effect profiles](#effect-profiles)
@@ -29,7 +28,7 @@ models are intended to assess the effects of substance exposure on
 effect endpoints, such as growth and reproduction, for a range of
 standard test species.
 
-The package offers a standardized framework which can by extended by
+The package offers a standardized framework which can be extended by
 (almost) any TKTD model that can be implemented in *R*. Its modeling
 workflows are designed to be self-explanatory and as intuitive as
 possible to make modeling approaches more accessible. In addition, the
@@ -54,31 +53,52 @@ my_it <- GUTS_RED_IT()
 my_it <- set_param(my_it, c(kd=1.2, hb=0, alpha=9.2, beta=4.3))
 # Print scenario details
 my_it
+#> 'GUTS-RED-IT' scenario
+#> param: kd=1.2, hb=0, alpha=9.2, beta=4.3
+#> init : D=0, H=0
+#> endpt: L
+#> times: none
+#> forcs: none
+#> expsr: none
+#> >> exposure series is empty
 ```
 
-A more advanced approach is to use the *tidy R* syntax (Wickham &
-Grolemund 2017) which uses verb-like statements to modify data. *tidy R*
+A more advanced approach is to use the *tidyr* syntax (cf. Wickham &
+Grolemund 2017) which uses verb-like statements to modify data. *tidyr*
 syntax can be used to chain functions calls which pass the result of one
 function on to the next:
 
 ``` r
-## Sample tidy R workflow ##
+## Example 'tidyr' workflow ##
 # the pipeline (%>%) symbol passes results to the next statement
 GUTS_RED_IT() %>%
   set_param(c(kd=1.2, hb=0, alpha=9.2, beta=4.3))
+#> 'GUTS-RED-IT' scenario
+#> param: kd=1.2, hb=0, alpha=9.2, beta=4.3
+#> init : D=0, H=0
+#> endpt: L
+#> times: none
+#> forcs: none
+#> expsr: none
+#> >> exposure series is empty
 ```
 
-Both workflow styles achieve the same result, but *tidy R* is terser,
-especially if several operations are performed on the same objects.
-*tidy R* is the recommended way to interact with the *cvasi* package.
+Both workflow styles achieve the same result, but *tidyr* is terser,
+especially if several operations are performed on the same object.
+*tidyr* style is the recommended way to interact with the *cvasi*
+package.
 
 # How to install
 
-The simplest way to install the *cvasi* package is by downloading it
-from *CRAN*:
+<!--The simplest way to install the *cvasi* package is by downloading it from *CRAN*:
+&#10;
+-->
+
+The latest development version can be installed from GitHub:
 
 ``` r
-install.packages("cvasi", dependencies=TRUE)
+install.packages("remotes", dependencies=TRUE)
+remotes::install_github("cvasi-tktd/cvasi", dependencies=TRUE)
 ```
 
 The package and its source code is also available on
@@ -101,8 +121,8 @@ on the model type but may include:
 - Exposure time-series, and
 - Environmental factor time-series
 
-Scenario properties can be modified using intuitively named *tidy*
-verbs - in general, each verb accepts a scenario as an argument and
+Scenario properties can be modified using intuitively named *tidyr*
+verbs: in general, each verb accepts a scenario as an argument and
 returns a modified scenario as the result. For instance, the
 `set_param()` function will update a scenario’s parameters to new
 values:
@@ -110,11 +130,10 @@ values:
 ``` r
 library(cvasi)
 
-# Create a new and empty GUTS-RED-IT scenario and set its parameters
+# Create a new GUTS-RED-IT scenario and set its model parameters
 GUTS_RED_IT() %>%
   set_param(c(kd=1.2, hb=0, alpha=9.2, beta=4.3))
-#> EffectScenario object
-#> model: GUTS-RED-IT 
+#> 'GUTS-RED-IT' scenario
 #> param: kd=1.2, hb=0, alpha=9.2, beta=4.3
 #> init : D=0, H=0
 #> endpt: L
@@ -132,7 +151,7 @@ an example, simulating the sample scenario `minnow_it` will run a
 *GUTS-RED-IT* model using substance-specific parameters:
 
 ``` r
-# Sample GUTS-RED-IT scenario derived from an acute fish toxicity study
+# Example GUTS-RED-IT scenario derived from an acute fish toxicity study
 # of the fathead minnow and Chlorpyrifos (Geiger et al. 1988)
 minnow_it %>%
   simulate()
@@ -174,14 +193,15 @@ TKTD models, for instance:
 - Dynamic Energy Budget (*DEB*) models
   - `DEB_abj()`, the *abj* model with type M acceleration
 
-The constructor functions create objects that will carry all data and
-settings to fully describe a scenario. In case of a *GUTS-RED* scenario,
-one needs to provide at least the model parameters and an exposure
-time-series to fully define a scenario:
+The listed functions create objects that will carry all data and
+settings to fully describe a scenario. In case of a *GUTS-RED-IT*
+scenario, one needs to provide at least the four model parameters and an
+exposure time-series to fully define a scenario:
 
 ``` r
 # Define an exposure time-series
-myexposure <- data.frame(time = c(0, 1, 1.01, 5), conc = c(10, 10, 0, 0))
+myexposure <- data.frame(time=c(0, 1, 1.01, 5),
+                         conc=c(10, 10, 0, 0))
 
 # Create and parameterize a scenario
 GUTS_RED_IT() %>%
@@ -189,7 +209,7 @@ GUTS_RED_IT() %>%
   set_exposure(myexposure) -> myscenario
 ```
 
-We can examine the main scenario properties by passing the scenario to
+One can examine the main scenario properties by passing the scenario to
 the console like in the next example. The console will print the model
 name, model parameters (*param*), initial state (*init*), enabled effect
 endpoints (*endpt*), output times (*times*), environmental forcings
@@ -200,8 +220,7 @@ displayed in the console output.
 ``` r
 # Print information about the scenario
 myscenario
-#> EffectScenario object
-#> model: GUTS-RED-IT 
+#> 'GUTS-RED-IT' scenario
 #> param: kd=1.2, hb=0, alpha=9.2, beta=4.3
 #> init : D=0, H=0
 #> endpt: L
@@ -218,6 +237,7 @@ myscenario
 Several `set_*()` verbs are available to modify scenario properties,
 such as:
 
+- `set_tag()`, to assign a custom tag to identify the scenario
 - `set_init()`, to set the initial state
 - `set_param()`, to modify model parameters
 - `set_times()`, to define output time points
@@ -237,8 +257,7 @@ undesired, it can be disabled by setting the argument
 # Update the exposure time-series but keep former output time points
 myscenario %>%
   set_exposure(no_exposure(), reset_times=FALSE)
-#> EffectScenario object
-#> model: GUTS-RED-IT 
+#> 'GUTS-RED-IT' scenario
 #> param: kd=1.2, hb=0, alpha=9.2, beta=4.3
 #> init : D=0, H=0
 #> endpt: L
@@ -250,11 +269,11 @@ myscenario %>%
 ```
 
 Note that `times` still has the original four elements although the
-exposure series which was set has only a single entry. Output time
-points can be explicitly set with `set_times()`. For deriving effect
-endpoints, the simulated time frame can be split up into moving exposure
-windows of a certain length using `set_window()`. A more complex
-scenario setup may look like the following workflow:
+assigned exposure series has only a single entry. Output time points can
+be explicitly set with `set_times()`. For deriving effect endpoints, the
+simulated time frame can be split up into moving exposure windows of a
+certain length using `set_window()`. A more complex scenario setup may
+look like the following workflow:
 
 ``` r
 # Selected model parameters
@@ -270,7 +289,16 @@ DEB_abj() %>%
   set_exposure(myexposure) %>%
   set_times(0:10) %>%             # Output times 0,1,2,...,10
   set_mode_of_action(4) %>%       # Method of Action #4 to be activated
-  set_window(length=3) -> mydeb   # Using moving exposure windows of length 3 days
+  set_window(length=3)            # Using moving exposure windows of length 3 days
+#> 'DEB_abj' scenario
+#> param: p_M=3211, v=0.023, k_J=0.63, MoA=4
+#> init : L=0.02, E=0, H=0, R=0, cV=0, Lmax=0
+#> endpt: L, R
+#> times: [0,10] n=11, regular
+#> forcs: none
+#> expsr: none
+#>   time conc
+#> 1    0 1.72
 ```
 
 ## Running a simulation
@@ -279,7 +307,7 @@ After a scenario is fully set up, it can be passed to `simulate()` to
 return model results:
 
 ``` r
-# Sample scenario of the Lemna TKTD model
+# Example scenario of the Lemna TKTD model
 metsulfuron %>%
   set_times(0:7) %>%
   simulate()
@@ -316,12 +344,12 @@ metsulfuron %>%
 
 The resulting table now contains ten times as many rows because we
 decreased the step length by a factor of ten but simulated the same
-period. It can be observed that the state-variables differ slightly at
-the end of the simulation although the scenarios were otherwise
-identical. The differences originate from small numerical errors
-introduced by the solver of the model’s Ordinary Differential Equations.
-Generally, the step-length in time can have influence on the precision
-of simulation results.
+period. The temporal resolution of simulations can have an influence on
+results, i.e. the numerical values of the returned variables. These
+differences usually originate from small numerical errors introduced by
+the solver of the model’s Ordinary Differential Equations. Generally,
+parameters such as the step-length in time can have influence on the
+precision of simulation results.
 
 There are several ways to increase the precision of simulation results
 without modifying a scenario’s output times. One option is to decrease
@@ -332,27 +360,28 @@ argument `hmax`. The smaller `hmax`, the more precise the results:
 # Original simulation period, but with a maximum solver step length of hmax=0.01
 metsulfuron %>%
   set_times(0:7) %>%
-  simulate(hmax = 1)
+  simulate(hmax=0.01)
 #>   time       BM E    M_int     C_int  FrondNo
 #> 1    0 50.00000 1   0.0000 0.0000000 500000.0
-#> 2    1 52.15863 1 223.0744 0.2560986 521586.3
-#> 3    2 52.43497 1 369.6346 0.4221193 524349.7
-#> 4    3 52.33916 1 463.0260 0.5297392 523391.6
-#> 5    4 52.17922 1 521.8928 0.5989178 521792.2
-#> 6    5 52.00016 1 558.6268 0.6432809 520001.6
-#> 7    6 51.81402 1 581.2109 0.6716917 518140.2
-#> 8    7 51.63739 1 474.0692 0.5497446 516373.9
+#> 2    1 52.15858 1 223.0745 0.2560989 521585.8
+#> 3    2 52.43495 1 369.6344 0.4221192 524349.5
+#> 4    3 52.33917 1 463.0261 0.5297392 523391.7
+#> 5    4 52.17923 1 521.8927 0.5989176 521792.3
+#> 6    5 52.00016 1 558.6268 0.6432808 520001.6
+#> 7    6 51.81403 1 581.2187 0.6717006 518140.3
+#> 8    7 51.63740 1 474.0716 0.5497473 516374.0
 ```
 
 Although very effective, reducing `hmax` to small values may lead to
 inefficiently long runtimes of simulations. If numerical precision is an
 issue, it is advisable to also test other solver settings such as
 absolute and relative error tolerances (`atol` and `rtol`) or to switch
-to another solver method. Please refer to the manual of `simulate()` for
-additional pointers:
+to another solver method. Numerical precision and stability is a complex
+and advanced topic, please refer to the manual of `simulate()` for
+additional information:
 
 ``` r
-?simulate
+?cvasi::simulate
 ```
 
 ## Deriving assessment endpoints
@@ -363,7 +392,7 @@ routines to derive these endpoints efficiently independent of the actual
 model that is being assessed. Hence, if a model is available within the
 package framework, it can be used to derive assessment endpoints. As an
 example, the following statement derives effect levels for a sample
-*GUTS-RED* scenario:
+*GUTS-RED-IT* scenario:
 
 ``` r
 # GUTS-RED-IT scenario of the fathead minnow and chlorpyrifos
@@ -376,12 +405,13 @@ minnow_it %>% effect()
 
 The lethality endpoint `L` has a value of `6.3e-5` which means that
 lethality has only marginally increased by 0.0063% compared to a control
-scenario without exposure. The columns `L.dat.start` and `L.dat.end`
-denote the period for which the effect level was observed. In case of
-*GUTS-RED* models, this refers to the whole simulation period. For
-certain assessments it may be necessary to evaluate all exposure periods
-of a certain length within the original series separately. This approach
-is referred to as a *moving exposure window*:
+scenario without exposure to the contaminant. The columns `L.dat.start`
+and `L.dat.end` denote the period for which the effect level was
+observed. In case of *GUTS-RED* models, this usually refers to the whole
+simulation period. For certain assessments it may be necessary to
+evaluate all exposure periods of a certain length within the original
+series separately. This approach is referred to as a *moving exposure
+window*:
 
 ``` r
 # Setting up a custom scenario with a total simulation period of 14 days and
@@ -427,15 +457,15 @@ mydeb %>%
 #> 1 <DebAbj>   1.16   1.71
 ```
 
-In the previous example, a factor `1.16` resulted in 10% effect on
-structural length and a factor of `1.71` in 50% effect. `epx()` provides
-means to control the precision of derived *EPx* values, the range of
-tested multiplication factors, factor cutoff thresholds, and debugging
+In this example, a factor of `1.16` resulted in 10% effect on structural
+length and a factor of `1.71` in 50% effect. `epx()` provides means to
+control the precision of derived *EPx* values, the range of tested
+multiplication factors, factor cutoff thresholds, and debugging
 capabilities. To examine how a particular *EPx* value was derived,
 simply set the argument `verbose=TRUE`:
 
 ``` r
-# Examine how the EP23 value is derived
+# Examine how the EP20 value is derived
 minnow_it %>% epx(level=20, verbose=TRUE)
 #> epx: screening multiplication factors
 #>   start: 10
@@ -455,8 +485,16 @@ minnow_it %>% epx(level=20, verbose=TRUE)
 ```
 
 In this example, the algorithm of `epx()` first tests a multiplication
-factor of `10` and then continues testing additional factors until one
-is found that causes 20% effect.
+factor of `10` and then continues testing additional factors using a
+binary search algorithm until a factor is found that causes 20% effect.
+
+**Please note**: Depending on model and chosen parameters, it may be
+impossible to calculate *EPx* values (for selected effect levels),
+because the model or organism cannot reach the required state. As an
+example: If the simulated period of a *DEB_abj* scenario is too short,
+reproduction cannot occur. Therefore, effects on reproduction will
+always be zero independent of the exposure level. Consequently, *EPx*
+values for the reproduction endpoint will not be available.
 
 # Data format of model inputs
 
@@ -478,7 +516,7 @@ and imposes only minimal requirements to set up scenarios:
 Therefore, it should be possible to apply the package’s routines on
 existing datasets with minimal effort. Please refer to Wickham and
 Grolemund (2017) on how to implement plain and consistent processes to
-import and transform data in *R* using *tidy* syntax.
+import and transform data using *tidyr* syntax.
 
 *cvasi* does support loading data from common sources, such as the
 exposure model *TOXSWA*, to ease data processing. Notable file formats
@@ -503,12 +541,12 @@ as temperature and nutrient concentrations. These values or time-series
 are specific to a certain scenario and must be chosen accordingly.
 
 Parameters of TKTD sub-models are substance-specific and are usually
-obtained by calibration to observed data. The *cvasi* package supports
-this process with the function `calibrate()` which uses a frequentist
-approach for parameter fitting. However, parameters can also be derived
-by other means. Generally, the user is responsible for choosing model
-parameters and the package does not impose any restrictions in this
-regard.
+obtained by fitting model parameters to observed data. The *cvasi*
+package supports this process with the function `calibrate()` which uses
+a frequentist approach for parameter fitting. However, parameters can
+also be derived by other means. Generally, the user is responsible for
+choosing model parameters and the package does not impose any
+restrictions in this regard.
 
 The package function `calibrate()` supports the following operation
 modes:
@@ -527,7 +565,7 @@ the [Modeling Howto](howto.html) for a description of the fitting
 process using `calibrate()`.
 
 As an alternative for *GUTS-RED* type models, model parameters can also
-be obtained using the [`morse`
+be obtained using the [*morse*
 package](https://cran.r-project.org/package=morse). It uses a Bayesian
 approach for parameter fitting.
 
@@ -537,62 +575,11 @@ The *cvasi* package does not use or define any custom file formats for
 model outputs but strictly relies on common *R* data structures.
 Simulation results and assessment endpoints are returned in tabular
 formats which can easily be serialized to common file formats such as
-`.csv` files for further processing and data storage.
+`.csv` or *Microsoft Excel* files for further processing and data
+storage.
 
 The following subsections will describe in detail the return values of
 common package routines for simulating and assessing scenarios.
-
-## Model fitting results
-
-The `calibrate()` function returns a `tibble` with 2 columns, the first
-column lists the scenario and the 2nd column a list of fitted parameters
-(as produced by stats::optim()).
-
-An example for Lemna, using just 1 `EffectScenario` and corresponding
-effect data, can be calibrated as follows
-
-``` r
-# Exposure data in the highest treatment level
-exp_df <- Schmitt2013 %>% 
-  dplyr::filter(ID == "T5.6") %>%
-  dplyr::select(t, conc) 
-# Exposure scenario containing the exposure data in the highest treatment level
-exp_scen <- metsulfuron %>% 
-     set_exposure(exp_df, reset_times = FALSE)
-# Create corresponding effect data
-# Observed effects in the highest treatment level   
-eff_df <- Schmitt2013 %>%   
-  dplyr::filter(ID == "T5.6") %>%
-  dplyr::select(t, obs)
-# calibration 
-fit1 <- calibrate(
-  x = exp_scen, 
-  par = c(KiN = 300),
-  data = eff_df, 
-  endpoint = "BM"
-  )
-#> Warning in stats::optim(par = par, fn = optim_scenario, hessian = hessian, : one-dimensional optimization by Nelder-Mead is unreliable:
-#> use "Brent" or optimize() directly
-```
-
-The calibrated model parameter, and additional information about the
-calibration routing can be accessed from the `fit` column of the output
-tibble.
-
-``` r
-fit1$fit[[1]]$par
-#> NULL
-fit1$fit
-#> NULL
-```
-
-The original `EffectScenario` also remains accessible as the `scenario`
-column of the output tibble.
-
-``` r
-fit1$scenario
-#> NULL
-```
 
 ## Simulation results
 
@@ -716,8 +703,8 @@ numerical precision of simulations or by setting a marginal effect
 threshold which instructs `effect()` to zero any effect below that
 threshold. A warning will be shown if a marginal effect threshold
 greater than 1% is chosen. Applying a threshold of 1% to the previous
-example results in zeroing the effect in the second to last exposure
-window but leaving the remaining results unchanged:
+example results in zeroing the effect in the last and second to last
+exposure window but leaving the remaining results unchanged:
 
 ``` r
 metsulfuron %>%
@@ -834,11 +821,11 @@ metsulfuron %>%
 #> 1 <LmnSchmS>   0.395      NA " multiplication factor out of range: BM.EP50 > 1e+30"
 ```
 
-In this example, the binary search narrows down the requested `BM.EP10`
-in less than ten model iterations. For the `BM.EP50`, the algorithm
+In this example, the binary search finds a `BM.EP10` with acceptable
+precision in less than ten iterations. For the `BM.EP50`, the algorithm
 re-uses the knowledge gained from previously performed calculations but
 is ultimately unable to find a suitable multiplication factor within the
-allowed range.
+allowed range of multiplication factors.
 
 # References
 
@@ -855,7 +842,7 @@ allowed range.
   Superior Environmental Studies. ISBN 9780961496838.
 - Klein J., Cedergreen N., Heine S., Reichenberger S., Rendal C.,
   Schmitt W., Hommen U., 2021: *Refined description of the Lemna TKTD
-  growth model based on Schmitt et al. (2013) – equation system and
+  growth model based on Schmitt et al. (2013) - equation system and
   default parameters*. Report of the working group *Lemna* of the SETAC
   Europe Interest Group Effect Modeling. Version 1, uploaded on 22.
   Sept. 2021. <https://www.setac.org/group/effect-modeling.html>

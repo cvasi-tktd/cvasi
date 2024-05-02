@@ -201,7 +201,7 @@ is_control_required <- function(x) {
 # @return `logical`, `TRUE` if package is installed, else `FALSE`
 #' @importFrom utils installed.packages
 is_pckg_avail <- function(name) {
-  tolower(name) %in% tolower(rownames(installed.packages()))
+  require(package=name, quietly=TRUE, character.only=TRUE)
 }
 
 # Check if an exposure series represents zero/no exposure

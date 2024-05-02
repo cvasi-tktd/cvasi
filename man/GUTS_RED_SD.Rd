@@ -13,7 +13,7 @@ GUTS_RED_SD(param, init)
 \item{init}{optional named numeric \code{vector} to use as initial state}
 }
 \value{
-GUTS_RED_SD scenario
+an S4 object of type \linkS4class{GutsRedSd}
 }
 \description{
 Reduced \emph{General Unified Threshold models of Survival} (GUTS) with stochastic

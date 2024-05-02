@@ -7,6 +7,9 @@
 \usage{
 Myrio()
 }
+\value{
+an S4 object of type \linkS4class{MyrioExpScenario}
+}
 \description{
 The \emph{Myriophyllum} model is derived from the \emph{Lemna} TKTD model by
 Klein \emph{et al.} (2021). The Myriophyllum model is mathematically equivalent

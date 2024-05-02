@@ -9,6 +9,9 @@ log_msg(...)
 \arguments{
 \item{...}{elements will be concatenated using \code{paste0()}}
 }
+\value{
+no return value
+}
 \description{
 Message will only appear in the console or in log file if logging was
 enabled using \code{log_enable()}.

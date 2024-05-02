@@ -1,12 +1,4 @@
-#' Set of model parameters
-#'
-#' @slot model `character`, a string containing a model name, e.g. `"GUTS-RED-IT"`
-#' @slot tag `character`, an optional identifier
-#' @slot param named `list` of model parameters
 #' @export
-#'
-#' @examples
-#' parameter_set("GUTS-RED-IT", list(kd=0.01, hb=0))
 setClass("parameter_set",
          slots=list(
            model="character",
@@ -19,8 +11,13 @@ setClass("parameter_set",
 #' @param model `character`, a string containing a model name, e.g. `"GUTS-RED-IT"`
 #' @param tag `character`, an optional identifier
 #' @param param named `list` of model parameters
+#' @slot model `character`, a string containing a model name, e.g. `"GUTS-RED-IT"`
+#' @slot tag `character`, an optional identifier
+#' @slot param named `list` of model parameters
+#' @return an S4 object of type [parameter_set-class]
 #'
 #' @export
+#' @aliases parameter_set-class
 #' @examples
 #' # create a parameter set and assign it
 #' ps <- parameter_set("GUTS-RED-IT", list(kd=0.12, hb=0.3))
@@ -31,9 +28,7 @@ setClass("parameter_set",
 #'   set_param(ps)
 #'
 #' # model names must match, otherwise an error will be raised
-#' \dontrun{
-#' GUTS_RED_SD() %>% set_param(ps)
-#' }
+#' try(GUTS_RED_SD() %>% set_param(ps))
 parameter_set <- function(model, param=list(), tag=NA_character_) {
   if(!is.character(model))
     stop("model name must be of type character")

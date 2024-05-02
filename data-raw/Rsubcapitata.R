@@ -1,4 +1,4 @@
-# Create Algae_Weber EffectScenario and CalibrationSet rda files
+# Create Algae_Weber scenario and CalibrationSet rda files
 # then run simulation, and compare with digitized simulation of Weber
 # eventually, create a test
 
@@ -17,7 +17,7 @@ times <- seq(from = 0, to = sim_end, by = 0.1)
 forc_I <- data.frame(times = times, I = 100)
 forc_T <- data.frame(times = times, T_act = 24)
 
-# EffectScenario
+# scenario
 Rsubcapitata <- Algae_TKTD() %>%
   set_tag("ReactorA") %>%
   # set_init(c(A = 90e4)) %>% # section 8.3.3.3 Weber thesis  # TODO seems very large

@@ -6,6 +6,7 @@
 #' otherwise the log file will be replaced
 #' @param envir log will be automatically disabled if `environment` is exited,
 #' set to `NULL` to disable
+#' @return no return value
 #' @export
 log_enable <- function(file=NULL, append=TRUE, envir=parent.frame()) {
   if(is.character(file)) {
@@ -45,6 +46,7 @@ log_disable <- function() {
 #' enabled using `log_enable()`.
 #'
 #' @param ... elements will be concatenated using `paste0()`
+#' @return no return value
 #' @export
 #' @examples
 #' log_msg("this message will not appear")
@@ -77,6 +79,7 @@ log_msgf <- function(...) {
 
 #' Log R environment properties
 #'
+#' @return no return value
 #' @export
 #' @importFrom utils sessionInfo
 log_envir <- function() {

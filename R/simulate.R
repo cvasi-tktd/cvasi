@@ -94,7 +94,9 @@
 #' # A very small step length may reduce the difference even further but may
 #' # also exceed the allowed number of steps per output interval. The following
 #' # simulation will be aborted with a solver error:
-#' \dontrun{minnow_it %>% simulate(times=c(0,1), hmax=0.0001)}
+#' try(
+#'   minnow_it %>% simulate(times=c(0,1), hmax=0.0001)
+#' )
 #'
 #' # However, the solver's max number of allowed steps can be increased:
 #' minnow_it %>% simulate(times=c(0,1), hmax=0.0001, maxsteps=10^5)
@@ -279,13 +281,8 @@ simulate_seq <- function(seq, times, ...) {
 #' @param model_base effect scenario object with mean parameters
 #' @param treatments treatments exposure levels as data frame (t, conc, trial)
 #' @param param_sample data.frame with parameter sample
+#' @return a `data.frame`
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' rs_mean <- simulate_batch(model_base, treatments)
-#' }
-#'
 simulate_batch <- function(model_base,
                            treatments,
                            param_sample = NULL

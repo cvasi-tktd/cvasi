@@ -114,7 +114,9 @@ minnow_it \%>\% simulate(times=c(0,1), method="radau")
 # A very small step length may reduce the difference even further but may
 # also exceed the allowed number of steps per output interval. The following
 # simulation will be aborted with a solver error:
-\dontrun{minnow_it \%>\% simulate(times=c(0,1), hmax=0.0001)}
+try(
+  minnow_it \%>\% simulate(times=c(0,1), hmax=0.0001)
+)
 
 # However, the solver's max number of allowed steps can be increased:
 minnow_it \%>\% simulate(times=c(0,1), hmax=0.0001, maxsteps=10^5)

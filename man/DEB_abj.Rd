@@ -8,7 +8,7 @@
 DEB_abj()
 }
 \value{
-A \code{DEB_abj} scenario
+an S4 object of type \linkS4class{DebAbj}
 }
 \description{
 Creates a \emph{DEB abj} scenario. The \emph{abj} model with type M acceleration is

@@ -14,7 +14,7 @@ epx_mtw(
 )
 }
 \arguments{
-\item{x}{EffectScenario object}
+\item{x}{a \link{scenario}}
 
 \item{level}{The target effect level of the effect, ie. the x of EPx.}
 
@@ -27,7 +27,7 @@ epx_mtw(
 \item{...}{arguments passed to \code{epx}}
 }
 \value{
-a tibble with
+a tibble with five columns
 \itemize{
 \item window.start
 \item window.end
@@ -42,14 +42,7 @@ an exposure profile that cause x\% of effect) for moving windows with length
 \code{window_length} that move timesteps defined by \code{window_interval}.
 }
 \examples{
-\dontrun{
-ti <- 0:21
-expo <- abs(0.01*ti + rnorm(length(ti), 0, 0.05))
-exposure <- data.frame(time = ti, conc = expo)
-metsulfuron_epx_mtw <- metsulfuron \%>\%
-  set_exposure(exposure) \%>\%
-  epx_mtw(level = 10, factor_cutoff = 1000,
-    window_length = 7, window_interval = 1)
-metsulfuron_epx_mtw
-}
+metsulfuron \%>\%
+  set_window(length=7, interval=1) \%>\%
+  epx_mtw()
 }

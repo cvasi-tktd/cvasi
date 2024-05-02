@@ -5,8 +5,9 @@ inst/doc
 /.docker
 /dev
 # any outputs in package directory that may have been created during testing
-/*.png
-/*.csv
 /Meta/
-# Exclude vignette outputs
-/doc/
+# Exclude some vignette outputs
+/doc/*.R
+/doc/*.Rmd
+/doc/*.html
+*.html

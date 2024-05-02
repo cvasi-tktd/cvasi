@@ -95,6 +95,7 @@ setClass("MyrioLogScenario", contains="Myriophyllum")
 #' Modeling. Version 1, uploaded on 22. Sept. 2021.
 #' https://www.setac.org/group/effect-modeling.html
 #'
+#' @return an S4 object of type [MyrioExpScenario-class]
 #' @seealso [Macrophyte-models], [Transferable], [Scenarios]
 #' @family Myriophyllum models
 #' @family macrophyte models
@@ -153,6 +154,7 @@ Myrio <- function() {
 #' @inheritSection Transferable Biomass transfer
 #' @inherit Myrio references
 #'
+#' @return an S4 object of type [MyrioLogScenario-class]
 #' @seealso [Transferable], [Scenarios]
 #' @family Myriophyllum models
 #' @family macrophyte models

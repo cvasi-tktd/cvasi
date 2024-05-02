@@ -81,7 +81,7 @@ setClass("GutsRedIt", contains="EffectScenario")
 #'
 #' @param param optional named `list` or `vector` with model parameters
 #' @param init optional named numeric `vector` to use as initial state
-#' @return GUTS_RED_IT scenario
+#' @return an S4 object of type [GutsRedIt-class]
 #'
 #' @export
 #' @family GUTS-RED models
@@ -114,7 +114,7 @@ GUTS_RED_IT <- function(param, init) {
 #' @inheritSection GUTS-RED-models Effects
 #' @inherit GUTS-RED-models references
 #' @inheritParams GUTS_RED_IT
-#' @return GUTS_RED_SD scenario
+#' @return an S4 object of type [GutsRedSd-class]
 #'
 #' @export
 #' @family GUTS-RED models

@@ -2,6 +2,7 @@
 % Please edit documentation in R/class-parameter_set.R
 \name{parameter_set}
 \alias{parameter_set}
+\alias{parameter_set-class}
 \title{Set of model parameters}
 \usage{
 parameter_set(model, param = list(), tag = NA_character_)
@@ -13,9 +14,22 @@ parameter_set(model, param = list(), tag = NA_character_)
 
 \item{tag}{\code{character}, an optional identifier}
 }
+\value{
+an S4 object of type \linkS4class{parameter_set}
+}
 \description{
 Set of model parameters
 }
+\section{Slots}{
+
+\describe{
+\item{\code{model}}{\code{character}, a string containing a model name, e.g. \code{"GUTS-RED-IT"}}
+
+\item{\code{tag}}{\code{character}, an optional identifier}
+
+\item{\code{param}}{named \code{list} of model parameters}
+}}
+
 \examples{
 # create a parameter set and assign it
 ps <- parameter_set("GUTS-RED-IT", list(kd=0.12, hb=0.3))
@@ -26,7 +40,5 @@ c(GUTS_RED_IT(), GUTS_RED_IT()) \%>\%
   set_param(ps)
 
 # model names must match, otherwise an error will be raised
-\dontrun{
-GUTS_RED_SD() \%>\% set_param(ps)
-}
+try(GUTS_RED_SD() \%>\% set_param(ps))
 }

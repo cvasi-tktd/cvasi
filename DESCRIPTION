@@ -1,17 +1,19 @@
 Package: cvasi
 Type: Package
-Title: Calibration, Validation, and Simulation of TKTD Models in R
-Version: 0.10.3
+Title: Calibration, Validation, and Simulation of TKTD Models
+Version: 0.10.5
 Authors@R: c(
     person("Nils", "Kehrein", email="nils.kehrein@gmail.com", role=c("aut", "cre")),
     person("Dirk", "Nickisch", role="aut"),
     person("Johannes", "Witt", role="ctb"),
     person("Andre", "Gergs", role="ctb")
     )
-Description: Eases the use of ecotox effect models. Can simulate common
-    effect models such as GUTS and Lemna; can derive effects and
-    effect profiles (EPx) from scenarios. It supports the use of tidyr workflows
-    employing the pipe symbol. Time-consuming tasks can be parallelized.
+Description: Eases the use of ecotoxicological effect models. Can simulate
+    common toxicokinetic-toxicodynamic (TK/TD) models such as 
+    General Unified Threshold models of Survival (GUTS) and Lemna. It can
+    derive effects and effect profiles (EPx) from scenarios. It supports the
+    use of 'tidyr' workflows employing the pipe symbol. Time-consuming
+    tasks can be parallelized.
 URL: https://github.com/cvasi-tktd/cvasi
 BugReports: https://github.com/cvasi-tktd/cvasi/issues
 License: GPL (>= 3)

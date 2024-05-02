@@ -88,7 +88,7 @@ setClass("DebDaphnia", contains="DebScenario")
 #' which considers exposure to a toxicant and one simulation without exposure, i.e.
 #' a control. See also [effect()].
 #'
-#' @return A `DEB_abj` scenario
+#' @return an S4 object of type [DebAbj-class]
 #' @export
 #' @family DEB models
 #' @aliases DebAbj-class
@@ -224,7 +224,7 @@ DEB_abj <- function() {
 #'    - `xG`, factor for growth dilution
 #'    - `xR`, factor for losses with repro
 #'
-#' @return A `DEB_Daphnia` scenario
+#' @return an S4 object of type [DebDaphnia-class]
 #' @export
 #' @family DEB models
 #' @aliases DebDaphnia-class

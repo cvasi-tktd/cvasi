@@ -13,12 +13,9 @@ simulate_batch(model_base, treatments, param_sample = NULL)
 
 \item{param_sample}{data.frame with parameter sample}
 }
+\value{
+a \code{data.frame}
+}
 \description{
 Returns data frame with simulation results
-}
-\examples{
-\dontrun{
-rs_mean <- simulate_batch(model_base, treatments)
-}
-
 }

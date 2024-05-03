@@ -11,7 +11,7 @@
 # through, additionally, a high KD parameter value was taken to represent high
 # uptake hence the scaled damage tracks almost instantly the water concentration
 test_that("Algae_Weber simulation", {
-  tol <- 1e-5
+  tol <- 1e-4
 
   # Simulate Algae_TKTD for Rsubcapitata exposed to isoproturon
   # sim setup

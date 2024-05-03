@@ -27,7 +27,9 @@ of the \emph{Lemna} population is simulated on basis of photosynthesis and respi
 rates which are functions of environmental conditions.
 The toxicodynamic sub-model describes the effects of growth-inhibiting
 substances by a respective reduction in the photosynthesis rate based on
-internal concentrations.
+internal concentrations. This is the historical version of the Lemna model.
+For current uses, we recommend the Lemna (SETAC) model, which is a more recent
+version of the Schmitt model.”
 }
 \details{
 Constructors to ease creation of scenarios based on the \emph{Lemna} model by

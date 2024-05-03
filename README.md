@@ -97,7 +97,7 @@ library(ggplot2)
 ggplot(drc) + geom_point(aes(mf,effect)) + scale_x_log10()
 ```
 
-<img src="doc/figures/README-drc-1.png" width="50%" />
+<img src="doc/figures/readme-unnamed-chunk-4-1.png" width="50%" />
 
 ``` r
 # derive EPx values

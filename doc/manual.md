@@ -1,7 +1,7 @@
 User Manual
 ================
 Nils Kehrein
-02 May, 2024
+03 May, 2024
 
 - [Required skills](#required-skills)
 - [How to install](#how-to-install)

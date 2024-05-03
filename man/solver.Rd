@@ -47,7 +47,6 @@ solver(scenario, times, ...)
   scenario,
   times,
   approx = c("linear", "constant"),
-  rule = 2,
   f = 1,
   method = "lsoda",
   hmax = 0.1,
@@ -58,7 +57,6 @@ solver(scenario, times, ...)
   scenario,
   times,
   approx = c("linear", "constant"),
-  rule = 2,
   f = 1,
   method = "lsoda",
   hmax = 0.1,
@@ -69,7 +67,6 @@ solver(scenario, times, ...)
   scenario,
   times,
   approx = c("linear", "constant"),
-  rule = 2,
   f = 1,
   method = "ode45",
   hmax = 0.01,
@@ -88,8 +85,6 @@ solver(scenario, times, ...)
 \item{f}{if \code{approx="constant"}, a number between 0 and 1 inclusive, see \code{\link[stats:approxfun]{stats::approxfun()}}}
 
 \item{method}{string, numerical solver used by \code{\link[deSolve:ode]{deSolve::ode()}}}
-
-\item{rule}{how to handle data points outside of time-series, see \link[deSolve:forcings]{deSolve::forcings}}
 
 \item{hmax}{numeric, maximum step length in time, see \code{\link[deSolve:ode]{deSolve::ode()}}}
 }

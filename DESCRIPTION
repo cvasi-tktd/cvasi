@@ -1,7 +1,7 @@
 Package: cvasi
 Type: Package
 Title: Calibration, Validation, and Simulation of TKTD Models
-Version: 0.10.5
+Version: 0.10.6
 Authors@R: c(
     person("Nils", "Kehrein", email="nils.kehrein@gmail.com", role=c("aut", "cre")),
     person("Dirk", "Nickisch", role="aut"),
@@ -36,6 +36,7 @@ Imports:
     grid,
     ggplot2,
     deSolve,
+    lemna,
     lubridate,
     attempt,
     units
@@ -94,7 +95,6 @@ Suggests:
     morse,
     knitr,
     rmarkdown,
-    lemna,
     roxyglobals,
     rjags
 Depends: 

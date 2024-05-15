@@ -23,6 +23,10 @@ static double parms[14];
  */
 static double forc[3];
 /*
+ * Constant helper value
+ */
+static double log_EC50;
+/*
  * Define aliases
  */
 // State variable aliases
@@ -67,6 +71,8 @@ void algae_TKTD_init(void (*odeparms)(int *, double *))
 {
   int N = 14;
   odeparms(&N, parms);
+
+  log_EC50 = log(EC_50);
 }
 
 /**
@@ -106,26 +112,19 @@ double f_Q_P_TKTD(double A_param, double Q_param, double P_param)
   return (((Q_max * A_param - Q_param) / ((Q_max - Q_min) * A_param)) * (P_param / (k_s + P_param)));
 }
 
-// Probit function
-double probit_TKTD(double x) {
-  return 0.5 * (1 + erf(x / sqrt(2.0)));
+// Effect of concentration on growth using probit (OECD 54, page 67)
+double f_Dw_probit(double Dw_param) {
+  //return gsl_cdf_ugaussian_P(-b * (log(C_param) - log(EC_50)));
+  //Function to calculate the cumulative distribution function (CDF) of the standard normal distribution
+  double z = -b * (log(Dw_param) - log_EC50);
+  return 0.5 * erfc(-z / sqrt(2));
 }
-// Logit_TKTD function
+
+// Effect of concentration on growth using logit (OECD 54, page 67)
 double f_Dw_logit(double Dw_param)
 {
-  return 1 - (1 / (1 + (pow(Dw_param / EC_50, -b))));
+  return 1 / (1 + exp(b * (log(Dw_param) - log_EC50)));
 }
-
-// Effect of concentration on growth using probit
-double f_Dw_probit(double Dw_param) {
-  return 1 - probit_TKTD((log(Dw_param / EC_50) + b) / sqrt(2.0));
-}
-
-// Effect of concentration on growth
-//double f_Dw(double Dw_param)
-//{
-//  return 1 / (1 + ((Dw_param / EC_50) * exp(-b))); //ToDo change to probit
-//}
 
 /**
  * Derivatives

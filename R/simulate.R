@@ -282,6 +282,7 @@ simulate_seq <- function(seq, times, ...) {
 #' @param treatments treatments exposure levels as data frame (t, conc, trial)
 #' @param param_sample data.frame with parameter sample
 #' @return a `data.frame`
+#' @global trial
 #' @export
 simulate_batch <- function(model_base,
                            treatments,
@@ -300,7 +301,7 @@ simulate_batch <- function(model_base,
   list_of_effect_sets <- list()
   # create list of effect scenario objects for each trial
   list_of_effect_sets <- treatments %>%
-    dplyr::group_by(.data$trial) %>%
+    dplyr::group_by(trial) %>%
     dplyr::group_map(~ model_base %>%
                        set_exposure(data.frame(.x$time, .x$conc)))
 

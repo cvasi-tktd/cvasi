@@ -217,6 +217,7 @@ plot_sd <- function(model_base,
 #' @param outfile optional `string`, file path is given = save graph
 #' @param ... any additional parameters
 #' @export
+#' @global time trial
 #'
 #' @return `data.frame` with fitted and observed frond numbers
 plot_ppc <- function(rs_mean,
@@ -270,7 +271,7 @@ plot_ppc <- function(rs_mean,
   # remove start conditions and control data from dataset (#OK for GUTS, Lemna
   # what about DEB?)
   rs_ppc <- dplyr::filter(rs_ppc,
-                          .data$time > 0 & .data$trial != unique(rs_mean$trial)[1])
+                          time > 0 & trial != unique(rs_mean$trial)[1])
 
   # create plot
   plot_ppc_combi(rs_ppc, xy_lim = xy_lim)
@@ -298,6 +299,7 @@ plot_ppc <- function(rs_mean,
 #'
 #' @param table `data.frame` containing return values of calls to `plot_ppc()`
 #' @param xy_lim optional `numeric`, limits of x and y axis for plotting
+#' @global obs min max pred study
 plot_ppc_combi <- function(table, xy_lim = NULL) {
   if (!is.data.frame(table)) stop("table not a data.frame")
 
@@ -319,7 +321,7 @@ plot_ppc_combi <- function(table, xy_lim = NULL) {
 
   # calculate PPC
   n <- nrow(table)
-  n_fit <- nrow(dplyr::filter(table, .data$obs <= max & .data$obs >= min))
+  n_fit <- nrow(dplyr::filter(table, obs <= max & obs >= min))
   ppc <- n_fit / n * 100
 
   # calculate NRMSE
@@ -351,13 +353,13 @@ plot_ppc_combi <- function(table, xy_lim = NULL) {
       fill = "red", alpha = 0.1
     ) +
     ggplot2::geom_abline(linetype = "dashed") +
-    ggplot2::geom_point(ggplot2::aes(.data$obs, .data$pred, color = .data$study),
+    ggplot2::geom_point(ggplot2::aes(obs, pred, color = study),
       data = table
     ) +
-    ggplot2::geom_linerange(ggplot2::aes(.data$obs,
-                                         ymin = .data$min,
-                                         ymax = .data$max,
-                                         color = .data$study),
+    ggplot2::geom_linerange(ggplot2::aes(obs,
+                                         ymin = min,
+                                         ymax = max,
+                                         color = study),
       alpha = 0.7,
       data = table
     ) +
@@ -385,6 +387,7 @@ plot_ppc_combi <- function(table, xy_lim = NULL) {
 #'
 #' @return a grid of ggplots
 #' @export
+#' @global EPx
 #'
 #' @examples
 #' ti <- 0:21
@@ -412,7 +415,7 @@ plot_epx <- function(EPx_ts, exposure_ts, draw = TRUE, time_col = "time", conc_c
     dplyr::select(window.start, window.end) %>%
     range()
   epx_plot <- ggplot2::ggplot(plot_dat) +
-    ggplot2::geom_line(ggplot2::aes(window.start, .data$EPx),
+    ggplot2::geom_line(ggplot2::aes(window.start, EPx),
                        color = "orange",
                        linewidth = 1.25) +
     ggplot2::ylab(epx_y_title) +

@@ -65,6 +65,7 @@ import_toxswa <- function(pathtofiles, profileNames = NA){
 #' @param substance_string the name of the substance
 #'
 #' @return exposure profiles
+#' @global V1 V2 V3 DateTime
 #' @noRd
 extract_focus_profile <- function(
     file_name,
@@ -103,13 +104,13 @@ extract_focus_profile <- function(
     t() %>%
     dplyr::as_tibble(.name_repair = ~paste0("V", seq_along(.))) %>%
     dplyr::transmute(
-      Layer_Specifier = as.character(.data$V2),
-      DateTime = as.character(.data$V1) %>% lubridate::dmy_hm(),
+      Layer_Specifier = as.character(V2),
+      DateTime = as.character(V1) %>% lubridate::dmy_hm(),
       `Time` = units::set_units(
-        (.data$DateTime - .data$DateTime[1]) / lubridate::ddays(1),
+        (DateTime - DateTime[1]) / lubridate::ddays(1),
         "d",
         mode = "standard"),
-      Exposure = units::set_units(as.numeric(.data$V3), unit, mode = "standard")
+      Exposure = units::set_units(as.numeric(V3), unit, mode = "standard")
     ) %>%
     tibble::add_column(
       RunID =

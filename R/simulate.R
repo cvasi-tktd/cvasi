@@ -276,13 +276,27 @@ simulate_seq <- function(seq, times, ...) {
   df
 }
 
-#' Returns data frame with simulation results
+#' Batch simulation of several effect scenarios
+#'
+#' An effect scenario contains only one exposure level. Consequently, the
+#' simulation of an effect scenario (e.g. metsulfuron %>% simulate will return
+#' the results for one exposure level only). However, in a laboratory experiment
+#' examining the effects of different exposure levels on a biological system,
+#' a batch simulation approach would involve running multiple simulations with
+#' varying exposure or treatment conditions. To illustrate, if the objective is
+#' to examine the impact of a substance on cell growth, the simulation model
+#' could be designed to replicate the cell growth dynamics under varying
+#' concentrations of the substance. Each simulation run would represent a
+#' specific exposure level, ranging from low to high concentrations of the
+#' chemical. To simulate such a laboratory experiment, the simulate_batch
+#' function can be used. All exposure series are saved in the treatment argument.
+#' The first column contains the time, the second column the concentration, and
+#' the third column the trial name (exposure level, e.g. “T1”, “T2”, “T3”).
 #'
 #' @param model_base effect scenario object with mean parameters
-#' @param treatments treatments exposure levels as data frame (t, conc, trial)
+#' @param treatments treatments exposure levels as data frame (time, conc, trial)
 #' @param param_sample data.frame with parameter sample
-#' @return a `data.frame`
-#' @global trial
+#' @return a `data.frame` with simulation results
 #' @export
 simulate_batch <- function(model_base,
                            treatments,
@@ -292,7 +306,8 @@ simulate_batch <- function(model_base,
   if(!("time" %in% colnames(treatments)) || !("conc" %in% colnames(treatments))) {
     stop("Columns 'time' and/or 'conc' not found in treatments dataframe.")
   }
-  treatments$trial <- factor(treatments$trial, levels = unique(treatments$trial))
+  exp_levels <- unique(treatments[,3])
+  treatments[,3] <- factor(treatments[,3], levels = exp_levels)
   # simulate scenarios with a defined step width in time
   t_max <- max(treatments[, 1]) # 1st column should contain time
   sim_times <- seq(0, t_max, 0.1) # magic number: 0.1
@@ -301,9 +316,10 @@ simulate_batch <- function(model_base,
   list_of_effect_sets <- list()
   # create list of effect scenario objects for each trial
   list_of_effect_sets <- treatments %>%
-    dplyr::group_by(trial) %>%
+    dplyr::group_by(treatments[,3]) %>% #trial/exposure level
     dplyr::group_map(~ model_base %>%
-                       set_exposure(data.frame(.x$time, .x$conc)))
+                       set_exposure(data.frame(treatments[,1], treatments[,2])))
+                                                # time, conc
 
   # simulate
   df <- data.frame()
@@ -314,7 +330,7 @@ simulate_batch <- function(model_base,
     # add trial name
     simulated_results <- purrr::map2(
       simulated_results,
-      unique(treatments$trial),
+      exp_levels,
       ~ dplyr::mutate(.x, trial = .y)
     )
     df <- dplyr::bind_rows(simulated_results)
@@ -326,7 +342,7 @@ simulate_batch <- function(model_base,
       # add trial name
       simulated_results <- purrr::map2(
         simulated_results,
-        unique(treatments$trial),
+        exp_levels,
         ~ dplyr::mutate(.x, trial = .y)
       )
       # bind

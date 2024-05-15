@@ -2,20 +2,33 @@
 % Please edit documentation in R/simulate.R
 \name{simulate_batch}
 \alias{simulate_batch}
-\title{Returns data frame with simulation results}
+\title{Batch simulation of several effect scenarios}
 \usage{
 simulate_batch(model_base, treatments, param_sample = NULL)
 }
 \arguments{
 \item{model_base}{effect scenario object with mean parameters}
 
-\item{treatments}{treatments exposure levels as data frame (t, conc, trial)}
+\item{treatments}{treatments exposure levels as data frame (time, conc, trial)}
 
 \item{param_sample}{data.frame with parameter sample}
 }
 \value{
-a \code{data.frame}
+a \code{data.frame} with simulation results
 }
 \description{
-Returns data frame with simulation results
+An effect scenario contains only one exposure level. Consequently, the
+simulation of an effect scenario (e.g. metsulfuron \%>\% simulate will return
+the results for one exposure level only). However, in a laboratory experiment
+examining the effects of different exposure levels on a biological system,
+a batch simulation approach would involve running multiple simulations with
+varying exposure or treatment conditions. To illustrate, if the objective is
+to examine the impact of a substance on cell growth, the simulation model
+could be designed to replicate the cell growth dynamics under varying
+concentrations of the substance. Each simulation run would represent a
+specific exposure level, ranging from low to high concentrations of the
+chemical. To simulate such a laboratory experiment, the simulate_batch
+function can be used. All exposure series are saved in the treatment argument.
+The first column contains the time, the second column the concentration, and
+the third column the trial name (exposure level, e.g. “T1”, “T2”, “T3”).
 }

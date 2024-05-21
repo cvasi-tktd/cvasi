@@ -15,15 +15,16 @@
 /**
  * Allocate memory for global parameter array
  */
-static double parms[13];
+static double parms[13] = {0};
+
 /**
  * Allocate memory for forcing function data
  *
  * Array's' values get updated by ODE solver in every time step.
  */
-static double forc[1];
+static double forc[1] = {0};
 // Internal variable for growth model selection
-static short growthmodel;
+static short growthmodel = 0;
 
 /*
  * Define aliases

@@ -19,11 +19,11 @@
 /*
  * Allocate memory for global parameter array
  */
-static double parms[31];
+static double parms[31] = {0};
 /*
  * Allocate memory for forcing function data
  *
- * Array's' values get updated by ODE solver in every time step.
+ * Array's values get updated by ODE solver in every time step.
  */
 static double forc[3];
 /*

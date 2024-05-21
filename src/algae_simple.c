@@ -16,17 +16,20 @@
 /**
  * Allocate memory for global parameter array
  */
-static double parms[6];
+static double parms[6] = {0};
+
 /**
  * Allocate memory for forcing function data
  *
  * Array values get updated by the ODE solver in every time step.
  */
-static double forc[2];
+static double forc[2] = {0};
+
 /*
  * Constant helper value
  */
-static double log_EC50;
+static double log_EC50 = 0;
+
 /*
  * Define aliases
  */

@@ -14,12 +14,12 @@
 /*
  * Allocate memory for global parameter array
  */
-static double parms[16];
+static double parms[16] = {0};
 /*
  * Allocate memory for forcing function data
  * Array's values get updated by ODE solver in every time step.
  */
-static double forc[1];
+static double forc[1] = {0};
 /*
  * Mode of Action switch for model
  */

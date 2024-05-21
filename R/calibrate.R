@@ -255,6 +255,8 @@ optim_scenario <- function(par, scenario, par_names, data, endpoint, metric_fun,
 
 optim_set <- function(par, sets, par_names, endpoint, metric_fun, metric_total,
                       catch_errors=catch_errors, verbose=verbose, ode_method, ...) {
+  if(verbose)
+    message(paste("Param:", paste(par_names, par, sep="=", collapse=",")), appendLF=FALSE)
   # error term
   err <- c()
   # cycle through all calibration sets, i.e. scenario/data combination
@@ -280,12 +282,19 @@ optim_set <- function(par, sets, par_names, endpoint, metric_fun, metric_total,
     }
     if(!(endpoint %in% names(out)))
       stop("endpoint not present in simulation results")
+    # todo handle missing/invalid values more gracefully
+    if(any(is.infinite(out[,endpoint])))
+       stop("endpoints contain infinite values")
+    if(any(is.nan(out[,endpoint])))
+      stop("endpoints contain NaN values")
+    if(any(is.na(out[,endpoint])))
+      stop("endpoints contain NA")
     err <- c(err, metric_fun(data[,2],out[,endpoint]) * set@weight)
   }
 
   err.total <- metric_total(err)
   if(verbose)
-    message(paste("Param:",paste(par_names,par,sep="=",collapse=",")," Err:",err.total))
+    message(paste(" Err:",err.total))
 
   err.total
 }

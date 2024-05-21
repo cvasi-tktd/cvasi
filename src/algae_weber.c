@@ -15,13 +15,13 @@
 /**
  * Allocate memory for global parameter array
  */
-static double parms[15];
+static double parms[15] = {0};
 /**
  * Allocate memory for forcing function data
  *
  * Array values get updated by the ODE solver in every time step.
  */
-static double forc[3];
+static double forc[3] = {0};
 /*
  * Define aliases
  */

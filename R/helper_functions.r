@@ -1,21 +1,14 @@
 
-#' Simulates parameter sample and derives uncertainty range
-#'
-#' @param model_base effect scenario object with mean parameters
-#' @param param_sample data.frame with parameter sample
-#' @param obs_full `data.frame`, full experimental data set including replicates
-#' @param ... any additional parameters
-#' @return data frame with confidence intervals
-#'
-#' @examples
-#' \dontrun{
-#' derive_range(model_base,
-#'                param_sample,
-#'                obs_full,
-#'                times = sim_times
-#'                )
-#' }
-#' @noRd
+# Simulates parameter sample and derives uncertainty range
+#
+# @param model_base effect scenario object with mean parameters
+# @param param_sample data.frame with parameter sample
+# @param obs_full `data.frame`, full experimental data set including replicates
+# @param ... any additional parameters
+# @return data frame with confidence intervals
+#
+# @examples
+# @noRd
 #' @global time trial FrondNo data gridExtra
 derive_range <- function(model_base, param_sample, obs_full = NULL,...) {
   # run simulations

@@ -1,7 +1,7 @@
 Package: cvasi
 Type: Package
 Title: Calibration, Validation, and Simulation of TKTD Models
-Version: 0.10.6
+Version: 1.0.1
 Authors@R: c(
     person("Nils", "Kehrein", email="nils.kehrein@gmail.com", role=c("aut", "cre")),
     person("Dirk", "Nickisch", role="aut"),

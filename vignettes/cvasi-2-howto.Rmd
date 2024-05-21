@@ -1,7 +1,7 @@
 ---
 title: "Modeling Howto"
 author: "Nils Kehrein"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
+date: "03 May, 2024"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -33,7 +33,7 @@ library(dplyr)
 This Howto provides instructions on how to address certain modeling challenges and
 offers additional details and context for certain features of the package. A final 
 section provides a complete worked out example.
-For a more general overview, please refer to the [manual](manual.html).
+For a more general overview, please refer to the [manual](cvasi-1-manual.html).
 
 
 ## How to access scenario properties
@@ -361,7 +361,7 @@ fit2 <- calibrate(
   cs,
   par=c(EC50=0.3, b=4.16, P_up=0.005),
   endpoint="BM",
-  method="L-BFGS-B", lower=c(0, 0.1), upper=c(1000, 10)
+  method="L-BFGS-B", lower=c(0, 0.1, 0), upper=c(1000, 10, 0.1)
 )
 fit2$par
 

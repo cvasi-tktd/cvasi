@@ -54,41 +54,26 @@ epx_mtw <- function(x,
 }
 
 
-#' Detect worst case EPx window
-#'
-#' Filters the minimal EPx per endpoint and level from the `epx_mtw` object and
-#' returns it as the worst case windows. If there is more than one worst case
-#' window, only the first window will be returned (if `only_first == TRUE`), or
-#' all windows will be returned (if `only_first == FALSE`).
-#'
-#' @param epx_mtw result of `epx_mtw()`
-#' @param only_first TRUE = first window only
-#' @noRd
-#' @global EPx size
-#'
-#' @return a tibble with
-#' \itemize{
-#'  \item window.start
-#'  \item window.end
-#'  \item endpoint
-#'  \item level
-#'  \item EPx
-#'  }
-#'
-#' @examples
-#' \dontrun{
-#' ti <- 0:21
-#' expo <- abs(0.01*ti + rnorm(length(ti), 0, 0.05))
-#' exposure <- data.frame(time = ti, conc = expo)
-#' metsulfuron_epx_mtw <- metsulfuron %>%
-#'   set_exposure(exposure) %>%
-#'   epx_mtw(level = 10, factor_cutoff = 1000,
-#'     window_length = 7, window_interval = 1)
-#'
-#' metsulfuron_epx_mtw
-#'
-#' metsulfuron_epx_mtw %>% epx_min_win()
-#' }
+# Detect worst case EPx window
+#
+# Filters the minimal EPx per endpoint and level from the `epx_mtw` object and
+# returns it as the worst case windows. If there is more than one worst case
+# window, only the first window will be returned (if `only_first == TRUE`), or
+# all windows will be returned (if `only_first == FALSE`).
+#
+# @param epx_mtw result of `epx_mtw()`
+# @param only_first TRUE = first window only
+# @noRd
+#' @autoglobal
+#
+# @return a tibble with
+# \itemize{
+#  \item window.start
+#  \item window.end
+#  \item endpoint
+#  \item level
+#  \item EPx
+#  }
 epx_min_win <- function(epx_mtw, only_first = TRUE){
   wc_window <- epx_mtw %>%
     dplyr::group_by(endpoint, level) %>%

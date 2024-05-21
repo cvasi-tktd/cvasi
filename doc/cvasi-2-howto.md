@@ -23,7 +23,7 @@ This Howto provides instructions on how to address certain modeling
 challenges and offers additional details and context for certain
 features of the package. A final section provides a complete worked out
 example. For a more general overview, please refer to the
-[manual](manual.html).
+[manual](cvasi-1-manual.html).
 
 ## How to access scenario properties
 
@@ -420,7 +420,7 @@ treatments <- exposure %>%
   mutate(trial="control")
 obs_mean <- obs_control %>%
   mutate(trial="control") %>%
-  select(time=t, trial, data=obs)
+  select(time=t, data=obs, trial)
 
 # Plot results
 plot_sd(
@@ -453,7 +453,7 @@ fit2 <- calibrate(
   cs,
   par=c(EC50=0.3, b=4.16, P_up=0.005),
   endpoint="BM",
-  method="L-BFGS-B", lower=c(0, 0.1), upper=c(1000, 10)
+  method="L-BFGS-B", lower=c(0, 0.1, 0), upper=c(1000, 10, 0.1)
 )
 fit2$par
 #>       EC50          b       P_up 
@@ -463,14 +463,14 @@ fit2$par
 fitted_tktd <- fitted_growth %>%
   set_param(fit2$par)
 
-treatments <- Schmitt2013 %>% select(time=t, trial=ID, conc)
+treatments <- Schmitt2013 %>% select(time=t, conc, trial=ID)
 rs_mean <- simulate_batch(
   model_base = fitted_tktd,
   treatments = treatments
 )
 # Observations in long format for plotting
 obs_mean <- Schmitt2013 %>%
-  select(time=t, trial=ID, data=obs)
+  select(time=t, data=obs, trial=ID)
 
 # Plot results
 plot_sd(
@@ -954,8 +954,8 @@ Lemna_Schmitt() %>%               # the Lemna model by Schmitt et al. (2013)
 ## simulate with model, under a range of different exposure scenarios
 # create several exposure scenarios
 exp_scen <- data.frame(time = Schmitt2013$t,
-                       trial = Schmitt2013$ID,
-                       conc = Schmitt2013$conc)
+                       conc = Schmitt2013$conc,
+                       trial = Schmitt2013$ID)
 # simulate for all these scenarios
 results <- simulate_batch(
   model_base = metsulfuron,

@@ -6,7 +6,10 @@ utils::globalVariables(c(
   "window.start", # <effect>
   "window.end", # <effect>
   "scenario", # <effect>
+  "endpoint", # <epx_min_win>
+  "level", # <epx_min_win>
   "EPx", # <epx_min_win>
+  "window.start", # <epx_min_win>
   "size", # <epx_min_win>
   "ep", # <epx_binary_search>
   "level", # <epx_binary_search>
@@ -15,6 +18,7 @@ utils::globalVariables(c(
   "trial", # <derive_range>
   "FrondNo", # <derive_range>
   "data", # <derive_range>
+  "gridExtra", # <derive_range>
   "V1", # <extract_focus_profile>
   "V2", # <extract_focus_profile>
   "V3", # <extract_focus_profile>
@@ -34,6 +38,5 @@ utils::globalVariables(c(
   "model", # <set_param_multi>
   "name", # <set_param_multi>
   "desc", # <set_param_multi>
-  "trial", # <simulate_batch>
   NULL
 ))

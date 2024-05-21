@@ -561,8 +561,8 @@ Parameter fitting builds upon the *R* function `stats::optim()` and it
 exposes full control over the fitting process. In this context, a
 dataset is represented by a `CalibrationSet` object which consists of a
 scenario, observed data, and an optional weighting term. Please refer to
-the [Modeling Howto](howto.html) for a description of the fitting
-process using `calibrate()`.
+the [Modeling Howto](cvasi-2-howto.html) for a description of the
+fitting process using `calibrate()`.
 
 As an alternative for *GUTS-RED* type models, model parameters can also
 be obtained using the [*morse*

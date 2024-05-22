@@ -252,7 +252,6 @@ Algae_TKTD <- function() {
 #' @section Model parameters:
 #' - Growth model
 #'   - `mu_max`, Maximum growth rate (d-1)
-#'   - `const_growth`, constant growth over time (0 = no, 1 = yes)
 #'
 #' - Concentration response (Toxicodynamics)
 #'   - `EC_50`, Effect concentration of 50% inhibition of growth rate (ug L-1)
@@ -264,9 +263,13 @@ Algae_TKTD <- function() {
 #'   - `scaled`, 0 = no internal scaled damage / 1 = yes (-)
 #'
 #' @section Forcings:
-#' simplified model without additional forcings except the external concentration
-#' and a forcing variable f_growth if the growth rates are time-dependent. If
-#' not time dependent, f_growth should be set to 1.
+#' Simplified model without additional forcings for e.g. irradiation or temperature
+#' as implemented in `Algae_Weber`. A constant growth over time is assumed.
+#' In case that growth is time dependent, a forcing variable (f_growth) can be set.
+#' Forcing time-series are represented by `data.frame` objects consisting of two
+#' columns. The first for time and the second for a scaling factor of mu_max.
+#' The input format for all forcings is a list of the data frames. If f_growth is
+#' not set, a default scaling factor of 1 is used.
 #'
 #' @section Simulation output:
 #'
@@ -288,7 +291,7 @@ Algae_TKTD <- function() {
 Algae_Simple <- function() {
   new("AlgaeSimpleScenario",
       name = "Algae_Simple",
-      param.req = c("mu_max", "const_growth",
+      param.req = c("mu_max",
                     "EC_50", "b", "kD",
                     "dose_response", "scaled"
       ),
@@ -299,7 +302,7 @@ Algae_Simple <- function() {
       ),
       endpoints = c("A", "r"),
       forcings.req = c("f_growth"),
-      #forcings = list(f_growth = data.frame(time = 0, f_growth = 1)),
+      forcings = list(f_growth = data.frame(time = 0, f_growth = 1)),
       control.req = TRUE,
       init = c(A = 1, Dw = 0),
       transfer.interval = -1,

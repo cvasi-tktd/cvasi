@@ -15,7 +15,6 @@ test_that("Algae_Simple simulation", {
 
   # parms
   parms <- c(mu_max = 1,
-             const_growth = 0,
              EC_50 = 1,
              b = 2,
              scaled = 0,
@@ -58,7 +57,6 @@ test_that("Algae_Simple simulation", {
   # control run, constant growth
   # parms
   parms <- c(mu_max = 1,
-             const_growth = 1,
              EC_50 = 1,
              b = 2,
              scaled = 0,
@@ -69,7 +67,6 @@ test_that("Algae_Simple simulation", {
   forc_fgrowth <- data.frame(times = times, f_growth = rep(0, length(times)))
   forc_C_in <- data.frame(times = times, C = rep(0, length(times)))
 
-  # control run
   # control run
   effect_scenario <- model_base %>%
     set_param(parms) %>%
@@ -117,7 +114,6 @@ test_that("Algae_Simple simulation", {
   #EC50 run probit
   # parms
   parms <- c(mu_max = 1,
-             const_growth = 1,
              EC_50 = 1,
              b = 2,
              scaled = 0,
@@ -136,7 +132,6 @@ test_that("Algae_Simple simulation", {
   #EC50 run probit scaled
   # parms
   parms <- c(mu_max = 1,
-             const_growth = 1,
              EC_50 = 1,
              b = 2,
              scaled = 0,

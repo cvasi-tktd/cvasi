@@ -558,15 +558,7 @@ solver_Algae_Simple <- function(scenario, times, approx = c("linear","constant")
     params <- unlist(params)
 
   # create forcings list
-  if (scenario@param$const_growth == TRUE){
-    if (!is.null(scenario@forcings$f_growth) && length(scenario@forcings$f_growth) > 0){
-      warning("Constant growth enabled, disregarding growth forcings")
-    }
-    df_growth=data.frame(time = 0, f_growth = 1)
-    forcings <- list(scenario@exposure@series, df_growth)
-  } else {
-    forcings <- list(scenario@exposure@series, scenario@forcings$f_growth)
-  }
+  forcings <- list(scenario@exposure@series, scenario@forcings$f_growth)
 
   #required for C code
   params.req = c("mu_max",

@@ -36,7 +36,6 @@ The model has two state variables:
 \item Growth model
 \itemize{
 \item \code{mu_max}, Maximum growth rate (d-1)
-\item \code{const_growth}, constant growth over time (0 = no, 1 = yes)
 }
 \item Concentration response (Toxicodynamics)
 \itemize{
@@ -54,9 +53,13 @@ The model has two state variables:
 
 \section{Forcings}{
 
-simplified model without additional forcings except the external concentration
-and a forcing variable f_growth if the growth rates are time-dependent. If
-not time dependent, f_growth should be set to 1.
+Simplified model without additional forcings for e.g. irradiation or temperature
+as implemented in \code{Algae_Weber}. A constant growth over time is assumed.
+In case that growth is time dependent, a forcing variable (f_growth) can be set.
+Forcing time-series are represented by \code{data.frame} objects consisting of two
+columns. The first for time and the second for a scaling factor of mu_max.
+The input format for all forcings is a list of the data frames. If f_growth is
+not set, a default scaling factor of 1 is used.
 }
 
 \section{Simulation output}{

@@ -30,5 +30,5 @@ specific exposure level, ranging from low to high concentrations of the
 chemical. To simulate such a laboratory experiment, the simulate_batch
 function can be used. All exposure series are saved in the treatment argument.
 The first column contains the time, the second column the concentration, and
-the third column the trial name (exposure level, e.g. “T1”, “T2”, “T3”).
+the third column the trial name (exposure level, e.g. 'T1', 'T2', 'T3').
 }

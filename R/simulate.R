@@ -291,7 +291,7 @@ simulate_seq <- function(seq, times, ...) {
 #' chemical. To simulate such a laboratory experiment, the simulate_batch
 #' function can be used. All exposure series are saved in the treatment argument.
 #' The first column contains the time, the second column the concentration, and
-#' the third column the trial name (exposure level, e.g. “T1”, “T2”, “T3”).
+#' the third column the trial name (exposure level, e.g. 'T1', 'T2', 'T3').
 #'
 #' @param model_base effect scenario object with mean parameters
 #' @param treatments treatments exposure levels as data frame (time, conc, trial)

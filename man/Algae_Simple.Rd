@@ -11,9 +11,9 @@ Algae_Simple()
 an S4 object of type \linkS4class{AlgaeSimpleScenario}
 }
 \description{
-„The model is a mechanistic combined toxicokinetic-toxicodynamic (TK/TD) and
+The model is a mechanistic combined toxicokinetic-toxicodynamic (TK/TD) and
 growth model for algae. It follows the concept of a simplified algae model
-described in Rendal et al. (2023).” The model simulates the development of
+described in Rendal et al. (2023). The model simulates the development of
 algal biomass. The growth of the algae population is simulated on the basis
 of growth rates, which are, in contrast to the Weber model, independent on
 environmental conditions which are usually optimal in laboratory effect studies.

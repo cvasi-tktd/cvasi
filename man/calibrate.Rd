@@ -3,6 +3,7 @@
 \name{calibrate}
 \alias{calibrate}
 \alias{calibrate,EffectScenario-method}
+\alias{calibrate,CalibrationSet-method}
 \alias{calibrate,list-method}
 \title{Fit model parameters to experimental data}
 \usage{
@@ -12,128 +13,162 @@ calibrate(x, ...)
   x,
   par,
   data,
-  endpoint,
-  hessian = TRUE,
-  metric_fun = sse,
-  as_tibble = FALSE,
-  catch_errors = TRUE,
+  endpoint = deprecated(),
+  output,
+  by,
+  metric_fun = deprecated(),
+  err_fun,
+  as_tibble = deprecated(),
+  catch_errors = deprecated(),
   verbose = FALSE,
   ...
 )
 
+\S4method{calibrate}{CalibrationSet}(x, par, output, err_fun, verbose = FALSE, ...)
+
 \S4method{calibrate}{list}(
   x,
   par,
-  endpoint,
-  hessian = TRUE,
-  metric_fun = sse,
-  metric_total = sum,
-  as_tibble = FALSE,
-  catch_errors = TRUE,
+  endpoint = deprecated(),
+  output,
+  metric_fun = deprecated(),
+  metric_total = deprecated(),
+  err_fun,
+  as_tibble = deprecated(),
+  catch_errors = deprecated(),
   verbose = FALSE,
   ...
 )
 }
 \arguments{
-\item{x}{either a single \code{EffectScenario} or a list of \code{CalibrationSet} objects to be fitted}
+\item{x}{either a single \link{scenario} or a list of \link{CalibrationSet} objects to be fitted}
 
-\item{...}{additional parameters passed on to \code{stats::optim()} and \code{simulate()}}
+\item{...}{additional parameters passed on to \code{\link[stats:optim]{stats::optim()}} and \code{\link[=simulate]{simulate()}}}
 
 \item{par}{named numeric vector with parameters to fit and their start values}
 
 \item{data}{\code{data.frame} with two or more columns with experimental data,
-1st column contains time points, 2nd and following columns contain values
+1st column must contain time points, the following columns may values
 which the scenario is fitted to.}
 
-\item{endpoint}{\code{character}, name of model output column to optimize on}
+\item{endpoint}{\emph{deprecated} \code{character}, please use \code{output} instead}
 
-\item{hessian}{\code{logical}, if \code{TRUE} the Hessian is returned by the optimization routine}
+\item{output}{\code{character}, name of a single output column of \code{\link[=simulate]{simulate()}} to
+optimize on}
 
-\item{metric_fun}{vectorized function to calculate an error term that is
-minimized during optimization, defaults to sum of squared errors}
+\item{by}{optional \code{character}, groups and splits the experimental data
+into multiple distinct trials and datasets before fitting}
 
-\item{as_tibble}{\code{logical}, if \code{TRUE} a tibble with scenario and optimization
-result is returned, else only the optimization result is returned}
+\item{metric_fun}{\emph{deprecated}, please use \code{err_fun} instead}
 
-\item{catch_errors}{\code{logical}, if \code{TRUE} simulation errors due to e.g. out of
-bounds parameters are caught and optimization continues, else optimization fails}
+\item{err_fun}{vectorized error function to calculate an error term that is
+minimized during optimization, must accept exactly two vectorized numeric
+arguments, defaults to sum of squared errors}
+
+\item{as_tibble}{\emph{deprecated}, result can no longer be returned as a tibble}
+
+\item{catch_errors}{\emph{deprecated}, simulation errors are always caught}
 
 \item{verbose}{\code{logical}, if \code{TRUE} then debug outputs are displayed during
 optimization}
 
-\item{metric_total}{vectorized function to aggregate multiple error terms to a
-single value, defaults to \code{sum()}}
+\item{metric_total}{\emph{deprecated}}
 }
 \value{
-By default, a list of fitted parameters (as produced by \code{\link[stats:optim]{stats::optim()}})
-is returned. Alternatively, when setting the argument as_tibble = TRUE,
-a \code{tibble} is returned with 2 columns, the first column lists the
-scenario and the 2nd column the list of fitted parameters.
+A list of fitted parameters (as produced by \code{\link[stats:optim]{stats::optim()}})
+is returned.
 }
 \description{
-The function \code{calibrate()}performs the calibration (fitting) of model
-parameters to observed data. Two options are available:
-\enumerate{
-\item Either a single \link{scenario} is fitted to a single dataset.
-The dataset must represent a time-series of an output variable of the
-model, e.g. observed biomass over time (effect data).
-\item Or a scenario is fitted to one or multiple datasets at once. Each
-dataset is represented by a \linkS4class{CalibrationSet} which also
-contains a scenario which describes the conditions during observation,
-such as exposure and environmental properties. Each \code{CalibrationSet}
-can also be given a weight to be considered in the fitting. By default,
-the total sum of squared errors is used as the target function which is
-minimized.
-}
+The function \code{calibrate()} performs the calibration (fitting) of model
+parameters to observed data. The data can originate from one or more experiments or
+trials. Experimental conditions, such as model parameters and exposure
+level, can differ between trials; fitting can be performed on all datasets
+at the same time.
 }
 \details{
-Effect data must be supplied as a \code{data.frame} in long format with two
-columns: the first column contains timestamps and the second column
-the observed property. The effect data may contain replicates as extra rows.
+Fitting of model parameters can be performed in two ways:
+\enumerate{
+\item A single \link{scenario} is fitted to a single dataset.
+The dataset must represent a time-series of an output variable of the
+model, e.g. observed biomass over time (effect data). The dataset can represent
+results of one or more experimental replicates under identical conditions.
+\item One or more datasets of observed data are fitted each to a scenario which
+describes the experimental conditions during observation, such as exposure
+level and environmental properties. Each combination of dataset and scenario
+is represented by a \link[=CalibrationSet]{calibration set}. During fitting,
+all \emph{calibration sets} are evaluated and a total error term is calculated by
+summing the error of each \emph{calibration set}.
+}
+\subsection{Observed data}{
+
+Experimental, or effect, data must be supplied as a \code{data.frame} in long format
+with at least two columns: the first column contains \code{numeric} timestamps and
+the remaining columns must contain the observed quantity. The dataset must
+contain a column that which matches with the contents of parameter \code{output}.
+
+As an example, the simulation result of \link{Lemna_Schmitt} model contains the
+output column \emph{biomass} (\code{BM}), amongst others. To fit model parameters of said
+\emph{Lemna_Schmitt} scenario based on observed biomass, the observed data must
+contain a column named \code{BM} which represents the observed biomass.
+A minimal observed dataset could look like this:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{observed <- data.frame(time=c(0,  7, 14, 21),
+                       BM=c( 12, 23, 37, 56))
+}\if{html}{\out{</div>}}
+}
+
+\subsection{Error function}{
+
+By default, the total sum of squared errors is used as the target
+function which is minimized during fitting. A custom error function can be
+supplied by the user: The function must accept two numeric vectorized
+arguments and return a numeric of length one, i.e. the error value.
+
+Example of a custom error function which returns the sum of absolute errors:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{my_absolute_error <- function(observed, simulated) \{
+  sum(abs(observed - simulated))
+\}
+}\if{html}{\out{</div>}}
+
+When using \emph{calibration sets}, the error term is calculated for each \emph{calibration
+set} individually, the weighting factor is applied to the error of each set,
+and then all error terms are summed up.
+}
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{calibrate(EffectScenario)}: Fit a single scenario
+\item \code{calibrate(EffectScenario)}: Fit single scenario using a dataset
 
-\item \code{calibrate(list)}: Fit using a \link{CalibrationSet}
+\item \code{calibrate(CalibrationSet)}: Fit using a \link{CalibrationSet}
+
+\item \code{calibrate(list)}: Fit using a list of \link{CalibrationSet} objects
 
 }}
 \examples{
-## 1st option: Fit scenario parameters using a single dataset
-metsulfuron
-
-# Observed biomass from Schmitt et al. 2013 experiment
-obs32 <- data.frame(
-  time=c(0, 3, 5, 7, 7.01, 10, 12, 14),
-  obs=c(12, 25, 30, 33, 33, 64, 127, 300)
-)
-
-# calibrate with an ExposureScenario and corresponding effect data
-metsulfuron \%>\%
-  calibrate(
-    par=c(k_phot_max=1, k_resp=0.1 ),
-    data=obs32,
-    endpoint="BM",
-  )
-
-# plot trial data
-obs32$trial <- "conc=1.0"
-plot_sd(treatments=metsulfuron@exposure@series, rs_mean=obs32)
-
-## 2nd option: Fit scenario parameters using CalibrationSets
-
-# Create one CalibrationSet for each observed exposure level and time-series
-# from Schmitt et al. (2013) dataset
 library(dplyr)
-Schmitt2013 \%>\%
-  group_by(ID) \%>\%
-  group_map(function(data, key) {
-    exp <- data \%>\% select(t, conc)
-    obs <- data \%>\% select(t, obs)
-    sc <- metsulfuron \%>\% set_exposure(exp)
-    CalibrationSet(sc, obs)
-  }) -> cs
-# Fit parameters
-calibrate(cs, par=c(k_phot_max=1), endpoint="BM")
+
+# Get observed biomass during control experiment by Schmitt et al. (2013)
+observed <- Schmitt2013 \%>\%
+  filter(ID == "T0") \%>\%
+  select(t, BM=obs)
+
+# Create a scenario that represents conditions during experiment
+scenario <- metsulfuron \%>\%
+  set_param(c(k_phot_fix=TRUE, k_resp=0, Emax=1)) \%>\%
+  set_init(c(BM=12)) \%>\%
+  set_noexposure()
+
+# Fit parameter 'k_phot_max' to observed biomass growth from experiment
+calibrate(
+  scenario,
+  par=c(k_phot_max=1),
+  data=observed,
+  output="BM",
+  method="Brent", # Brent is recommended for one-dimensional optimization
+  lower=0,        # lower parameter boundary
+  upper=0.5       # upper parameter boundary
+) -> fit
+fit$par
 
 }

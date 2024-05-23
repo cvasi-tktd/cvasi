@@ -1,300 +1,400 @@
 #' Fit model parameters to experimental data
 #'
-#' The function `calibrate()`performs the calibration (fitting) of model
-#' parameters to observed data. Two options are available:
-#' 1) Either a single [scenario] is fitted to a single dataset.
+#' The function `calibrate()` performs the calibration (fitting) of model
+#' parameters to observed data. The data can originate from one or more experiments or
+#' trials. Experimental conditions, such as model parameters and exposure
+#' level, can differ between trials; fitting can be performed on all datasets
+#' at the same time.
+#'
+#' Fitting of model parameters can be performed in two ways:
+#' 1) A single [scenario] is fitted to a single dataset.
 #'   The dataset must represent a time-series of an output variable of the
-#'   model, e.g. observed biomass over time (effect data).
-#' 2) Or a scenario is fitted to one or multiple datasets at once. Each
-#'   dataset is represented by a \linkS4class{CalibrationSet} which also
-#'   contains a scenario which describes the conditions during observation,
-#'   such as exposure and environmental properties. Each `CalibrationSet`
-#'   can also be given a weight to be considered in the fitting. By default,
-#'   the total sum of squared errors is used as the target function which is
-#'   minimized.
+#'   model, e.g. observed biomass over time (effect data). The dataset can represent
+#'   results of one or more experimental replicates under identical conditions.
+#' 2) One or more datasets of observed data are fitted each to a scenario which
+#'   describes the experimental conditions during observation, such as exposure
+#'   level and environmental properties. Each combination of dataset and scenario
+#'   is represented by a [calibration set][CalibrationSet]. During fitting,
+#'   all *calibration sets* are evaluated and a total error term is calculated by
+#'   summing the error of each *calibration set*.
 #'
-#' Effect data must be supplied as a `data.frame` in long format with two
-#' columns: the first column contains timestamps and the second column
-#' the observed property. The effect data may contain replicates as extra rows.
+#' ### Observed data
+#' Experimental, or effect, data must be supplied as a `data.frame` in long format
+#' with at least two columns: the first column contains `numeric` timestamps and
+#' the remaining columns must contain the observed quantity. The dataset must
+#' contain a column that which matches with the contents of parameter `output`.
 #'
-#' @param x either a single `EffectScenario` or a list of `CalibrationSet` objects to be fitted
+#' As an example, the simulation result of [Lemna_Schmitt] model contains the
+#' output column *biomass* (`BM`), amongst others. To fit model parameters of said
+#' *Lemna_Schmitt* scenario based on observed biomass, the observed data must
+#' contain a column named `BM` which represents the observed biomass.
+#' A minimal observed dataset could look like this:
+#'
+#' ```
+#' observed <- data.frame(time=c(0,  7, 14, 21),
+#'                        BM=c( 12, 23, 37, 56))
+#' ```
+#'
+#' ### Error function
+#' By default, the total sum of squared errors is used as the target
+#' function which is minimized during fitting. A custom error function can be
+#' supplied by the user: The function must accept two numeric vectorized
+#' arguments and return a numeric of length one, i.e. the error value.
+#'
+#' Example of a custom error function which returns the sum of absolute errors:
+#' ```
+#' my_absolute_error <- function(observed, simulated) {
+#'   sum(abs(observed - simulated))
+#' }
+#' ```
+#'
+#' When using *calibration sets*, the error term is calculated for each *calibration
+#' set* individually, the weighting factor is applied to the error of each set,
+#' and then all error terms are summed up.
+#'
+#' @param x either a single [scenario] or a list of [CalibrationSet] objects to be fitted
 #' @param par named numeric vector with parameters to fit and their start values
-#' @param endpoint `character`, name of model output column to optimize on
-#' @param hessian `logical`, if `TRUE` the Hessian is returned by the optimization routine
-#' @param metric_fun vectorized function to calculate an error term that is
-#' minimized during optimization, defaults to sum of squared errors
-#' @param as_tibble `logical`, if `TRUE` a tibble with scenario and optimization
-#'  result is returned, else only the optimization result is returned
-#' @param catch_errors `logical`, if `TRUE` simulation errors due to e.g. out of
-#' bounds parameters are caught and optimization continues, else optimization fails
+#' @param endpoint *deprecated* `character`, please use `output` instead
+#' @param output `character`, name of a single output column of [simulate()] to
+#'   optimize on
+#' @param metric_fun *deprecated*, please use `err_fun` instead
+#' @param err_fun  vectorized error function to calculate an error term that is
+#'   minimized during optimization, must accept exactly two vectorized numeric
+#'   arguments, defaults to sum of squared errors
+#' @param as_tibble *deprecated*, result can no longer be returned as a tibble
+#' @param catch_errors *deprecated*, simulation errors are always caught
 #' @param verbose `logical`, if `TRUE` then debug outputs are displayed during
-#' optimization
-#' @param ... additional parameters passed on to `stats::optim()` and `simulate()`
-#'
-#' @examples
-#' ## 1st option: Fit scenario parameters using a single dataset
-#' metsulfuron
-#'
-#' # Observed biomass from Schmitt et al. 2013 experiment
-#' obs32 <- data.frame(
-#'   time=c(0, 3, 5, 7, 7.01, 10, 12, 14),
-#'   obs=c(12, 25, 30, 33, 33, 64, 127, 300)
-#' )
-#'
-#' # calibrate with an ExposureScenario and corresponding effect data
-#' metsulfuron %>%
-#'   calibrate(
-#'     par=c(k_phot_max=1, k_resp=0.1 ),
-#'     data=obs32,
-#'     endpoint="BM",
-#'   )
-#'
-#' # plot trial data
-#' obs32$trial <- "conc=1.0"
-#' plot_sd(treatments=metsulfuron@exposure@series, rs_mean=obs32)
-#'
-#' ## 2nd option: Fit scenario parameters using CalibrationSets
-#'
-#' # Create one CalibrationSet for each observed exposure level and time-series
-#' # from Schmitt et al. (2013) dataset
-#' library(dplyr)
-#' Schmitt2013 %>%
-#'   group_by(ID) %>%
-#'   group_map(function(data, key) {
-#'     exp <- data %>% select(t, conc)
-#'     obs <- data %>% select(t, obs)
-#'     sc <- metsulfuron %>% set_exposure(exp)
-#'     CalibrationSet(sc, obs)
-#'   }) -> cs
-#' # Fit parameters
-#' calibrate(cs, par=c(k_phot_max=1), endpoint="BM")
-#'
+#'   optimization
 #' @param data `data.frame` with two or more columns with experimental data,
-#' 1st column contains time points, 2nd and following columns contain values
+#' 1st column must contain time points, the following columns may values
 #' which the scenario is fitted to.
-#' @param metric_total vectorized function to aggregate multiple error terms to a
-#' single value, defaults to `sum()`
+#' @param by optional `character`, groups and splits the experimental data
+#'   into multiple distinct trials and datasets before fitting
+#' @param metric_total *deprecated*
+#' @param ... additional parameters passed on to [stats::optim()] and [simulate()]
 #'
-#' @return By default, a list of fitted parameters (as produced by [stats::optim()])
-#' is returned. Alternatively, when setting the argument as_tibble = TRUE,
-#' a `tibble` is returned with 2 columns, the first column lists the
-#' scenario and the 2nd column the list of fitted parameters.
+#' @return A list of fitted parameters (as produced by [stats::optim()])
+#' is returned.
 #'
 #' @export
-#' @aliases calibrate,EffectScenario-method calibrate,list-method
-#' @include class-EffectScenario.R
+#' @aliases calibrate,EffectScenario-method calibrate,CalibrationSet-method
+#'    calibrate,list-method
+#' @examples
+#' library(dplyr)
+#'
+#' # Get observed biomass during control experiment by Schmitt et al. (2013)
+#' observed <- Schmitt2013 %>%
+#'   filter(ID == "T0") %>%
+#'   select(t, BM=obs)
+#'
+#' # Create a scenario that represents conditions during experiment
+#' scenario <- metsulfuron %>%
+#'   set_param(c(k_phot_fix=TRUE, k_resp=0, Emax=1)) %>%
+#'   set_init(c(BM=12)) %>%
+#'   set_noexposure()
+#'
+#' # Fit parameter 'k_phot_max' to observed biomass growth from experiment
+#' calibrate(
+#'   scenario,
+#'   par=c(k_phot_max=1),
+#'   data=observed,
+#'   output="BM",
+#'   method="Brent", # Brent is recommended for one-dimensional optimization
+#'   lower=0,        # lower parameter boundary
+#'   upper=0.5       # upper parameter boundary
+#' ) -> fit
+#' fit$par
+#'
 setGeneric("calibrate", function(x,...) standardGeneric("calibrate"), signature="x")
 
 #' @export
-#' @describeIn calibrate Fit a single scenario
+#' @describeIn calibrate Fit single scenario using a dataset
+#' @importFrom lifecycle deprecated
+#' @include class-EffectScenario.R
 setMethod("calibrate", "EffectScenario",
-  function(x, par, data, endpoint, hessian=TRUE, metric_fun=sse,
-           as_tibble=FALSE, catch_errors=TRUE, verbose=FALSE, ...) {
-    calibrate_scenario(x=x, par=par, data=data, endpoint=endpoint, hessian=hessian,
-                       metric_fun=metric_fun, as_tibble=as_tibble, catch_errors=catch_errors,
-                       verbose=verbose, ...)
+  function(x,
+           par,
+           data,
+           endpoint=deprecated(),
+           output,
+           by,
+           metric_fun=deprecated(),
+           err_fun,
+           as_tibble=deprecated(),
+           catch_errors=deprecated(),
+           verbose=FALSE,
+           ...) {
+    calibrate_scenario(x=x,
+                       par=par,
+                       data=data,
+                       endpoint=endpoint,
+                       output=output,
+                       by=by,
+                       metric_fun=metric_fun,
+                       err_fun=err_fun,
+                       as_tibble=as_tibble,
+                       catch_errors=catch_errors,
+                       verbose=verbose,
+                       ...)
   }
 )
+
+calibrate_scenario <- function(x, data, endpoint, output, by, ...)
+{
+  if(lifecycle::is_present(endpoint)) { # for backwards compatability
+    output <- endpoint
+  }
+
+  if(!is_scenario(x)) {
+    stop("parameter 'x' must be a scenario")
+  }
+  if(is.matrix(data)) { # coerce matrix to data.frame
+    data <- as.data.frame(data)
+  }
+  if(!is.data.frame(data)) {
+    stop("parameter 'data' must be a data.frame")
+  }
+  if(nrow(data) == 0) {
+    stop("parameter 'data' is empty")
+  }
+  # make sure we have data.frame and not something else that behaves differently
+  data <- tibble::as_tibble(data)
+  # is output column contained in data?
+  if(!all(output %in% names(data))) {
+    stop("Output variable missing from dataset")
+  }
+
+  # group data first?
+  if(!missing(by)) {
+    data <- data %>% dplyr::group_by(.data[[by]])
+  }
+
+  # create calibration sets from data.frame
+  cs <- dplyr::group_map(data, .f=function(df, key) {
+    # sort by time, i.e. first column
+    df <- df %>%
+      dplyr::select(dplyr::all_of(1), dplyr::all_of(output)) %>%
+      dplyr::arrange(dplyr::pick(1), dplyr::pick(2)) %>%
+      dplyr::ungroup()
+    caliset(x, df)
+  })
+
+  calibrate(x=cs, endpoint=endpoint, output=output, ...)
+}
 
 #' @export
 #' @describeIn calibrate Fit using a [CalibrationSet]
-setMethod("calibrate", "list",
-  function(x, par, endpoint, hessian=TRUE, metric_fun=sse, metric_total=sum,
-           as_tibble=FALSE, catch_errors=TRUE, verbose=FALSE, ...)
-    calibrate_set(x=x, par=par, endpoint=endpoint, hessian=hessian,
-                  metric_fun=metric_fun, metric_total=metric_total,
-                  as_tibble=as_tibble, catch_errors=catch_errors,
-                  verbose=verbose, ...)
+#' @include class-CalibrationSet.R
+setMethod("calibrate", "CalibrationSet",
+          function(x, par, output, err_fun, verbose=FALSE, ...) {
+            calibrate_set(x=list(x), par=par, output=output, err_fun=err_fun,
+                          verbose=verbose, ...)
+          }
 )
 
-calibrate_scenario <- function(x, par, data, endpoint, hessian, metric_fun=sse,
-                               as_tibble, catch_errors, verbose, ...) {
-  if(!is.numeric(par) | !is.vector(par))
-    stop("par is not numeric vector")
-  if(length(names(par)) < length(par))
-    stop("all parameters to fit have to be named")
-  unused <- setdiff(names(par),x@param.req)
-  if(length(unused)>0)
-    stop(paste("parameters can not be fit:",paste(unused,sep=",")))
-  if(nrow(data)==0)
-    stop("no data for calibration")
-  #if(data[1,1]!=0)
-  #  stop("calibration data needs to start at zero")
-  if(!is.character(endpoint) | length(endpoint)>1)
-    stop("only one endpoint supported")
+#' @export
+#' @describeIn calibrate Fit using a list of [CalibrationSet] objects
+setMethod("calibrate", "list",
+          function(x,
+                   par,
+                   endpoint=deprecated(),
+                   output,
+                   metric_fun=deprecated(),
+                   metric_total=deprecated(),
+                   err_fun,
+                   as_tibble=deprecated(),
+                   catch_errors=deprecated(),
+                   verbose=FALSE,
+                   ...)
+            calibrate_set(x=x,
+                          par=par,
+                          endpoint=endpoint,
+                          output=output,
+                          metric_fun=metric_fun,
+                          metric_total=metric_total,
+                          err_fun=err_fun,
+                          as_tibble=as_tibble,
+                          catch_errors=catch_errors,
+                          verbose=verbose,
+                          ...)
+)
 
-  # make sure we have data.frame and not a matrix
-  data <- as.data.frame(data)
-  # some stats
-  if(verbose) {
-    message(paste("fitted scenario:",is(x)[[1]]))
-    message(paste("  data contains",length(data)-1,"replicates"))
-    message(paste("  time points:",paste(data[,1],collapse=",")))
+calibrate_set <- function(x, par, endpoint, output, metric_fun, metric_total,
+                          err_fun, as_tibble, catch_errors, verbose, data, ...) {
+  if(!missing(data)) {
+    stop("parameter 'data' cannot be used in combination with calibration sets")
   }
+  if(!all(sapply(x, function(y) is(y, "CalibrationSet")))) {
+    stop("parameter 'x' must only contain calibration set objects")
+  }
+
+  # parameters to fit
+  if(!is.numeric(par) | !is.vector(par)) {
+    stop("parameter 'par' must be a numeric vector")
+  }
+  if(length(names(par)) < length(par)) {
+    stop("all elements in 'par' must be named")
+  }
+  unused <- setdiff(names(par), x[[1]]@scenario@param.req)
+  if(length(unused) > 0) {
+    stop(paste("invalid parameters, can not fit: ", paste(unused, sep=",")))
+  }
+
+  # output variable
+  if(lifecycle::is_present(endpoint)) {
+    lifecycle::deprecate_warn("1.1.0", "calibrate(endpoint)", "calibrate(output)")
+    output <- endpoint
+  }
+  if(length(output) > 1) {
+    stop("parameter 'output' must be of length one")
+  }
+  if(!is.character(output)) {
+    stop("parameter 'output' must be a string")
+  }
+
+  # error function
+  err_desc <- "Custom"
+  if(lifecycle::is_present(metric_fun)) {
+    lifecycle::deprecate_warn("1.1.0", "calibrate(metric_fun)", "calibrate(err_fun)")
+    err_fun <- metric_fun
+  }
+  if(lifecycle::is_present(metric_total)) {
+    lifecycle::deprecate_warn("1.1.0", "calibrate(metric_total)")
+  }
+  if(missing(err_fun)) {
+    err_fun <- sse
+    err_desc <- "Sum of squared errors"
+  } else if(!is.function(err_fun)) {
+    stop("parameter 'err_fun' must be a function")
+  }
+
+  # deprecated and removed parameters
+  if(lifecycle::is_present(as_tibble)) {
+    lifecycle::deprecate_warn("1.1.0", "cvasi::calibrate(as_tibble)", details="Results can no longer be returned as a tibble")
+  }
+  if(lifecycle::is_present(catch_errors)) {
+    lifecycle::deprecate_warn("1.1.0", "cvasi::calibrate(catch_errors)", details="Catching errors is always enabled")
+  }
+
   # parameter names have to be re-set for Brent method in each iteration
   par_names <- names(par)
 
-  stats::optim(par=par,
-               fn=optim_scenario,
-               hessian=hessian,
-               scenario=x,
-               par_names=par_names,
-               data=data,
-               endpoint=endpoint,
-               metric_fun=metric_fun,
-               catch_errors=catch_errors,
-               verbose=verbose,
-               ...) -> fit
-
-  names(fit$par) <- par_names # re-set names in case method 'Brent' dropped them
-  if(fit$convergence>0)
-    warning(paste("possible convergence problem: optim gave code =",fit$convergence,
-                  ifelse(is.null(fit$message),"",paste("\n",fit$message))))
-
-  # return updated scenario + fit data as tibble
-  x <- set_param(x, fit$par)
-  if(as_tibble) {
-    tibble::tibble(scenario=c(x),fit=list(fit))
-  } else {
-    fit
-  }
-}
-
-calibrate_set <- function(x, par, endpoint, hessian, metric_fun, metric_total,
-                          as_tibble, catch_errors, verbose, data, ...) {
-  if(!missing(data))
-    stop("parameter 'data' must not be set when using CalibrationSets")
-  if(!all(sapply(x,function(y)is(y,"CalibrationSet"))))
-    stop("list must contain CalibrationSet objects")
-  if(!is.numeric(par) | !is.vector(par))
-    stop("par is not numeric vector")
-  if(length(names(par)) < length(par))
-    stop("all parameters to fit have to be named")
-  #unused <- setdiff(names(par),x[[1]]@param.req)
-  #if(length(unused)>0)
-  #  stop(paste("parameters can not be fit:",paste(unused,sep=",")))
-  if(!is.character(endpoint) | length(endpoint)>1)
-    stop("only one endpoint supported")
-
   # some stats
   if(verbose) {
-    message(paste("fitted scenario:",is(x[[1]]@scenario)[[1]]))
-    message(paste("  set contains",length(x), "trials"))
+    message("Calibration based on ", length(x), " data set", ifelse(length(x) > 1, "s", ""))
+    message("Fitted parameter", ifelse(length(par_names) > 1, "s", ""), ": ", paste(par_names, collapse=","))
+    message("Output variable: ", output)
+    message("Error function: ", err_desc)
   }
-  # parameter names have to be re-set for Brent method in each iteration
-  par_names <- names(par)
 
+  # check that output variable is present in all datasets
+  for(i in seq_along(x)) {
+    data <- x[[i]]@data
+    if(!all(output %in% names(data))) {
+      stop("Output variable missing from dataset(s)")
+    }
+  }
+
+  # start optimization
   stats::optim(par=par,
                fn=optim_set,
-               hessian=hessian,
                sets=x,
                par_names=par_names,
-               endpoint=endpoint,
-               metric_fun=metric_fun,
-               metric_total=metric_total,
-               catch_errors=catch_errors,
+               output=output,
+               err_fun=err_fun,
                verbose=verbose,
                ...) -> fit
 
-  names(fit$par) <- par_names # re-set names in case method 'Brent' dropped them
-  if(fit$convergence>0)
-    warning(paste("possible convergence problem: optim gave code =",
-                  fit$convergence,ifelse(is.null(fit$message),"",paste("\n",fit$message))))
-
-  # return updated scenario + fit data as tibble
-  if(as_tibble) {
-    x <- purrr::map(x, ~.x@scenario %>% set_param(fit$par))
-    tibble::tibble(scenario=c(x), fit=list(fit))
-  } else {
-    fit
-  }
-}
-
-# Default wrapper function that is called by `stats::optim()`
-#
-# Can optimize on several data sets at once using different model setups.
-# @param x Current parameter values set by `stats::optim()`
-# @param scenario `EffectScenario` object
-# @param data `data.frame` with (measured) calibration data
-# @param endpoint `character` or `numeric` value identifying the relevant model output
-# @param metric_fun `function` to calculate error metrics
-# @param ... additional parameters passed on to `simulate()`
-#
-# @return `numeric` value, error metric
-optim_scenario <- function(par, scenario, par_names, data, endpoint, metric_fun,
-                           catch_errors=catch_errors, verbose=verbose, ode_method, ...) {
-  # set parameters supplied by optimization routine
-  if(is.null(names(par))) names(par) <- par_names # req for Brent method
-  scenario <- set_param(scenario, par)
-  # comparison table, measured vs. simulated
-  df.cmp <- data.frame(m=numeric(),s=numeric())
-
-  # cycle through all data sets/columns
-  for(i in seq(length(data)-1)) {
-    # run simulation
-    if(missing(ode_method))
-      out <- try(simulate(scenario,times=data[,1],...), silent=TRUE)
-    else
-      out <- try(simulate(scenario,times=data[,1],method=ode_method,...), silent=TRUE)
-
-    if(catch_errors & is(out,"try-error")) {
-      if(verbose)
-        message(paste(" -- Invalid param:",paste(par_names,par,sep="=",collapse=",")," Err: 1e15"))
-      return(1e15) # penalize invalid parameters, requires a finite value for 'L-BFGS-B' to work
-    }
-    df.cmp <- rbind(df.cmp, list(ref=data[,i+1],fit=out[,endpoint]))
+  # re-set names in case method 'Brent' dropped them
+  names(fit$par) <- par_names
+  # optimization successful?
+  if(fit$convergence > 0) {
+    warning(paste("  possible convergence problem during optimization: optim gave code =",
+                  fit$convergence, ifelse(is.null(fit$message), "", paste("\n  ", fit$message))))
   }
 
-  if(verbose)
-    message(paste("Param:",paste(par_names,par,sep="=",collapse=",")," Err:",metric_fun(df.cmp[,1], df.cmp[,2])))
+  if(verbose) {
+    message("Best fit: ", paste(par_names, fit$par, sep="=", collapse=","))
+  }
 
-  # error term
-  metric_fun(df.cmp[,1],df.cmp[,2])
+  # return fit
+  fit
 }
 
+# Calculate error for a single set of parameters, functions is called by
+# `optim()` repeatedly
+optim_set <- function(par, sets, par_names, output, err_fun, verbose=verbose,
+                      ode_method, ...) {
+  if(verbose) {
+    message(paste("Testing:", paste(par_names, par, sep="=", collapse=",")), appendLF=FALSE)
+  }
+  # check if parameter names got lost, happens sometimes
+  if(is.null(names(par))) {
+    names(par) <- par_names
+  }
+  # total error
+  err_total <- 0
 
-optim_set <- function(par, sets, par_names, endpoint, metric_fun, metric_total,
-                      catch_errors=catch_errors, verbose=verbose, ode_method, ...) {
-  if(verbose)
-    message(paste("Param:", paste(par_names, par, sep="=", collapse=",")), appendLF=FALSE)
-  # error term
-  err <- c()
-  # cycle through all calibration sets, i.e. scenario/data combination
-  for(i in seq(length(sets))) {
-    # current calibration set and scenario object
+  # cycle through all calibration sets, i.e. scenario and data combinations
+  for(i in seq_along(sets))
+  {
+    # current calibration set
     set <- sets[[i]]
+
     # coerce fit data to data.frame to avoid issues with data.frame-like types
     data <- as.data.frame(set@data)
-    # set parameters supplied by optimization routine
-    if(is.null(names(par))) names(par) <- par_names # req for Brent method
+    # set parameters supplied by optimization routine to scenario
     scenario <- set_param(set@scenario, par)
 
     # run simulation
-    if(missing(ode_method))
-      out <- try(simulate(scenario,times=data[,1],...), silent=TRUE)
-    else
-      out <- try(simulate(scenario,times=data[,1],method=ode_method,...), silent=TRUE)
-    if(catch_errors & is(out,"try-error")) {
-      if(verbose)
-        message(paste(" -- Invalid param:",paste(par_names,par,sep="=",collapse=",")," Err: 1e15"))
-        message(out)
-      return(1e15) # penalize invalid parameters, requires a finite value for 'L-BFGS-B' to work
+    if(missing(ode_method)) {
+      out <- try(simulate(scenario, times=data[, 1], ...), silent=TRUE)
+    } else {
+      out <- try(simulate(scenario, times=data[, 1], method=ode_method, ...), silent=TRUE)
     }
-    if(!(endpoint %in% names(out)))
-      stop("endpoint not present in simulation results")
-    # todo handle missing/invalid values more gracefully
-    if(any(is.infinite(out[,endpoint])))
-       stop("endpoints contain infinite values")
-    if(any(is.nan(out[,endpoint])))
-      stop("endpoints contain NaN values")
-    if(any(is.na(out[,endpoint])))
-      stop("endpoints contain NA")
-    err <- c(err, metric_fun(data[,2],out[,endpoint]) * set@weight)
+
+    # check if simulation result contains errors
+    is_error <- FALSE
+    is_issue <- FALSE
+    msg <- NA
+    if(is(out, "try-error")) {
+      is_error <- TRUE
+      msg <- out
+    }
+    else if(!(all(output %in% names(out)))) {
+      is_error <- TRUE
+      msg <- "output column not in simulation results"
+    }
+    else if(any(is.infinite(out[, output]))) {
+      is_issue <- TRUE
+      msg <- "output column contains infinite values"
+    }
+    else if(any(is.nan(out[, output]))) {
+      is_issue <- TRUE
+      msg <- "output column contains NaN values"
+    }
+    else if(any(is.na(out[, output]))) {
+      is_issue <- TRUE
+      msg <- "output column contains NAs"
+    }
+
+    if(is_issue | is_error) {
+      if(verbose) {
+        message(" failed, Error: 1e15")
+        message("  ", msg)
+      } else if(is_error) {
+        warning(msg)
+      }
+      return(1e15) # penalize parameters causing issues, requires a finite value for 'L-BFGS-B' to work
+    }
+
+    # calculate and sum up error term values
+    err_total <- err_total + err_fun(data[, output], out[, output]) * set@weight
   }
 
-  err.total <- metric_total(err)
-  if(verbose)
-    message(paste(" Err:",err.total))
+  if(verbose) {
+    message(paste(", Error:", err_total))
+  }
 
-  err.total
+  err_total
 }

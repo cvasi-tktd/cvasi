@@ -393,16 +393,18 @@ control <- metsulfuron %>%
 
 # Get control data from Schmitt et al. (2013)
 obs_control <- Schmitt2013 %>%
-  dplyr::filter(ID == "T0") %>%
-  dplyr::select(t, obs)
+  filter(ID == "T0") %>%
+  select(t, BM=obs)
 
 # Fit parameter `k_phot_max` to observed data
 fit1 <- calibrate(
   x = control,
-  par = c(k_phot_max=1),
+  par = c(k_phot_max = 1),
   data = obs_control,
-  endpoint = "BM",
-  method="Brent", lower=0, upper=0.5 # Brent is recommended for one-dimensional optimization
+  output = "BM",
+  method="Brent", # Brent is recommended for one-dimensional optimization
+  lower=0,        # lower parameter boundary
+  upper=0.5       # upper parameter boundary
 )
 fit1$par
 #> k_phot_max 
@@ -420,7 +422,7 @@ treatments <- exposure %>%
   mutate(trial="control")
 obs_mean <- obs_control %>%
   mutate(trial="control") %>%
-  select(time=t, data=obs, trial)
+  select(time=t, data=BM, trial)
 
 # Plot results
 plot_sd(
@@ -443,21 +445,34 @@ Schmitt2013 %>%
   group_by(ID) %>%
   group_map(function(data, key) {
     exp <- data %>% select(t, conc)
-    obs <- data %>% select(t, obs)
+    obs <- data %>% select(t, BM=obs)
     sc <- fitted_growth %>% set_exposure(exp) 
-    CalibrationSet(sc, obs)
+    caliset(sc, obs)
   }) -> cs
 
 # Fit parameters on results of all trials at once
 fit2 <- calibrate(
   cs,
   par=c(EC50=0.3, b=4.16, P_up=0.005),
-  endpoint="BM",
-  method="L-BFGS-B", lower=c(0, 0.1, 0), upper=c(1000, 10, 0.1)
+  output="BM",
+  method="L-BFGS-B",
+  lower=c(0, 0.1, 0),
+  upper=c(1000, 10, 0.1)
 )
+#> Warning in rk(y, times, func, parms, method = "ode45", ...): Number of time steps 1 exceeded maxsteps at t = 0
+
+#> Warning in rk(y, times, func, parms, method = "ode45", ...): Number of time steps 1 exceeded maxsteps at t = 0
+
+#> Warning in rk(y, times, func, parms, method = "ode45", ...): Number of time steps 1 exceeded maxsteps at t = 0
+
+#> Warning in rk(y, times, func, parms, method = "ode45", ...): Number of time steps 1 exceeded maxsteps at t = 0
+
+#> Warning in rk(y, times, func, parms, method = "ode45", ...): Number of time steps 1 exceeded maxsteps at t = 0
+
+#> Warning in rk(y, times, func, parms, method = "ode45", ...): Number of time steps 1 exceeded maxsteps at t = 0
 fit2$par
 #>       EC50          b       P_up 
-#> 0.50690096 4.16140491 0.01365827
+#> 0.52965567 5.24863437 0.02039446
 
 # Update the scenario with fitted parameter and simulate all trials
 fitted_tktd <- fitted_growth %>%

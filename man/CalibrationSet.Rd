@@ -2,79 +2,69 @@
 % Please edit documentation in R/class-CalibrationSet.R
 \name{CalibrationSet}
 \alias{CalibrationSet}
-\title{Create a CalibrationSet object}
+\alias{CalibrationSet-class}
+\alias{caliset}
+\title{Calibration set}
 \usage{
-CalibrationSet(scenario, data, weight = 1)
+caliset(scenario, data, weight = 1.0)
 }
 \arguments{
-\item{scenario}{any kind of \code{EffectScenario} or \code{\link[=sequence]{sequence()}}.}
+\item{scenario}{a \link{scenario} describing conditions during the experiment}
 
-\item{data}{a \code{data.frame} with effect data in long format containing two
+\item{data}{a \code{data.frame} with observed data in long format containing two
 columns: the 1st column with \code{numeric} time points and 2nd column with
-\code{numeric} effect data to fit to.}
+\code{numeric} data to fit to.}
 
-\item{weight}{optional \code{numeric} weight to be applied to this datasets' error
-term during fitting, default values is 1.}
+\item{weight}{optional \code{numeric} weight to be applied to this dataset's error
+term during fitting, default values is 1.0.}
 }
 \value{
-\code{CalibrationSet()} returns a \code{CalibrationSet} object with three
-slots containing \code{scenario}, \code{data}, and \code{weight}. Warnings are returned
-when input data are not a \code{data.frame} with 2 columns\code{.}
+\code{caliset()} returns a \emph{calibration set} object
 }
 \description{
-\code{CalibrationSet()} creates an object of the \code{CalibrationSet}
-class, which combines an \code{EffectScenario} and the corresponding effect data
-into one object. The created \code{CalibrationSet} object can subsequently be
-used for calibration of a model.
+A \emph{calibration set} combines a \link{scenario}, observed data, and an
+optional weighting factor into one object. The \emph{calibration set} is used to fit
+model parameters to observed data using \code{\link[=calibrate]{calibrate()}}.
+}
+\details{
+A \emph{calibration set} usually represents a single experiment or trial.
+Multiple experimental replicates can be combined into a single \emph{set}, if model
+parameters are identical between trials.
+If model parameters were modified during a trial, e.g. a pump failure occurred
+or flow rates changed, this can be represented by using a \emph{scenario sequence}
+instead of a basic \link{scenario}. Please refer to \code{\link[=sequence]{sequence()}} for details.
+\subsection{Weighting}{
 
-Instead of an \code{EffectScenario}, a \code{sequence} can also be used,
-e.g., when during an experiment a change in conditions is created which
-should not be captured by the model (e.g., a pump failure, a sudden change
-in temperature, or the removal of some experimental organisms from the
-system to avoid overcrowding, see \code{\link[=sequence]{sequence()}}).
-
-Optionally, a weight can be added to the \code{CalibrationSet}, in case one
-\code{CalibrationSet} should have more weight in the subsequent model
-calibration compared to other \code{CalibrationSets}.
+If more than one \emph{calibration set} is used for fitting, then an optional
+weighting factor can be used to scale the error term of the affected \emph{set}.
+}
 }
 \examples{
-# Lemna example with `EffectScenario` ----------------------------------------------
-# 1st get effect data
-eff_df <- Schmitt2013 \%>\%
-  dplyr::filter(ID == "T0") \%>\%
-  dplyr::select(t, obs)
-# 2nd, create `CalibrationSet`
-Cal_set <- CalibrationSet(scenario = metsulfuron, data = eff_df)
-# optionally, add a weight to the data
-Cal_set2 <- CalibrationSet(scenario = metsulfuron, data = eff_df, weight = 4)
-# look at what is returned
-Cal_set@data
-Cal_set@scenario
-Cal_set@scenario@name
-Cal_set@weight
+library(dplyr)
 
-# Lemna example with `sequence` ----------------------------------------------
-# Let's change the end of the exposure scenario in the `metsulfuron` `EffectScenario`
-metsulfuron@exposure
-altered_exposure_end <- data.frame(
-  time = c(5:10),
-  c = rep(1.5, 6)
-)
-metsulfuron \%>\%
-  set_times(c(0:4)) -> metsulfuron_1sthalf
-metsulfuron \%>\%
-  set_exposure(altered_exposure_end) \%>\%
-  set_times(c(5:10)) -> metsulfuron_2ndhalf
-# then, create a scenario sequence
-Sequence <- sequence(
-  c(metsulfuron_1sthalf, metsulfuron_2ndhalf)
-)
-# finally, create a `CalibrationSet` with the sequence
-obs32 <- Schmitt2013 \%>\%
-  dplyr::filter(ID == "T0.32") \%>\%
-  dplyr::select(t, obs)
-Cal_set3 <- CalibrationSet(Sequence, obs32)
-# look at what is returned
-Cal_set3@scenario@scenarios[[1]]
+# Get observed biomass during control experiment by Schmitt et al. (2013)
+observed <- Schmitt2013 \%>\%
+  filter(ID == "T0") \%>\%
+  select(t, BM=obs)
+
+# Create a scenario that represents conditions during experiment
+scenario <- metsulfuron \%>\%
+  set_param(c(k_phot_fix=TRUE, k_resp=0, Emax=1)) \%>\%
+  set_init(c(BM=12)) \%>\%
+  set_noexposure()
+
+# Create a calibration set
+cs <- caliset(scenario, observed)
+
+# Fit parameter 'k_phot_max' to observed biomass growth from experiment
+calibrate(
+  cs,
+  par=c(k_phot_max=1),
+  output="BM",
+  method="Brent", # Brent is recommended for one-dimensional optimization
+  lower=0,        # lower parameter boundary
+  upper=0.5       # upper parameter boundary
+) -> fit
+fit$par
 
 }

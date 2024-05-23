@@ -25,7 +25,7 @@ static double forc[3] = {0};
 /*
  * Constant helper value
  */
-static double log_EC50;
+static double log_EC50 = 0;
 /*
  * Define aliases
  */

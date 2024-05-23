@@ -1,100 +1,93 @@
-
-#' CalibrationSet class
+#' Calibration set
 #'
-#' @slot scenario any kind of `EffectScenario` or [sequence()]
-#' @slot data `data.frame` with two columns, 1st column with time points and
-#' 2nd column with numerical data to fit to
-#' @slot weight `numeric` weight to be applied to this datasets' error term
-#'  during fitting
+#' A *calibration set* combines a [scenario], observed data, and an
+#' optional weighting factor into one object. The *calibration set* is used to fit
+#' model parameters to observed data using [calibrate()].
 #'
-#' @export
-setClass("CalibrationSet",
-         slots=list(
-           scenario="ANY",
-           data="data.frame",
-           weight="numeric"
-         )
-)
-
-#' Create a CalibrationSet object
+#' A *calibration set* usually represents a single experiment or trial.
+#' Multiple experimental replicates can be combined into a single *set*, if model
+#' parameters are identical between trials.
+#' If model parameters were modified during a trial, e.g. a pump failure occurred
+#' or flow rates changed, this can be represented by using a *scenario sequence*
+#' instead of a basic [scenario]. Please refer to [sequence()] for details.
 #'
-#' @description `CalibrationSet()` creates an object of the `CalibrationSet`
-#'   class, which combines an `EffectScenario` and the corresponding effect data
-#'   into one object. The created `CalibrationSet` object can subsequently be
-#'   used for calibration of a model.
+#' ### Weighting
+#' If more than one *calibration set* is used for fitting, then an optional
+#' weighting factor can be used to scale the error term of the affected *set*.
+#' @usage caliset(scenario, data, weight = 1.0)
 #'
-#'   Instead of an `EffectScenario`, a `sequence` can also be used,
-#'   e.g., when during an experiment a change in conditions is created which
-#'   should not be captured by the model (e.g., a pump failure, a sudden change
-#'   in temperature, or the removal of some experimental organisms from the
-#'   system to avoid overcrowding, see [sequence()]).
-#'
-#'   Optionally, a weight can be added to the `CalibrationSet`, in case one
-#'   `CalibrationSet` should have more weight in the subsequent model
-#'   calibration compared to other `CalibrationSets`.
-#'
-#' @param scenario any kind of `EffectScenario` or [sequence()].
-#' @param data a `data.frame` with effect data in long format containing two
+#' @param scenario a [scenario] describing conditions during the experiment
+#' @param data a `data.frame` with observed data in long format containing two
 #'   columns: the 1st column with `numeric` time points and 2nd column with
-#'   `numeric` effect data to fit to.
-#' @param weight optional `numeric` weight to be applied to this datasets' error
-#'   term during fitting, default values is 1.
+#'   `numeric` data to fit to.
+#' @param weight optional `numeric` weight to be applied to this dataset's error
+#'   term during fitting, default values is 1.0.
 #'
-#' @returns `CalibrationSet()` returns a `CalibrationSet` object with three
-#'   slots containing `scenario`, `data`, and `weight`. Warnings are returned
-#'   when input data are not a `data.frame` with 2 columns`.`
+#' @returns `caliset()` returns a *calibration set* object
+#' @export
 #'
 #' @examples
-#' # Lemna example with `EffectScenario` ----------------------------------------------
-#' # 1st get effect data
-#' eff_df <- Schmitt2013 %>%
-#'   dplyr::filter(ID == "T0") %>%
-#'   dplyr::select(t, obs)
-#' # 2nd, create `CalibrationSet`
-#' Cal_set <- CalibrationSet(scenario = metsulfuron, data = eff_df)
-#' # optionally, add a weight to the data
-#' Cal_set2 <- CalibrationSet(scenario = metsulfuron, data = eff_df, weight = 4)
-#' # look at what is returned
-#' Cal_set@data
-#' Cal_set@scenario
-#' Cal_set@scenario@name
-#' Cal_set@weight
+#' library(dplyr)
 #'
-#' # Lemna example with `sequence` ----------------------------------------------
-#' # Let's change the end of the exposure scenario in the `metsulfuron` `EffectScenario`
-#' metsulfuron@exposure
-#' altered_exposure_end <- data.frame(
-#'   time = c(5:10),
-#'   c = rep(1.5, 6)
-#' )
-#' metsulfuron %>%
-#'   set_times(c(0:4)) -> metsulfuron_1sthalf
-#' metsulfuron %>%
-#'   set_exposure(altered_exposure_end) %>%
-#'   set_times(c(5:10)) -> metsulfuron_2ndhalf
-#' # then, create a scenario sequence
-#' Sequence <- sequence(
-#'   c(metsulfuron_1sthalf, metsulfuron_2ndhalf)
-#' )
-#' # finally, create a `CalibrationSet` with the sequence
-#' obs32 <- Schmitt2013 %>%
-#'   dplyr::filter(ID == "T0.32") %>%
-#'   dplyr::select(t, obs)
-#' Cal_set3 <- CalibrationSet(Sequence, obs32)
-#' # look at what is returned
-#' Cal_set3@scenario@scenarios[[1]]
+#' # Get observed biomass during control experiment by Schmitt et al. (2013)
+#' observed <- Schmitt2013 %>%
+#'   filter(ID == "T0") %>%
+#'   select(t, BM=obs)
 #'
+#' # Create a scenario that represents conditions during experiment
+#' scenario <- metsulfuron %>%
+#'   set_param(c(k_phot_fix=TRUE, k_resp=0, Emax=1)) %>%
+#'   set_init(c(BM=12)) %>%
+#'   set_noexposure()
+#'
+#' # Create a calibration set
+#' cs <- caliset(scenario, observed)
+#'
+#' # Fit parameter 'k_phot_max' to observed biomass growth from experiment
+#' calibrate(
+#'   cs,
+#'   par=c(k_phot_max=1),
+#'   output="BM",
+#'   method="Brent", # Brent is recommended for one-dimensional optimization
+#'   lower=0,        # lower parameter boundary
+#'   upper=0.5       # upper parameter boundary
+#' ) -> fit
+#' fit$par
+#'
+#' @name CalibrationSet
+#' @aliases CalibrationSet-class caliset
+NULL
+
 #' @export
-CalibrationSet <- function(scenario,data,weight=1) {
+#' @aliases CalibrationSet
+setClass("CalibrationSet",
+  slots=list(
+   scenario="ANY",
+   data="data.frame",
+   weight="numeric"
+  )
+)
+
+# Creates a *calibration set*
+#' @export
+caliset <- function(scenario, data, weight=1) {
   if(!is.data.frame(data))
-    stop("Data must be a data.frame")
-  if(length(data)!=2)
-    stop("Data must have two columns")
+    stop("parameter 'data' must be a data.frame")
+  if(length(data) < 2)
+    stop("parameter 'data' must have at least two columns")
   if(!is.numeric(weight))
-    stop("weight must be numeric")
+    stop("parameter 'weight' must be numeric")
+  if(is.infinite(weight) | is.na(weight) | is.nan(weight))
+    stop("parameter 'weight' must be finite numeric value")
 
   new("CalibrationSet",
       scenario=scenario,
       data=data,
       weight=weight)
+}
+
+# Alias for `caliset()`
+#' @export
+CalibrationSet <- function(...) {
+  caliset(...)
 }

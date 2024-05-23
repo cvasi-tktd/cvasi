@@ -1,10 +1,12 @@
 Package: cvasi
 Type: Package
 Title: Calibration, Validation, and Simulation of TKTD Models
-Version: 1.0.1
+Version: 1.1.0
 Authors@R: c(
     person("Nils", "Kehrein", email="nils.kehrein@gmail.com", role=c("aut", "cre")),
     person("Dirk", "Nickisch", role="aut"),
+    person("Peter", "Vermeiren", role="aut"),
+    person("Torben", "Wittwer", role="ctb"),
     person("Johannes", "Witt", role="ctb"),
     person("Andre", "Gergs", role="ctb")
     )
@@ -39,19 +41,20 @@ Imports:
     lemna,
     lubridate,
     attempt,
-    units
+    units,
+    lifecycle
 RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd",
     "roxyglobals::global_roclet"))
 Config/testthat/edition: 3
 Collate: 
     'cache_controls.R'
+    'class-CalibrationSet.R'
     'class-ExposureSeries.R'
     'class-EffectScenario.R'
     'calibrate.R'
     'class-Transferable.R'
     'class-Algae.R'
-    'class-CalibrationSet.R'
     'class-Deb.R'
     'class-GutsRed.R'
     'class-Lemna.R'

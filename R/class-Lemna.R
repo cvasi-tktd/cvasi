@@ -54,7 +54,7 @@ setClass("LemnaSetacScenario", contains="Lemna")
 #' substances by a respective reduction in the photosynthesis rate based on
 #' internal concentrations. This is the historical version of the Lemna model.
 #' For current uses, we recommend the Lemna (SETAC) model, which is a more recent
-#' version of the Schmitt model.”
+#' version of the Schmitt model.
 #'
 #' Constructors to ease creation of scenarios based on the *Lemna* model by
 #' Schmitt *et al.* (2013).

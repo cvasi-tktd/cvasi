@@ -45,6 +45,19 @@ install.packages("remotes", dependencies=TRUE)
 remotes::install_github("cvasi-tktd/cvasi", dependencies=TRUE)
 ```
 
+## Documentation
+
+The package contains the following vignettes
+
+- [User Manual](doc/cvasi-1-manual.md)
+- [Modeling Howto](doc/cvasi-2-howto.md)
+
+They can also be accessed locally by executing an *R* statement such as:
+
+``` r
+vignette("manual", package="cvasi")
+```
+
 ## Usage
 
 Basic usage:
@@ -97,7 +110,7 @@ library(ggplot2)
 ggplot(drc) + geom_point(aes(mf,effect)) + scale_x_log10()
 ```
 
-<img src="doc/figures/readme-unnamed-chunk-4-1.png" width="50%" />
+<img src="doc/figures/readme-unnamed-chunk-5-1.png" width="50%" />
 
 ``` r
 # derive EPx values
@@ -120,19 +133,6 @@ rep(c(scenario), 100) %>% epx()
 
 # disable parallel processing
 future::plan(future::sequential)
-```
-
-## Documentation
-
-The package contains the following vignettes
-
-- [User Manual](doc/manual.md)
-- [Modeling Howto](doc/howto.md)
-
-They can also be accessed locally by executing an *R* statement such as:
-
-``` r
-vignette("manual", package="cvasi")
 ```
 
 ## License

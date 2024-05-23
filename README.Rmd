@@ -58,6 +58,19 @@ install.packages("remotes", dependencies=TRUE)
 remotes::install_github("cvasi-tktd/cvasi", dependencies=TRUE)
 ```
 
+## Documentation
+
+The package contains the following vignettes
+
+* [User Manual](doc/cvasi-1-manual.md)
+* [Modeling Howto](doc/cvasi-2-howto.md)
+
+They can also be accessed locally by executing an *R* statement such as:
+```{r, eval=FALSE}
+vignette("manual", package="cvasi")
+```
+
+
 ## Usage
 
 Basic usage:
@@ -102,19 +115,6 @@ rep(c(scenario), 100) %>% epx()
 
 # disable parallel processing
 future::plan(future::sequential)
-```
-
-
-## Documentation
-
-The package contains the following vignettes
-
-* [User Manual](doc/manual.md)
-* [Modeling Howto](doc/howto.md)
-
-They can also be accessed locally by executing an *R* statement such as:
-```{r, eval=FALSE}
-vignette("manual", package="cvasi")
 ```
 
 ## License

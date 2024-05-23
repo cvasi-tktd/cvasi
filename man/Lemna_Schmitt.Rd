@@ -29,7 +29,7 @@ The toxicodynamic sub-model describes the effects of growth-inhibiting
 substances by a respective reduction in the photosynthesis rate based on
 internal concentrations. This is the historical version of the Lemna model.
 For current uses, we recommend the Lemna (SETAC) model, which is a more recent
-version of the Schmitt model.”
+version of the Schmitt model.
 }
 \details{
 Constructors to ease creation of scenarios based on the \emph{Lemna} model by

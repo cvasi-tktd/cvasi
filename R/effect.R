@@ -91,7 +91,7 @@ effect <- function(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_effect, .
 
     rs <- tibble::tibble(scenario=c(x))
     for(ep in x@endpoints) {
-      max.efx <- dplyr::arrange(efx, dplyr::desc(.data[[ep]]),window.start)
+      max.efx <- dplyr::arrange(efx, dplyr::desc(.data[[ep]]), window.start)
       max.efx <- max.efx[1,c(ep,"window.start","window.end")]
       names(max.efx) <- c(ep,paste0(ep,".dat.start"),paste0(ep,".dat.end"))
       rs <- dplyr::bind_cols(rs,max.efx)

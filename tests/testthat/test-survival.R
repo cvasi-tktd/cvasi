@@ -19,6 +19,9 @@ Surv.SD_Cext <- function(Cw, time, kk, kd, z, hb) {
 
 
 test_that("GUTS-RED constant exposure", {
+  # rjags not readily available on macOS
+  skip_on_os("mac")
+
   # GUTS model verification as conducted in
   # EFSA Scientific Opinion on TKTD models, pp. 36
   # doi:10.2903/j.efsa.2018.5377
@@ -83,6 +86,9 @@ test_that("GUTS-RED constant exposure", {
 })
 
 test_that("GUTS-RED time-variable exposure", {
+  # rjags not readily available on macOS
+  skip_on_os("mac")
+
   # GUTS model verification as conducted in
   # EFSA Scientific Opinion on TKTD models, pp. 36
   # doi:10.2903/j.efsa.2018.5377
@@ -136,6 +142,9 @@ test_that("GUTS-RED time-variable exposure", {
 })
 
 test_that("GUTS-RED extreme cases", {
+  # rjags not readily available on macOS
+  skip_on_os("mac")
+
   # GUTS model verification as conducted in
   # EFSA Scientific Opinion on TKTD models, pp. 36
   # doi:10.2903/j.efsa.2018.5377
@@ -259,7 +268,10 @@ test_that("GUTS-RED extreme cases", {
 })
 
 test_that("GUTS-RED sensitivity analysis", {
-  # GUTS model verification as conducted in
+  # rjags not readily available on macOS
+  skip_on_os("mac")
+
+    # GUTS model verification as conducted in
   # EFSA Scientific Opinion on TKTD models, pp. 36
   # doi:10.2903/j.efsa.2018.5377
 

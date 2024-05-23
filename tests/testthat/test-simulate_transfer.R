@@ -37,7 +37,7 @@ test_that("custom biomass", {
 test_that("non-standard biomass compartment name", {
   sc <- metsulfuron
   sc@transfer.comp.biomass <- "Foo"
-  sc@init <- c(Foo=1,M_int=0)
+  sc@init <- c(Foo=1, E=1, M_int=0)
   sc %>%
     set_transfer(times=c(2,3,6), biomass=c(1,1,1)) %>%
     simulate() -> rs

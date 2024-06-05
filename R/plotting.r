@@ -384,6 +384,8 @@ plot_ppc_combi <- function(table, xy_lim = NULL) {
 #' the EPx plot are returned as a list for later modification
 #' @param time_col the name of the time column in the exposure dataset
 #' @param conc_col the name of the concentration column in the exposure dataset
+#' @param epx_x_title title of the x-axis of the epx panel
+#' @param conc_y_title title of the y-axis of the concentration panel
 #'
 #' @return a grid of ggplots
 #' @export
@@ -398,8 +400,9 @@ plot_ppc_combi <- function(table, xy_lim = NULL) {
 #' epx_mtw(level = 10, factor_cutoff = 1000)
 #' metsulfuron_epx_mtw
 #' plot_epx(EPx_ts = metsulfuron_epx_mtw,
-#' exposure_ts = exposure)
-plot_epx <- function(EPx_ts, exposure_ts, draw = TRUE, time_col = "time", conc_col = "conc") {
+#' exposure_ts = exposure, conc_y_title = "env. concentration [µg/L]")
+plot_epx <- function(EPx_ts, exposure_ts, draw = TRUE, time_col = "time", conc_col = "conc",
+                     epx_x_title = "Start time", conc_y_title = "Exposure conc.") {
 
   plot_dat <- EPx_ts %>%
     dplyr::select(!dplyr::matches("window.end", "level"))
@@ -410,7 +413,6 @@ plot_epx <- function(EPx_ts, exposure_ts, draw = TRUE, time_col = "time", conc_c
     stop("only single EPx level accepted for plotting")
   }
   epx_y_title <- parse(text = paste0('EP[', ep_level, ']'))
-  epx_x_title <- "Start time"
   epx_plot_x_lim <- EPx_ts %>%
     dplyr::select(window.start, window.end) %>%
     range()
@@ -425,7 +427,6 @@ plot_epx <- function(EPx_ts, exposure_ts, draw = TRUE, time_col = "time", conc_c
     ggplot2::facet_wrap(endpoint ~ ., ncol = 1, scales="free_y")
 
   # Concentration plot ----
-  conc_y_title <- "Exposure conc."
   conc_plot <- ggplot2::ggplot(exposure_ts) +
     ggplot2::geom_area(ggplot2::aes(.data[[time_col]], .data[[conc_col]]),
                        alpha = 0.5,

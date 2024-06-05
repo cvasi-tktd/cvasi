@@ -9,7 +9,9 @@ plot_epx(
   exposure_ts,
   draw = TRUE,
   time_col = "time",
-  conc_col = "conc"
+  conc_col = "conc",
+  epx_x_title = "Start time",
+  conc_y_title = "Exposure conc."
 )
 }
 \arguments{
@@ -25,6 +27,10 @@ the EPx plot are returned as a list for later modification}
 \item{time_col}{the name of the time column in the exposure dataset}
 
 \item{conc_col}{the name of the concentration column in the exposure dataset}
+
+\item{epx_x_title}{title of the x-axis of the epx panel}
+
+\item{conc_y_title}{title of the y-axis of the concentration panel}
 }
 \value{
 a grid of ggplots
@@ -41,5 +47,5 @@ set_exposure(exposure) \%>\%
 epx_mtw(level = 10, factor_cutoff = 1000)
 metsulfuron_epx_mtw
 plot_epx(EPx_ts = metsulfuron_epx_mtw,
-exposure_ts = exposure)
+exposure_ts = exposure, conc_y_title = "env. concentration [µg/L]")
 }

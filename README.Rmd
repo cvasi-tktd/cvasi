@@ -46,17 +46,23 @@ for an overview of user-facing updates and changes.
 
 ## Installation
 
-<!-- 1. Install from CRAN -->
-<!-- ```{r eval=FALSE} -->
-<!-- install.packages("cvasi", dependencies=TRUE) -->
-<!-- ``` -->
+Install the package from CRAN:
 
-Install latest version from GitHub:
+```{r eval=FALSE}
+install.packages("cvasi", dependencies=TRUE)
+```
+
+Or install the newest development version from *GitHub*:
 
 ```{r eval=FALSE}
 install.packages("remotes", dependencies=TRUE)
 remotes::install_github("cvasi-tktd/cvasi", dependencies=TRUE)
 ```
+
+For installing `cvasi` from *GitHub* on Windows computers, please make sure that
+you also have [*Rtools*](https://cran.r-project.org/bin/windows/Rtools/) installed
+on your machine. *Rtools* are required to compile the package's C code.
+
 
 ## Documentation
 

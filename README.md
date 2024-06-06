@@ -33,17 +33,23 @@ user-facing updates and changes.
 
 ## Installation
 
-<!-- 1. Install from CRAN -->
-<!-- ```{r eval=FALSE} -->
-<!-- install.packages("cvasi", dependencies=TRUE) -->
-<!-- ``` -->
+Install the package from CRAN:
 
-Install latest version from GitHub:
+``` r
+install.packages("cvasi", dependencies=TRUE)
+```
+
+Or install the newest development version from *GitHub*:
 
 ``` r
 install.packages("remotes", dependencies=TRUE)
 remotes::install_github("cvasi-tktd/cvasi", dependencies=TRUE)
 ```
+
+For installing `cvasi` from *GitHub* on Windows computers, please make
+sure that you also have
+[*Rtools*](https://cran.r-project.org/bin/windows/Rtools/) installed on
+your machine. *Rtools* are required to compile the package’s C code.
 
 ## Documentation
 
@@ -110,7 +116,7 @@ library(ggplot2)
 ggplot(drc) + geom_point(aes(mf,effect)) + scale_x_log10()
 ```
 
-<img src="doc/figures/readme-unnamed-chunk-5-1.png" width="50%" />
+<img src="doc/figures/readme-unnamed-chunk-6-1.png" width="50%" />
 
 ``` r
 # derive EPx values

@@ -298,6 +298,18 @@ simulate_seq <- function(seq, times, ...) {
 #' @param param_sample data.frame with parameter sample
 #' @return a `data.frame` with simulation results
 #' @export
+#' @examples
+#'
+#' exposure <- data.frame(time = Schmitt2013$t,
+#'             conc = Schmitt2013$conc,
+#'            trial = Schmitt2013$ID)
+#'
+#' sim_result <- simulate_batch(model_base = metsulfuron,
+#'                             treatments = exposure)
+#'
+#'
+#'
+#'
 simulate_batch <- function(model_base,
                            treatments,
                            param_sample = NULL
@@ -315,10 +327,10 @@ simulate_batch <- function(model_base,
   # Initialize an empty list to store data frames
   list_of_effect_sets <- list()
   # create list of effect scenario objects for each trial
-  list_of_effect_sets <- treatments %>%
-    dplyr::group_by(treatments[,3]) %>% #trial/exposure level
-    dplyr::group_map(~ model_base %>%
-                       set_exposure(data.frame(treatments[,1], treatments[,2])))
+  list_of_effect_sets <- lapply(split(treatments, treatments$trial), function(x){
+    model_base %>%
+      set_exposure(data.frame(time = x[,1], conc = x[,2]))
+  })
                                                 # time, conc
 
   # simulate

@@ -32,3 +32,16 @@ function can be used. All exposure series are saved in the treatment argument.
 The first column contains the time, the second column the concentration, and
 the third column the trial name (exposure level, e.g. 'T1', 'T2', 'T3').
 }
+\examples{
+
+exposure <- data.frame(time = Schmitt2013$t,
+            conc = Schmitt2013$conc,
+           trial = Schmitt2013$ID)
+
+sim_result <- simulate_batch(model_base = metsulfuron,
+                            treatments = exposure)
+
+
+
+
+}

@@ -7,18 +7,19 @@
 plot_ppc(
   rs_mean,
   rs_range,
+  col_number = 2,
   obs_mean = NULL,
   obs_full = NULL,
   xy_lim = NULL,
-  study = NULL,
-  outfile = NULL,
-  ...
+  study = NULL
 )
 }
 \arguments{
 \item{rs_mean}{\code{data.frame}, model results best fit params}
 
 \item{rs_range}{\code{data.frame}, predictions (min, max from param.sample run)}
+
+\item{col_number, }{column to plot, default = 2}
 
 \item{obs_mean}{\code{data.frame}, observations with means per treatment level}
 
@@ -27,18 +28,19 @@ plot_ppc(
 \item{xy_lim}{optional \code{numeric}, limits of x and y axis for plotting}
 
 \item{study}{optional \code{string}, name of study which can be used as key}
-
-\item{outfile}{optional \code{string}, file path is given = save graph}
-
-\item{...}{any additional parameters}
 }
 \value{
-\code{data.frame} with fitted and observed frond numbers
+a ggplot2 plot object
 }
 \description{
 A sample of parameters representing the uncertainty within the dataset
 is passed to the function. All parameter combinations and exposure patterns
 are simulated and the range of predicted frond numbers is derived for a
-single study. The uncertainty is displayed by a Posterior Predicitve Plot
-(PPC).
+single study. The uncertainty is displayed by a Posterior Predictive Plot
+(PPC). The data (rs_mean, obs_mean and obs_full) must have the
+following format (col1 = time, col2 = data of interest, col3 = trial name).
+Data for uncertainties (rs_range) must have the format: col1 = time,
+col2 = lower boundaries, col3 = upper boundaries, col4 = trial. The user
+should take care of the input data and consider whether control data and
+data at time zero should be included in the model check.
 }

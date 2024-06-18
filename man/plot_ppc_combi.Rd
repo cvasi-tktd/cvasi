@@ -11,6 +11,9 @@ plot_ppc_combi(table, xy_lim = NULL)
 
 \item{xy_lim}{optional \code{numeric}, limits of x and y axis for plotting}
 }
+\value{
+a ggplot2 plot object
+}
 \description{
 The function expects a data.frame with four mandatory and one optional
 column. The mandatory columns are as follows:
@@ -22,5 +25,7 @@ column. The mandatory columns are as follows:
 The optional column is to be named \code{study} and contains a study identifier.
 If more than one study identifier is present in the table, individual
 studies will be plotted in different colors and a legend will be displayed.
+The function is called by plot_ppc where the column names are defined
+(see rs_ppc object).
 }
 }

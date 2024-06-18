@@ -2,10 +2,12 @@
 #' Creates plot of model results (uncertainties optional)
 #'
 #' All parameter combinations and exposure patterns are simulated and the mean
-#' of predicted frond numbers is derived for a single study. The uncertainty is
+#' of predictions is derived for a single study. The uncertainty is
 #' passed to the function due to computation time. Results are displayed by
 #' plotting the time series including the uncertainty interval. Observation data
-#' can be optionally displayed. Data should be provided in long format.
+#' can be optionally displayed. Data should be provided in long format. Function
+#' plots the time (column 1) and the predictions (column 2, can be changed by
+#' the user plot_col)
 #'
 #' @param model_base effect scenario object with mean parameters
 #' @param treatments treatments exposure levels as data frame
@@ -21,6 +23,7 @@
 #' @param y_title optional title of y-axis
 #' @param ... any additional parameters
 #' @return a ggplot2 plot object
+#' @global trial
 #' @export
 #'
 #' @examples
@@ -71,6 +74,8 @@ plot_sd <- function(model_base,
     stop("obs_full not a data.frame")
   }
 
+  no_trials <- length(unique(rs_mean$trial))
+
   # ToDo check class calibration set / set more than one exposure in an effect
   # scenario object as an alternative
   # ToDo check style guide
@@ -78,6 +83,7 @@ plot_sd <- function(model_base,
   # ToDo how to handle replicates? Plot replicates? Plot uncertainties?
 
   exp_plot <- treatments # long format
+  exp_plot$trial <- as.factor(exp_plot$trial)
 
   # try to guess the simulated time period
   t_max <- max(treatments[, 1]) # 1st column should contain time
@@ -100,10 +106,12 @@ plot_sd <- function(model_base,
 
   if (!is.null(obs_full)) {
     obs_plot <- obs_full
-    obs_max <- max(obs_max, obs_plot$data) #??col number instead of name?
+    obs_max <- max(obs_max, obs_plot[,2]) #2 = data, observations
+    obs_plot$trial <- as.factor(obs_plot$trial) #trial
   } else if (!is.null(obs_mean)) {
     obs_plot <- obs_mean
-    obs_max <- max(obs_max, obs_plot$data)
+    obs_max <- max(obs_max, obs_plot[,2])
+    obs_plot$trial <- as.factor(obs_plot$trial) #trial
   } else {
     obs_plot <- NULL
   }
@@ -111,9 +119,9 @@ plot_sd <- function(model_base,
   obs_max <- obs_max * 1.10 # 10 per cent for the symbols
 
   # determine max of x-axis and scale the x value
-  exp_max <- max(exp_plot$conc) #?? col instead of name?
+  exp_max <- max(exp_plot[,2]) #?? col instead of name?
   if (obs_max > exp_max * 10 | exp_max > obs_max) {
-    exp_plot$conc <- exp_plot$conc / exp_max * obs_max
+    exp_plot[,2] <- exp_plot[,2] / exp_max * obs_max
   }
 
   # color scheme
@@ -127,10 +135,10 @@ plot_sd <- function(model_base,
   # random colors instead?
   # set default breaks for x axis
   if (is.null(x_breaks)) {
-    x_breaks <- grDevices::axisTicks(usr = range(treatments[, "time"]),
-                          log = FALSE,
-                          axp = NULL,
-                          nint = 5)
+    x_breaks <- grDevices::axisTicks(usr = range(treatments[, 1]),
+                                     log = FALSE,
+                                     axp = NULL,
+                                     nint = 5)
   }
   # set default y axis limits
   if (is.null(y_lim)) {
@@ -151,54 +159,91 @@ plot_sd <- function(model_base,
   }
 
   # create plot
-  plot <- ggplot2::ggplot() +
-    # exposure profiles
-    ggplot2::geom_area(ggplot2::aes(x = .data$time,
-                                    y = .data$conc,
-                                    fill = "black"),
-      data = exp_plot,
-      alpha = 0.12,
-      position = "identity"
-    ) +
-    # best fit
-    ggplot2::geom_line(ggplot2::aes(.data$time,
-                                    rs_mean[, plot_col],
-                                    color = .data$trial),
-      data = rs_mean
-    ) +
-    # labels
-    ggplot2::facet_wrap(trial ~ ., ncol = grid_ncol, labeller = f_lb) +
+  # one plot
+  if(no_trials == 1){ #ToDo? Exposure with second y-axis
+    plot <- ggplot2::ggplot() +
+      # best fit
+      ggplot2::geom_line(data = rs_mean, ggplot2::aes(x = rs_mean[,1], #time
+                                                      y = rs_mean[, plot_col], #output selected by user
+                                                      color = "black"),
+                         #show.legend = TRUE
+      ) +
+      # exposure profiles
+      ggplot2::geom_area(data = exp_plot, ggplot2::aes(x = exp_plot[,1], #time
+                                                       y = exp_plot[,2], #conc
+                                                       fill = "grey"),
+                         alpha = 0.12,
+                         position = "identity",
+                         #show.legend = TRUE
+      )
+
     # colors
-    ggplot2::scale_color_manual(values = col_palette) +
-    ggplot2::scale_fill_manual(values = col_palette) +
-    ggplot2::scale_x_continuous(name = "Time (days)", breaks = x_breaks) +
-    ggplot2::scale_y_continuous(name = y_title) +
-    # (name of column)
-    ggplot2::coord_cartesian(xlim = c(0, t_max), ylim = y_lim) + # boundaries
-    ggplot2::theme_bw() +
-    ggplot2::theme(legend.position = "none")
+    plot <- plot +
+      ggplot2::scale_color_manual(values = "black", name = "Prediction") +
+      ggplot2::scale_fill_manual(values = "grey", name = "Exposure") +
+      ggplot2::scale_x_continuous(name = "Time (days)", breaks = x_breaks) +
+      ggplot2::scale_y_continuous(name = y_title) +
+      #ggplot2::scale_y_continuous(sec.axis = sec_axis(~./1,name = "Exposure")) +
+      # (name of column)
+      ggplot2::coord_cartesian(xlim = c(0, t_max), ylim = y_lim) + # boundaries
+      ggplot2::theme_bw() +
+      ggplot2::theme(legend.position = "top")
 
-  if (!is.null(obs_plot)) {
-    plot <- plot + # observations, data
-      ggplot2::geom_point(ggplot2::aes(x = .data$time,
-                                       y = .data$data,
-                                       bg = .data$trial),
-        data = obs_plot, size = 3, shape = 22
-      )
+  } else {
+    plot <- ggplot2::ggplot() +
+
+      # best fit
+      ggplot2::geom_line(data = rs_mean, ggplot2::aes(x = rs_mean[,1], #time
+                                                      y = rs_mean[, plot_col], #output selected by user
+                                                      color = trial)
+      ) +
+      # exposure profiles
+      ggplot2::geom_area(data = exp_plot, ggplot2::aes(x = exp_plot[,1], #time
+                                                       y = exp_plot[,2], #conc
+                                                       fill = "black"),
+                         alpha = 0.12,
+                         position = "identity"
+      ) +
+      # Facet by trial
+      ggplot2::facet_wrap(~ trial, ncol = grid_ncol, labeller = f_lb)
+
+    # colors
+    plot <- plot +
+      ggplot2::scale_color_manual(values = col_palette) +
+      ggplot2::scale_fill_manual(values = col_palette) +
+      ggplot2::scale_x_continuous(name = "Time (days)", breaks = x_breaks) +
+      ggplot2::scale_y_continuous(name = y_title) +
+      # (name of column)
+      ggplot2::coord_cartesian(xlim = c(0, t_max), ylim = y_lim) + # boundaries
+      ggplot2::theme_bw() +
+      ggplot2::theme(legend.position = "none")
+
+    if (!is.null(obs_plot)) {
+      plot <- plot + # observations, data
+        ggplot2::geom_point(data = obs_plot, ggplot2::aes(x = obs_plot[,1], #time
+                                                          y = obs_plot[,2], #observations
+                                                          bg = trial),
+                            size = 3, shape = 22
+        ) +
+        # Facet by trial
+        ggplot2::facet_wrap(~ trial, ncol = grid_ncol, labeller = f_lb)
+    }
+
+    if (!is.null(rs_range)) {
+      plot <- plot + # uncertainties, data
+        ggplot2::geom_ribbon(data = rs_range, ggplot2::aes(x = rs_range[,1], #time
+                                                           ymin = rs_range[,2], #min
+                                                           ymax = rs_range[,3], #max
+                                                           fill = trial),
+                             alpha = 0.35
+        ) +
+        # Facet by trial
+        ggplot2::facet_wrap(~ trial, ncol = grid_ncol, labeller = f_lb)
+    }
   }
-
-  if (!is.null(rs_range)) {
-    plot <- plot + # uncertainties, data
-      ggplot2::geom_ribbon(ggplot2::aes(x = .data$time,
-                                        ymin = .data$min,
-                                        ymax = .data$max,
-                                        fill = .data$trial),
-        data = rs_range, alpha = 0.35
-      )
-  }
-
   print(plot)
 }
+
 
 #' Creates a PPC plot for a single dataset
 #'
@@ -450,5 +495,50 @@ plot_epx <- function(EPx_ts, exposure_ts, draw = TRUE, time_col = "time", conc_c
   } else {
     out <- list(conc_plot, epx_plot)
   }
+
+}
+
+#' Creates a prediction plot for one effect scenario
+#'
+#' Sometimes it is helpful if the user can plot results of one effect
+#' scenario. This is for instance the case for test simulations or predictions
+#' for one profile. This function runs the simulation for one effect scenario
+#' and plots the results. Function plots the time (column 1) and the predictions
+#' (column 2, can be changed by the user plot_col)
+#'
+#' @param model_base effect scenario object with mean parameters
+#' @param plot_col output column which should be plotted, default = 2
+#' @param trial_number name for model run (if available tag is used)
+#' @return plot of the results for one `effect scenario`
+#' @export
+#'
+#' @examples
+#' plot_scenario(metsulfuron)
+plot_scenario <- function(model_base, plot_col = 2, trial_number = NULL) {
+
+  # set name of run
+  if (is.null(trial_number)) {
+    if (is.na(model_base@tag)) {
+      trial_number <- "T1"
+    } else {
+      trial_number <- model_base@tag
+    }
+  }
+
+  # run model
+  sim_result <- model_base %>% simulate()
+  sim_result$trial <- trial_number
+
+  # prepare exposure data
+  exposure <- model_base@exposure@series
+  exposure$trial <- trial_number
+
+  # plot results
+  plot_sd(model_base = model_base,
+    treatments = exposure,
+    rs_mean = sim_result,
+    obs_mean = NULL,
+    plot_col = plot_col
+  )
 
 }

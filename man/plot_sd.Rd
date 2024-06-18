@@ -52,10 +52,12 @@ a ggplot2 plot object
 }
 \description{
 All parameter combinations and exposure patterns are simulated and the mean
-of predicted frond numbers is derived for a single study. The uncertainty is
+of predictions is derived for a single study. The uncertainty is
 passed to the function due to computation time. Results are displayed by
 plotting the time series including the uncertainty interval. Observation data
-can be optionally displayed. Data should be provided in long format.
+can be optionally displayed. Data should be provided in long format. Function
+plots the time (column 1) and the predictions (column 2, can be changed by
+the user plot_col)
 }
 \examples{
 set.seed(124)

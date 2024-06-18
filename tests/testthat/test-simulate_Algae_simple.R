@@ -33,7 +33,7 @@ test_that("Algae_Simple simulation", {
     set_times(times) %>%
     set_forcings(f_growth = forc_fgrowth) %>%
     set_init(y_init)
-  results <- effect_scenario %>% simulate(nout = 6)
+  results <- effect_scenario %>% simulate(nout = 5)
 
   # check biomass growth against values from analytical solution
   # generated in R with initial_value * exp(growth_max * t)
@@ -74,7 +74,7 @@ test_that("Algae_Simple simulation", {
     set_exposure(forc_C_in) %>%
     set_times(times) %>%
     set_init(y_init)
-  results <- effect_scenario %>% simulate(nout = 6)
+  results <- effect_scenario %>% simulate(nout = 5)
 
   # check biomass growth against values from analytical solution
   # generated in R with initial_value * exp(growth_max * t)

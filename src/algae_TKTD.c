@@ -151,17 +151,11 @@ void algae_TKTD_func(int *neq, double *t, double *y, double *ydot, double *yout,
   // TKTD damage concentration
   dDw = kD * (Cw - Dw);
 
-  // Store forcing values in yout
   // derivatives as additional output
-  if(*ip >= 3) {
-    yout[0] = Cw;
-    yout[1] = I;
-    yout[2] = T_act;
-  }
-  if(*ip >= 7) {
-    yout[3] = dA;
-    yout[4] = dQ;
-    yout[5] = dP;
-    yout[6] = dDw;
+  if(*ip >= 4) {
+    yout[0] = dA;
+    yout[1] = dQ;
+    yout[2] = dP;
+    yout[3] = dDw;
   }
 }

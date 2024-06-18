@@ -89,8 +89,15 @@ setClass("AlgaeSimpleScenario", contains = "Algae")
 #' list of the data frames.
 #'
 #' @section Simulation output:
+#' Simulation results will contain the state variables Biomass (`A`), mass of
+#' internal phosphorous (`Q`), mass of external phosphorous (`P`) and the external
+#' concentration (`C`). The derivatives are also available as additional output.
 #'
-#' Simulation results will contain state variables.
+#' - `nout >= 4`
+#'    - `dA`, biomass derivative (µg)
+#'    - `dQ`, internal phosphorous derivative (mg P/ug fresh wt)
+#'    - `dP`, external phosphorous derivative (mg P L-1)
+#'    - `dC`, external concentration derivative (ug L-1)
 #'
 #' @references
 #' Weber D, Schaeffer D, Dorgerloh M, Bruns E, Goerlitz G, Hammel K, Preuss TG
@@ -188,8 +195,15 @@ Algae_Weber <- function() {
 #' list of the data frames.
 #'
 #' @section Simulation output:
+#' Simulation results will contain the state variables Biomass (`A`), mass of
+#' internal phosphorous (`Q`), mass of external phosphorous (`P`) and the damage
+#' concentration (`Dw`). The derivatives are also available as additional output.
 #'
-#' Simulation results will contain state variables.
+#' - `nout >= 4`
+#'    - `dA`, biomass derivative (µg)
+#'    - `dQ`, internal phosphorous derivative (mg P/ug fresh wt)
+#'    - `dP`, external phosphorous derivative (mg P L-1)
+#'    - `dDw`, damage concentration derivative (ug L-1)
 #'
 #' @references
 #' Weber D, Schaeffer D, Dorgerloh M, Bruns E, Goerlitz G, Hammel K, Preuss TG
@@ -246,7 +260,7 @@ Algae_TKTD <- function() {
 #'
 #' @section State variables:
 #' The model has two state variables:
-#' - `A`, Biomass
+#' - `A`, Biomass (µg)
 #' - `Dw`, only used if scaled = 1
 #'
 #' @section Model parameters:
@@ -272,8 +286,14 @@ Algae_TKTD <- function() {
 #' not set, a default scaling factor of 1 is used.
 #'
 #' @section Simulation output:
+#' Simulation results will contain the state variables biomass (`A`) and in case
+#' of scaled damage the damage concentration (`Dw`). The derivatives are also
+#' available as additional output.
 #'
-#' Simulation results will contain state variables.
+#' - `nout >= 2`
+#'    - `dA`, biomass derivative (µg)
+#'    - `dDw`, damage concentration derivative (ug L-1)
+#'
 #'
 #' @references
 #' Weber D, Schaeffer D, Dorgerloh M, Bruns E, Goerlitz G, Hammel K, Preuss TG

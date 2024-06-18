@@ -25,7 +25,7 @@ basis of internal concentrations.
 
 The model has two state variables:
 \itemize{
-\item \code{A}, Biomass
+\item \code{A}, Biomass (µg)
 \item \code{Dw}, only used if scaled = 1
 }
 }
@@ -64,8 +64,16 @@ not set, a default scaling factor of 1 is used.
 
 \section{Simulation output}{
 
-
-Simulation results will contain state variables.
+Simulation results will contain the state variables biomass (\code{A}) and in case
+of scaled damage the damage concentration (\code{Dw}). The derivations are also
+available as additional output.
+\itemize{
+\item \code{nout >= 2}
+\itemize{
+\item \code{dA}, biomass derivative (µg)
+\item \code{dDw}, damage concentration derivative (ug L-1)
+}
+}
 }
 
 \references{

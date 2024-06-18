@@ -134,18 +134,11 @@ void algae_func(int *neq, double *t, double *y, double *ydot, double *yout, int 
   // Actual concentration
   dC = C_in * D - k * C - D * C;
 
-  // Store forcing values in yout
   // derivatives as additional output
-  if(*ip >= 3) {
-    yout[0] = C_in;
-    yout[1] = I;
-    yout[2] = T_act;
+  if(*ip >= 4) {
+    yout[0] = dA;
+    yout[1] = dQ;
+    yout[2] = dP;
+    yout[3] = C;
   }
-  if(*ip >= 7) {
-    yout[3] = dA;
-    yout[4] = dQ;
-    yout[5] = dP;
-    yout[6] = dC;
-  }
-
 }

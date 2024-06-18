@@ -128,11 +128,5 @@ void algae_simple_func(int *neq, double *t, double *y, double *ydot, double *you
     yout[0] = dA;
     yout[1] = dDw;
   }
-  // settings as additional output
-  if(*ip >= 6) {
-    yout[2] = dose_response;
-    yout[3] = scaled;
-    yout[4] = f_growth;
-    yout[5] = log(A);
-  }
+
 }

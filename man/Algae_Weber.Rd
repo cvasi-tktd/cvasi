@@ -73,8 +73,18 @@ list of the data frames.
 
 \section{Simulation output}{
 
-
-Simulation results will contain state variables.
+Simulation results will contain the state variables Biomass (\code{A}), mass of
+internal phosphorous (\code{Q}), mass of external phosphorous (\code{P}) and the external
+concentration (\code{C}). The derivations are also available as additional output.
+\itemize{
+\item \code{nout >= 4}
+\itemize{
+\item \code{dA}, biomass derivative (µg)
+\item \code{dQ}, internal phosphorous derivative (mg P/ug fresh wt)
+\item \code{dP}, external phosphorous derivative (mg P L-1)
+\item \code{dC}, external concentration derivative (ug L-1)
+}
+}
 }
 
 \references{

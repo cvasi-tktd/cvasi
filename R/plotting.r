@@ -474,7 +474,7 @@ plot_ppc_combi <- function(table, xy_lim = NULL) {
 #'
 #' @return a grid of ggplots
 #' @export
-#' @global EPx
+#' @global EPx len
 #'
 #' @examples
 #' ti <- 0:21
@@ -501,10 +501,23 @@ plot_epx <- function(EPx_ts, exposure_ts, draw = TRUE, time_col = "time", conc_c
   epx_plot_x_lim <- EPx_ts %>%
     dplyr::select(window.start, window.end) %>%
     range()
-  epx_plot <- ggplot2::ggplot(plot_dat) +
-    ggplot2::geom_line(ggplot2::aes(window.start, EPx),
-                       color = "orange",
-                       linewidth = 1.25) +
+
+  len_ts <- plot_dat %>%
+    dplyr::group_by(endpoint) %>%
+    dplyr::summarise(len = length(window.start)) %>%
+    dplyr::pull(len) %>%
+    min()
+  if (len_ts == 1){
+    epx_plot_base <- ggplot2::ggplot(plot_dat) +
+      ggplot2::geom_point(ggplot2::aes(window.start, EPx),
+                          color = "orange")
+  } else {
+    epx_plot_base <- ggplot2::ggplot(plot_dat) +
+      ggplot2::geom_line(ggplot2::aes(window.start, EPx),
+                         color = "orange",
+                         linewidth = 1.25)
+  }
+  epx_plot <- epx_plot_base +
     ggplot2::ylab(epx_y_title) +
     ggplot2::xlab(epx_x_title) +
     ggplot2::ylim(0, NA) +

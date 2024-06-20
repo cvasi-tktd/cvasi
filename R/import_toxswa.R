@@ -119,7 +119,7 @@ extract_focus_profile <- function(
         stringr::str_extract("[[:digit:]]+"),
       .before = "DateTime"
     ) %>%
-    dplyr::select("RunID", "Layer_Specifier", "DateTime", "Time", "Exposure")  %>%
+    dplyr::select(dplyr::all_of(c("RunID", "Layer_Specifier", "DateTime", "Time", "Exposure"))) %>%
     dplyr::rename_at("Exposure", ~ paste0("Concentration"))
 }
 
@@ -202,11 +202,18 @@ check_if_toxswa <- function(ln){
 #' @noRd
 melt_focus_profiles <- function(profile, time_col = "Time", conc_col =  "Concentration"){
   out <- profile %>%
-    dplyr::select(c(time_col,conc_col)) %>%
+    dplyr::select(dplyr::all_of(c(time_col,conc_col))) %>%
     units::drop_units() %>%
     as.data.frame()
 
   names(out) <- c("time", "conc")
+
+  myunits <- setNames(
+    c(profile %>% dplyr::pull(time_col) %>% units::deparse_unit(),
+      profile %>% dplyr::pull(conc_col) %>% units::deparse_unit()),
+    names(out)
+  )
+  attr(out, "units") <- myunits
 
   return(out)
 }

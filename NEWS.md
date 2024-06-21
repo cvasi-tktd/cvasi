@@ -1,3 +1,8 @@
+# cvasi 1.1.1
+
+* Various improvements to plotting routines
+* New `plot_scenario()`
+
 # cvasi 1.1.0
 
 * `calibrate()`

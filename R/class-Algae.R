@@ -151,11 +151,15 @@ Algae_Weber <- function() {
 
 #' Algae model with exponential growth, forcings (P, I) and scaled damage
 #'
-#' Creates an *Algae* scenario. The model is a variant
-#' of the [Algae_Weber()] model (Weber 2012) as cited in EFSA TKTD opinion (2018).
-#' This Algae model, [Algae_TKTD()], a) provides an additional
-#' possibility to simulate the dose-response curve (probit) and b) considers an
-#' scaled internal damage instead of the external concentration.
+#'The model is a mechanistic combined toxicokinetic-toxicodynamic (TK/TD) and
+#'growth model for algae. The model simulates the development of algal biomass
+#'under laboratory and environmental conditions. The growth of the algae
+#' population is simulated on the basis of growth rates, which are dependent on
+#' environmental conditions (radiation, temperature and phosphorus).
+#' The model is a variant of the [Algae_Weber()] model (Weber 2012) as cited
+#' in EFSA TKTD opinion (2018). This Algae model, [Algae_TKTD()], provides an
+#' additional possibility (probit) to simulate the dose-response curve and
+#' considers a scaled internal damage instead of the external concentration.
 #'
 #' @section State variables:
 #' The model has four state variables:

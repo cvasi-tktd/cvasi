@@ -1,3 +1,8 @@
+# cvasi 1.1.2
+
+* `morse` removed (temporarily) as suggested package, because it was archived by CRAN
+* Model man pages amended
+
 # cvasi 1.1.1
 
 * Various improvements to plotting routines

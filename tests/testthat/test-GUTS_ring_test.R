@@ -158,6 +158,8 @@ test_that("GUTS-RED extreme cases", {
 })
 
 test_that("GUTS-RED ring-test C", {
+  skip_if_not_installed("morse")
+
   # the morse rds files are too large to put them in a CRAN source package
   rds_file <- test_path(file.path("..", "minnow_fit.sd.rds"))
   skip_if_not(file.exists(rds_file), "morse GUTS-RED-SD parameter file unavailable")
@@ -191,6 +193,8 @@ test_that("GUTS-RED ring-test C", {
 
 
 test_that("GUTS-RED ring-test C", {
+  skip_if_not_installed("morse")
+
   # the morse rds files are too large to put them in a CRAN source package
   rds_file <- test_path(file.path("..", "minnow_fit.sd.rds"))
   skip_if_not(file.exists(rds_file), "morse GUTS-RED-SD parameter file unavailable")

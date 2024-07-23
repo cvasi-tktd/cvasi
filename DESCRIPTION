@@ -1,7 +1,7 @@
 Package: cvasi
 Type: Package
 Title: Calibration, Validation, and Simulation of TKTD Models
-Version: 1.1.1
+Version: 1.1.2
 Authors@R: c(
     person("Nils", "Kehrein", email="nils.kehrein@gmail.com", role=c("aut", "cre")),
     person("Dirk", "Nickisch", role="aut"),
@@ -95,11 +95,9 @@ Collate:
 Suggests: 
     future,
     testthat,
-    morse,
     knitr,
     rmarkdown,
-    roxyglobals,
-    rjags
+    roxyglobals
 Depends: 
     R (>= 3.5.0)
 VignetteBuilder: knitr

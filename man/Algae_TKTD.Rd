@@ -11,11 +11,15 @@ Algae_TKTD()
 an S4 object of type \linkS4class{AlgaeTKTDScenario}
 }
 \description{
-Creates an \emph{Algae} scenario. The model is a variant
-of the \code{\link[=Algae_Weber]{Algae_Weber()}} model (Weber 2012) as cited in EFSA TKTD opinion (2018).
-This Algae model, \code{\link[=Algae_TKTD]{Algae_TKTD()}}, a) provides an additional
-possibility to simulate the dose-response curve (probit) and b) considers an
-scaled internal damage instead of the external concentration.
+The model is a mechanistic combined toxicokinetic-toxicodynamic (TK/TD) and
+growth model for algae. The model simulates the development of algal biomass
+under laboratory and environmental conditions. The growth of the algae
+population is simulated on the basis of growth rates, which are dependent on
+environmental conditions (radiation, temperature and phosphorus).
+The model is a variant of the \code{\link[=Algae_Weber]{Algae_Weber()}} model (Weber 2012) as cited
+in EFSA TKTD opinion (2018). This Algae model, \code{\link[=Algae_TKTD]{Algae_TKTD()}}, provides an
+additional possibility (probit) to simulate the dose-response curve and
+considers a scaled internal damage instead of the external concentration.
 }
 \section{State variables}{
 
@@ -72,7 +76,7 @@ list of the data frames.
 
 Simulation results will contain the state variables Biomass (\code{A}), mass of
 internal phosphorous (\code{Q}), mass of external phosphorous (\code{P}) and the damage
-concentration (\code{Dw}). The derivations are also available as additional output.
+concentration (\code{Dw}). The derivatives are also available as additional output.
 \itemize{
 \item \code{nout >= 4}
 \itemize{

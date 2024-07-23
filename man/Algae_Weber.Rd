@@ -75,7 +75,7 @@ list of the data frames.
 
 Simulation results will contain the state variables Biomass (\code{A}), mass of
 internal phosphorous (\code{Q}), mass of external phosphorous (\code{P}) and the external
-concentration (\code{C}). The derivations are also available as additional output.
+concentration (\code{C}). The derivatives are also available as additional output.
 \itemize{
 \item \code{nout >= 4}
 \itemize{

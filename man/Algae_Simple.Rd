@@ -65,7 +65,7 @@ not set, a default scaling factor of 1 is used.
 \section{Simulation output}{
 
 Simulation results will contain the state variables biomass (\code{A}) and in case
-of scaled damage the damage concentration (\code{Dw}). The derivations are also
+of scaled damage the damage concentration (\code{Dw}). The derivatives are also
 available as additional output.
 \itemize{
 \item \code{nout >= 2}

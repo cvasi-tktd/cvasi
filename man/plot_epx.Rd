@@ -27,7 +27,9 @@ the EPx plot are returned as a list for later modification}
 \item{time_col}{the name of the time column in the exposure dataset}
 
 \item{conc_col}{the name of the concentration column in the exposure dataset}
+
 \item{epx_x_title}{title of the x-axis of the epx panel}
+
 \item{conc_y_title}{title of the y-axis of the concentration panel}
 }
 \value{

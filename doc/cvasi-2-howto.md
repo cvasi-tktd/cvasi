@@ -268,7 +268,7 @@ ggplot(results) +
   labs(x="Start of window (day)", y="Effect on biomass (%)")
 ```
 
-![](../doc/figures/howto-unnamed-chunk-9-1.png)<!-- --> The effect plot
+![](../doc/figures/howto-unnamed-chunk-10-1.png)<!-- --> The effect plot
 shows the effect for the time point where each window starts. Effects
 are not available, and therefore not plotted, for time points where the
 window exceeds the simulated timeframe.
@@ -318,7 +318,7 @@ ggplot(result) +
   labs(x="Time (days)", y="Biomass (g_dw/m2)", title="Biomass transfer every three days")
 ```
 
-![](../doc/figures/howto-unnamed-chunk-10-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-11-1.png)<!-- -->
 
 Option 2: Custom time points and custom biomass
 
@@ -335,7 +335,7 @@ ggplot(result2) +
   labs(x="Time (days)", y="Biomass (g_dw/m2)", title="Biomass transfer at custom time points")
 ```
 
-![](../doc/figures/howto-unnamed-chunk-11-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
 # Call the help page of set_transfer
@@ -433,7 +433,7 @@ plot_sd(
 )
 ```
 
-![](../doc/figures/howto-unnamed-chunk-13-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-14-1.png)<!-- -->
 
 Option 2: Create a list of *calibration sets* and then fit TK/TD model
 parameters on all datasets and exposure levels at the same time:
@@ -496,7 +496,7 @@ plot_sd(
 )
 ```
 
-![](../doc/figures/howto-unnamed-chunk-14-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-15-1.png)<!-- -->
 
 The resulting scenario with fitted parameters shows a very good fit with
 the observed effects from experiments.
@@ -985,7 +985,7 @@ plot_sd(
 )
 ```
 
-<img src="../doc/figures/howto-unnamed-chunk-28-1.png" width="100%" />
+<img src="../doc/figures/howto-unnamed-chunk-29-1.png" width="100%" />
 
 ``` r
 
@@ -1004,4 +1004,4 @@ plot_sd(
 )
 ```
 
-<img src="../doc/figures/howto-unnamed-chunk-28-2.png" width="100%" />
+<img src="../doc/figures/howto-unnamed-chunk-29-2.png" width="100%" />

@@ -1,3 +1,8 @@
+# cvasi 1.1.3
+
+* Links to MOSAIC web page (mosaic.univ-lyon1.fr) had to be removed because
+  server was inaccessible
+
 # cvasi 1.1.2
 
 * `morse` removed (temporarily) as suggested package, because it was archived by CRAN

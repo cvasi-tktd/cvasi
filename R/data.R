@@ -3,9 +3,8 @@
 #' The scenario consists of a parameterized GUTS-RED-SD model and a constant
 #' exposure series. Model parameters were derived from an acute fish toxicity
 #' study of the fathead minnow and chlorpyrifos by Geiger *et al.* (1988).
-#' The dataset is also referred to as the *GUTS Ring-test dataset C* and was
-#' downloaded from the [MOSAIC](https://mosaic.univ-lyon1.fr/guts) website.
-#' Fitted parameters were estimated using the [morse] package.
+#' The dataset is also referred to as *GUTS Ring-test dataset C* by
+#' EFSA (2018). Fitted parameters were estimated using the [morse] package.
 #'
 #' The background mortality rate (`hb`) was set to zero.
 #'
@@ -16,7 +15,13 @@
 #' University of Wisconsin-Superior, Center for Lake Superior Environmental Studies.
 #' ISBN 9780961496838.
 #'
-#' @source <https://mosaic.univ-lyon1.fr/guts>
+#' EFSA PPR Panel (EFSA Panel on Plant Protection Products and their Residues),
+#' Ockleford C, Adriaanse P, Berny P, et al., 2018: *Scientific Opinion on the
+#' state of the art of Toxicokinetic/Toxicodynamic (TKTD) effect models for
+#' regulatory risk assessment of pesticides for aquatic organisms*. EFSA Journal 2018;
+#' 16(8):5377, 188 pp. \doi{10.2903/j.efsa.2018.5377}
+#'
+#' @source https://mosaic.univ-lyon1.fr/guts
 "minnow_sd"
 
 #' A GUTS-RED-IT scenario of the fathead minnow
@@ -24,9 +29,8 @@
 #' The scenario consists of a parameterized GUTS-RED-IT model and a constant
 #' exposure series. Model parameters were derived from an acute fish toxicity
 #' study of the fathead minnow and chlorpyrifos by Geiger *et al.* (1988).
-#' The dataset is also referred to as the *GUTS Ring-test dataset C* and was
-#' downloaded from the [MOSAIC](https://mosaic.univ-lyon1.fr/guts) website.
-#' Fitted parameters were estimated using the [morse] package.
+#' The dataset is also referred to as *GUTS Ring-test dataset C* by
+#' EFSA (2018). Fitted parameters were estimated using the [morse] package.
 #'
 #' The background mortality rate (`hb`) was set to zero.
 #'
@@ -37,7 +41,13 @@
 #' University of Wisconsin-Superior, Center for Lake Superior Environmental Studies.
 #' ISBN 9780961496838.
 #'
-#' @source <https://mosaic.univ-lyon1.fr/guts>
+#' EFSA PPR Panel (EFSA Panel on Plant Protection Products and their Residues),
+#' Ockleford C, Adriaanse P, Berny P, et al., 2018: *Scientific Opinion on the
+#' state of the art of Toxicokinetic/Toxicodynamic (TKTD) effect models for
+#' regulatory risk assessment of pesticides for aquatic organisms*. EFSA Journal 2018;
+#' 16(8):5377, 188 pp. \doi{10.2903/j.efsa.2018.5377}
+#'
+#' @source https://mosaic.univ-lyon1.fr/guts
 "minnow_it"
 
 #' Lemna data published by Schmitt (2013)

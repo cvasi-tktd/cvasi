@@ -8,7 +8,7 @@
 An object of class \code{GutsRedIt} of length 1.
 }
 \source{
-\url{https://mosaic.univ-lyon1.fr/guts}
+https://mosaic.univ-lyon1.fr/guts
 }
 \usage{
 minnow_it
@@ -17,9 +17,8 @@ minnow_it
 The scenario consists of a parameterized GUTS-RED-IT model and a constant
 exposure series. Model parameters were derived from an acute fish toxicity
 study of the fathead minnow and chlorpyrifos by Geiger \emph{et al.} (1988).
-The dataset is also referred to as the \emph{GUTS Ring-test dataset C} and was
-downloaded from the \href{https://mosaic.univ-lyon1.fr/guts}{MOSAIC} website.
-Fitted parameters were estimated using the \link{morse} package.
+The dataset is also referred to as \emph{GUTS Ring-test dataset C} by
+EFSA (2018). Fitted parameters were estimated using the \link{morse} package.
 }
 \details{
 The background mortality rate (\code{hb}) was set to zero.
@@ -29,6 +28,12 @@ Geiger D.L., Call D.J., and Brooke L.T., 1988: \emph{Acute toxicities of organic
 chemicals to fathead minnows (Pimephales promelas): Volume IV}, pp. 195-197.
 University of Wisconsin-Superior, Center for Lake Superior Environmental Studies.
 ISBN 9780961496838.
+
+EFSA PPR Panel (EFSA Panel on Plant Protection Products and their Residues),
+Ockleford C, Adriaanse P, Berny P, et al., 2018: \emph{Scientific Opinion on the
+state of the art of Toxicokinetic/Toxicodynamic (TKTD) effect models for
+regulatory risk assessment of pesticides for aquatic organisms}. EFSA Journal 2018;
+16(8):5377, 188 pp. \doi{10.2903/j.efsa.2018.5377}
 }
 \seealso{
 \link{GUTS-RED-models}

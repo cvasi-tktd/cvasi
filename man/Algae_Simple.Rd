@@ -19,13 +19,13 @@ of growth rates, which are, in contrast to the Weber model, independent on
 environmental conditions which are usually optimal in laboratory effect studies.
 The toxicodynamic sub-model describes the effects of growth-inhibiting
 substances through a corresponding reduction in the photosynthesis rate on the
-basis of internal concentrations.
+basis of either external or internal concentrations (depending on user choice of 'scaled' parameter setting).
 }
 \section{State variables}{
 
 The model has two state variables:
 \itemize{
-\item \code{A}, Biomass (µg)
+\item \code{A}, Biomass (ug fresh wt/mL, cells/mL *10^4)
 \item \code{Dw}, only used if scaled = 1
 }
 }
@@ -60,6 +60,12 @@ Forcing time-series are represented by \code{data.frame} objects consisting of t
 columns. The first for time and the second for a scaling factor of mu_max.
 The input format for all forcings is a list of the data frames. If f_growth is
 not set, a default scaling factor of 1 is used.
+}
+
+\section{Parameter boundaries}{
+
+Upper and lower parameter boundaries are set by default for each parameter. This,
+to avoid extreme values during calibration (particularly likelihood profiling)
 }
 
 \section{Simulation output}{

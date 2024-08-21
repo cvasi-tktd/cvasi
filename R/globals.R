@@ -14,6 +14,8 @@ utils::globalVariables(c(
   "ep", # <epx_binary_search>
   "level", # <epx_binary_search>
   "mf", # <epx_binary_search>
+  "LLR_accept", # <explore_space>
+  "LLR_quality", # <explore_space>
   "time", # <derive_range>
   "trial", # <derive_range>
   "FrondNo", # <derive_range>

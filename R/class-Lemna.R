@@ -78,46 +78,46 @@ setClass("LemnaSetacScenario", contains="Lemna")
 #' @section Model parameters:
 #' The following model parameters are required:
 #' * Fate and biomass
-#'   * k_phot_fix, logical, TRUE then k_phot_max is not changed by environmental factors, else FALSE
-#'   * k_phot_max, 1/d, maximum photosynthesis rate
-#'   * k_resp, 1/d, respiration rate
-#'   * k_loss, 1/d, rate of loss (e.g. flow rate)
-#'   * mass_per_frond, g_dw/frond, dry weight per frond
-#'   * BMw2BMd, g_fw/g_dw, Fresh weight/dry weight
+#'   * `k_phot_fix`, logical, TRUE then k_phot_max is not changed by environmental factors, else FALSE
+#'   * `k_phot_max`, 1/d, maximum photosynthesis rate
+#'   * `k_resp`, 1/d, respiration rate
+#'   * `k_loss`, 1/d, rate of loss (e.g. flow rate)
+#'   * `mass_per_frond`, g_dw/frond, dry weight per frond
+#'   * `BMw2BMd`, g_fw/g_dw, Fresh weight/dry weight
 #' * Effect
-#'   * Emax, -, maximum effect \[0,1\]
-#'   * EC50, ug/L, midpoint of effect curve
-#'   * b, -, slope of effect curve
+#'   * `Emax`, -, maximum effect \[0,1\]
+#'   * `EC50`, ug/L, midpoint of effect curve
+#'   * `b`, -, slope of effect curve
 #' * Toxicokinetics
-#'   * P_up, cm/d, Permeability for uptake
-#'   * AperBM, cm2/g_dw, A_leaf / d_leaf = 1/d_leaf (for circular disc, d=0.05 cm)
-#'   * Kbm, -, Biomass(fw) : water partition coefficient
-#'   * P_Temp, logical, TRUE to enable temperature dependence of cuticle permeability, else FALSE
-#'   * MolWeight, g/mol, Molmass of molecule (determines Q10_permeability)
+#'   * `P_up`, cm/d, Permeability for uptake
+#'   * `AperBM`, cm2/g_dw, A_leaf / d_leaf = 1/d_leaf (for circular disc, d=0.05 cm)
+#'   * `Kbm`, -, Biomass(fw) : water partition coefficient
+#'   * `P_Temp`, logical, TRUE to enable temperature dependence of cuticle permeability, else FALSE
+#'   * `MolWeight`, g/mol, Molmass of molecule (determines Q10_permeability)
 #' * Temperature dependence
-#'   * Tmin, deg C, minimum temperature for growth
-#'   * Tmax, deg C, maximum temperature for growth
-#'   * Topt, deg C, optimal temperature for growth
-#'   * t_ref, deg C, reference temperature for respiration rate
-#'   * Q10, -, temperature dependence factor for respiration rate
+#'   * `Tmin`, deg C, minimum temperature for growth
+#'   * `Tmax`, deg C, maximum temperature for growth
+#'   * `Topt`, deg C, optimal temperature for growth
+#'   * `t_ref`, deg C, reference temperature for respiration rate
+#'   * `Q10`, -, temperature dependence factor for respiration rate
 #' * Light dependence
-#'   * k_0, 1/d, light dependence: intercept of linear part
-#'   * a_k, (1/d)/(kJ/m2.d), light dependence: slope of linear part
+#'   * `k_0`, 1/d, light dependence: intercept of linear part
+#'   * `a_k`, (1/d)/(kJ/m2.d), light dependence: slope of linear part
 #' * Phosphorus dependence (Hill like dep.)
-#'   * C_P, mg/L, phosphorus concentration in water
-#'   * CP50, mg/L, phosphorus conc. where growth rate is halfed
-#'   * a_p, -, Hill coefficient
-#'   * KiP, mg/L, p-inhibition constant for very high p-conc.
+#'   * `C_P`, mg/L, phosphorus concentration in water
+#'   * `CP50`, mg/L, phosphorus conc. where growth rate is halfed
+#'   * `a_p`, -, Hill coefficient
+#'   * `KiP`, mg/L, p-inhibition constant for very high p-conc.
 #' * Nitrogen dependence (Hill like dep.)
-#'   * C_N, mg/L, nitrogen concentration in water
-#'   * CN50, mg/L, n-conc. where growth rate is halfed
-#'   * a_N, -, Hill coefficient
-#'   * KiN, mg/L, n-inhibition constant for very high p-conc.
+#'   * `C_N`, mg/L, nitrogen concentration in water
+#'   * `CN50`, mg/L, n-conc. where growth rate is halfed
+#'   * `a_N`, -, Hill coefficient
+#'   * `KiN`, mg/L, n-inhibition constant for very high p-conc.
 #' * Density dependence
-#'   * BM50, g_dw/m2, cut off BM
+#'   * `BM50`, g_dw/m2, cut off BM
 #'
 #' The `Lemna_SchmittThold` model requires the following additional parameter:
-#' * threshold, ug/L, cumulative exposure threshold
+#' * `threshold`, ug/L, cumulative exposure threshold
 #'
 #' @section Forcings:
 #' Besides exposure, the Lemna model requires two environmental properties as
@@ -135,10 +135,15 @@ setClass("LemnaSetacScenario", contains="Lemna")
 #' the last state of a simulation. Be aware that endpoint *r* is incompatible
 #' with frond transfers.
 #'
+#' @section Parameter boundaries:
+#' Default values for parameter boundaries are set for all parameters by expert
+#' judgement, for calibration purposes. Values can be access from the object, and
+#' defaults overwritten.
+#'
 #' @section Simulation output:
 #' Simulation results will contain two additional columns besides state variables:
-#' * C_int, ug/L, internal concentration of toxicant
-#' * FrondNo, -, number of fronds
+#' * `C_int`, ug/L, internal concentration of toxicant
+#' * `FrondNo`, -, number of fronds
 #'
 #' It is possible to amend the output of [simulate()] with additional model
 #' quantities that are not state variables, for e.g. debugging purposes or to
@@ -185,6 +190,7 @@ setClass("LemnaSetacScenario", contains="Lemna")
 #' @family macrophyte models
 #' @aliases LemnaSchmittScenario-class
 #' @export
+
 Lemna_Schmitt <- function(param, init) {
   new("LemnaSchmittScenario",
       name="Lemna_Schmitt",
@@ -199,6 +205,20 @@ Lemna_Schmitt <- function(param, init) {
                  Tmin=8.0, Tmax=40.5, Topt=26.7, t_ref=25, Q10=2, k_0=3, a_k=5E-5, C_P=0.3,
                  CP50=0.0043, a_P=1, KiP=101, C_N=0.6, CN50=0.034, a_N=1, KiN=604, BM50=176,
                  mass_per_frond=0.0001, BMw2BMd=16.7),
+      param.low=list(Emax=0,  EC50=0, b=0.1, P_up=0,
+                     AperBM=0, Kbm=0,
+                 MolWeight=0,
+                 k_phot_max=0, k_resp=0, k_loss=0,
+                 Tmin=0, Tmax=5, Topt=4, t_ref=4, Q10=0, k_0=0, a_k=0, C_P=0,
+                 CP50=0, a_P=0, KiP=0, C_N=0, CN50=0, a_N=0, KiN=0, BM50=0,
+                 mass_per_frond=0, BMw2BMd=1),
+      param.up=list(Emax=1,   EC50=1000000, b=20, P_up=100,
+                    AperBM=100000, Kbm=100000,
+                 MolWeight=1000000,
+                 k_phot_max=1, k_resp=0.3, k_loss=3,
+                 Tmin=40, Tmax=50, Topt=40, t_ref=40, Q10=10, k_0=1000000, a_k=1000000, C_P=10,
+                 CP50=10, a_P=20, KiP=1000000, C_N=10, CN50=10, a_N=20, KiN=1000000, BM50=1000000,
+                 mass_per_frond=10, BMw2BMd=100),
       endpoints=c("BM","r"),
       forcings.req=c("temp","rad"),
       control.req=TRUE,
@@ -374,6 +394,22 @@ Lemna_SETAC <- function() {
       name="Lemna_SETAC",
       param.req=names(lemna::param_defaults()),
       param=lemna::param_defaults()[!is.na(lemna::param_defaults())],
+      param.low=list(k_photo_max=0, k_loss=0,
+                     BM_min=0, T_opt=4,T_min=0, T_max=4 ,
+                     Q10=0, T_ref=4,
+                     alpha=0.0000000001, beta=0.0000000001, N_50=0, P_50=0,
+                     BM_L=1, E_max=0, EC50_int=0,
+                     b=0.1, P=0,
+                     r_A_DW=100, r_FW_DW=5, r_FW_V=0.5,r_DW_FN=0,
+                     K_pw=0,k_met=0),
+      param.up=list(k_photo_max=1, k_loss=3,
+                     BM_min=0.1, T_opt=40,T_min=40, T_max=50,
+                     Q10=10, T_ref=40,
+                     alpha=1000, beta=1000, N_50=10, P_50=10,
+                     BM_L=10000, E_max=1, EC50_int=1000000,
+                     b=20, P=100,
+                     r_A_DW=10000, r_FW_DW=50, r_FW_V=1.5,r_DW_FN=0.1,
+                     K_pw=100000,k_met=100),
       endpoints=c("BM","r"),
       forcings.req=c("tmp","irr","P","N"),
       forcings=list(tmp=data.frame(time=0,tmp=NA_real_),

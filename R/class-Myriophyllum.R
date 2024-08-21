@@ -40,7 +40,7 @@ setClass("MyrioLogScenario", contains="Myriophyllum")
 #'
 #' @section State variables:
 #' The model has two state variables:
-#' - `BM`, Biomass (g dw m-2)
+#' - `BM`, Biomass (g dw m-2 for field studies or mg dw for lab)
 #' - `M_int`, Mass of toxicant in plant population (mass per m2, e.g. ug m-2)
 #'
 #' @section Model parameters:
@@ -57,13 +57,17 @@ setClass("MyrioLogScenario", contains="Myriophyllum")
 #'   - `r_A_DW`, Area per dry-weight ratio (cm2 g-1), default: `1000`
 #'   - `r_FW_DW`, Fresh weight per dry weight ratio (-), default: `16.7`
 #'   - `r_FW_V`, Fresh weight density (g cm-3), default: `1`
-#'   - `r_DW_TSL`, Dry weight per total shoot length ratio  (?)
+#'   - `r_DW_TSL`, Dry weight per total shoot length ratio  (g (field) or mg (lab) dw cm-1)
 #'   - `K_pw`, Partitioning coefficient plant:water (-), default: `1`
 #'   - `k_met`, Metabolisation rate (d-1), default: `0`
 #'
 #' @section Environmental factors:
 #'
 #' None.
+#'
+#' @section Parameter boundaries:
+#' Default values for parameter boundaries are set for all parameters by expert
+#' judgement, for calibration purposes. Values can be modified using [set_param_bounds()].
 #'
 #' @section Simulation output:
 #'
@@ -104,11 +108,25 @@ setClass("MyrioLogScenario", contains="Myriophyllum")
 Myrio <- function() {
   new("MyrioExpScenario",
       name="Myriophyllum",
-      param.req=c("k_photo_max", "E_max", "EC50_int", "b", "P", "r_A_DW",
-                  "r_FW_DW", "r_FW_V", "r_DW_TSL", "K_pw", "k_met"),
+      param.req=c("k_photo_max", "E_max",
+                  "EC50_int", "b", "P",
+                  "r_A_DW", "r_FW_DW", "r_FW_V",
+                  "r_DW_TSL",
+                  "K_pw", "k_met"),
       # default values as defined by Klein et al. (2021)
-      param=list("k_photo_max"=0.47, "E_max"=1, "r_A_DW"=1000,
-                 "r_FW_DW"=16.7, "r_FW_V"=1, "K_pw"=1, "k_met"=0),
+      param=list(k_photo_max=0.47, E_max=1,
+                 r_A_DW=1000, r_FW_DW=16.7, r_FW_V=1,
+                 K_pw=1, k_met=0),
+      param.low=list(k_photo_max=0, E_max=0,
+                     EC50_int=0, b=0.1, P=0,
+                     r_A_DW=10, r_FW_DW=1, r_FW_V=0.5,
+                     r_DW_TSL=0,
+                     K_pw=0, k_met=0),
+      param.up=list(k_photo_max=1, E_max=1,
+                    EC50_int=1000000, b=20, P=100,
+                    r_A_DW=100000, r_FW_DW=1000, r_FW_V=2,
+                    r_DW_TSL=1000000,
+                    K_pw=100000, k_met=1000000),
       endpoints=c("BM", "r"),
       control.req=TRUE,
       init=c(BM=0, M_int=0),
@@ -152,6 +170,7 @@ Myrio <- function() {
 #' @inheritSection Myrio Simulation output
 #' @inheritSection Myrio Effects
 #' @inheritSection Transferable Biomass transfer
+#' @inheritSection Myrio Parameter boundaries
 #' @inherit Myrio references
 #'
 #' @return an S4 object of type [MyrioLogScenario-class]
@@ -163,11 +182,24 @@ Myrio <- function() {
 Myrio_log <- function() {
   new("MyrioLogScenario",
       name="Myriophyllum",
-      param.req=c("k_photo_max", "BM_L", "E_max", "EC50_int", "b", "P", "r_A_DW",
-                  "r_FW_DW", "r_FW_V", "r_DW_TSL", "K_pw", "k_met"),
+      param.req=c("k_photo_max", "BM_L", "E_max",
+                  "EC50_int", "b", "P",
+                  "r_A_DW", "r_FW_DW", "r_FW_V",
+                  "r_DW_TSL",
+                  "K_pw", "k_met"),
       # default values as defined by Klein et al. (2021)
-      param=list("k_photo_max"=0.47, "E_max"=1, "r_A_DW"=1000,
-                 "r_FW_DW"=16.7, "r_FW_V"=1, "K_pw"=1, "k_met"=0),
+      param=list(k_photo_max=0.47, E_max=1, r_A_DW=1000,
+                 r_FW_DW=16.7, r_FW_V=1, K_pw=1, k_met=0),
+      param.low=list(k_photo_max=0, BM_L=0,E_max=0,
+                     EC50_int=0, b=0.1, P=0,
+                     r_A_DW=10, r_FW_DW=1, r_FW_V=0.5,
+                     r_DW_TSL=0,
+                     K_pw=0, k_met=0),
+      param.up=list(k_photo_max=1, BM_L=1000000,E_max=1,
+                    EC50_int=1000000, b=20, P=100,
+                    r_A_DW=100000, r_FW_DW=1000, r_FW_V=2,
+                    r_DW_TSL=1000000,
+                    K_pw=100000, k_met=1000000),
       endpoints=c("BM", "r"),
       control.req=TRUE,
       init=c(BM=0, M_int=0),

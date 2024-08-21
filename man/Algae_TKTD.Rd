@@ -25,9 +25,9 @@ considers a scaled internal damage instead of the external concentration.
 
 The model has four state variables:
 \itemize{
-\item \code{A}, Biomass (ug fresh wt)
-\item \code{Q}, Mass of phosphorous internal (mg P/ug fresh wt)
-\item \code{P}, Mass of phosphorous external (mg P/L)
+\item \code{A}, Biomass (ug fresh wt/mL, cells/mL *10^4)
+\item \code{Q}, Mass of phosphorous internal (ug P/ug fresh wt)
+\item \code{P}, Mass of phosphorous external (ug P/L)
 \item \code{Dw}, Damage concentration (ug/L)
 }
 }
@@ -38,9 +38,9 @@ The model has four state variables:
 \item Growth model
 \itemize{
 \item \code{mu_max}, Maximum growth rate (d-1)
-\item \code{Q_min}, Minimum intracellular P (mg P/ug fresh wt)
-\item \code{Q_max}, Maximum intracellular P (mg P/ug fresh wt)
-\item \code{v_max}, Maximum P-uptake rate at non-limited growth (mg P/ug fresh wt/d)
+\item \code{Q_min}, Minimum intracellular P (ug P/ug fresh wt)
+\item \code{Q_max}, Maximum intracellular P (ug P/ug fresh wt)
+\item \code{v_max}, Maximum P-uptake rate at non-limited growth (ug P/ug fresh wt/d)
 \item \code{k_s},   Half-saturation constant for extracellular P (mg P/L)
 \item \code{m_max}, Natural mortality rate (1/d)
 \item \code{I_opt}, Optimum light intensity for growth (uE/m²/s)
@@ -56,7 +56,7 @@ The model has four state variables:
 }
 \item External concentration (Toxicokinetics)
 \itemize{
-\item \code{kD}, dominant rate constant (used in \code{Algae_TKTD()}only) (d-1)
+\item \code{kD}, dominant rate constant (d-1)
 }
 }
 }

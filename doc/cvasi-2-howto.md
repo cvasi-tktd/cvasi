@@ -396,7 +396,8 @@ obs_control <- Schmitt2013 %>%
   filter(ID == "T0") %>%
   select(t, BM=obs)
 
-# Fit parameter `k_phot_max` to observed data
+# Fit parameter `k_phot_max` to observed data (k_phot_max is the typical physiological
+# parameter to optimize against the control data
 fit1 <- calibrate(
   x = control,
   par = c(k_phot_max = 1),
@@ -410,9 +411,26 @@ fit1$par
 #> k_phot_max 
 #>  0.3860241
 
+# For illustrative purposes: Fit parameter `k_phot_max` and `k_resp` (need at 
+# least 2 params to do likelihood profiling)
+fit2 <- calibrate(
+  x = control,
+  par = c(k_phot_max=1,  k_resp=0),
+  data = obs_control,
+  endpoint = "BM")
+fit2$par
+#> k_phot_max     k_resp 
+#>  0.6968750  0.3070312 
+
+# decide on parameter boundaries for likelihood profiling and
+# space explorer (if defaults seem not sufficient)
+control@param.up[c("k_phot_max", "k_resp")]
+pars_bound <- list(k_resp = c(0,10), k_phot_max = c(0,30))
+
 # Update the scenario with fitted parameter and simulate it
 fitted_growth <- control %>% 
-  set_param(fit1$par)
+  set_param(fit2$par) %>% 
+  set_param_bounds(pars_bound)
 sim_mean <- fitted_growth %>%
   simulate() %>%
   mutate(trial="control")
@@ -431,6 +449,27 @@ plot_sd(
   rs_mean = sim_mean,
   obs_mean = obs_mean
 )
+
+# Likelihood profiling - physiological params
+res <- lik_profile(x = fitted_growth,
+                   data = obs_control,
+                   endpoint = "BM",
+                   par = fit2$par,
+                   refit = TRUE,
+                   type = "fine",
+                   break_prof = FALSE)
+# check outputs
+plot_lik_profile(res)
+
+# parameter space explorer
+explore_space(x = list(CalibrationSet(control, obs_control)),
+              res = res,
+              endpoint = "BM",
+              sample_size = 1000,
+              max_runs = 30,
+              nr_accept = 500)
+
+
 ```
 
 ![](../doc/figures/howto-unnamed-chunk-14-1.png)<!-- -->

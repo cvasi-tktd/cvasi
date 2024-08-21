@@ -1,0 +1,343 @@
+#' Explore parameter space
+#'
+#' The function is aimed at getting an idea of how the parameter space
+#' of a model behaves, so that parameter identifiability problems and correlations
+#' between parameters can be explored. Therefore, the function samples a large
+#' number of parameter sets by randomly drawing from each parameter's 95%
+#' confidence interval (genereated by [lik_profile()]). It then
+#' checks how many of the parameter sets are within acceptable limits by comparing
+#' the likelihood ratio of a parameter set vs. the original parameter set against
+#' a chi-square distribution as degrees of freedom (df) the total number of profile
+#' parameters (outer rim) or one df (inner rim). If needed, the function resamples
+#' until at least `nr_accept` parameters sets are within the inner rim
+#'
+#' @param x a list of [CalibrationSet] objects
+#' @param res output of 'lik_profile()' function
+#' @param endpoint character vector, of length 1 - the endpoint from the [scenario] or [CalibrationSet] that is used in calibration
+#' @param sample_size number of samples to draw from each parameter interval
+#' @param max_runs max number of times to redraw samples (within a smaller space), and repeat the process
+#' @param nr_accept threshold for number of points sampled within the inner circle
+#'
+#' @return a list containing a plot to explore the parameter space, and the dataframe
+#' supporting it
+#'
+#' @export
+#' @global LLR_accept LLR_quality
+#'
+#' @examples
+#' \donttest{
+#' library(dplyr)
+#' # Example with Lemna model - physiological params
+#' # Before applying the function, a model needs to be calibrated and its parameters profiled
+#' # Inputs for likelihood profiling
+#'
+#' # exposure - control run
+#' exp <- Schmitt2013 %>%
+#'   filter(ID == "T0") %>%
+#'   select(t, conc)
+#' colnames(exp) = c("time", "conc")
+#'
+#' # observations - control run
+#' obs <- Schmitt2013 %>%
+#'   filter(ID == "T0") %>%
+#'   select(t, obs)
+#' colnames(obs) = c("t", "BM")
+#'
+#' # parameters after calibration
+#' params <- c(k_phot_max = 5.663571,
+#'             k_resp = 1.938689,
+#'             Topt = 26.7)
+#'
+#' # set parameter boundaries (if different from defaults)
+#' pars_bounds <- list(k_resp = list(0,10),
+#'                   k_phot_max = list(0,30),
+#'                   Topt = list(20, 30))
+#'
+#' # update metsulfuron
+#' metsulfuron <- metsulfuron %>%
+#'   set_init(c(BM  = 5, E = 1,  M_int = 0)) %>%
+#'   set_param(list(k_0 = 5E-5,
+#'                  a_k =  0.25,
+#'                  BM50 = 17600,
+#'                  mass_per_frond = 0.1)) %>%
+#'   set_exposure(exp) %>%
+#'   set_param(params) %>%
+#'   set_param_bounds(pars_bounds)
+#'
+#' # Likelihood profiling
+#' res <- lik_profile(x = metsulfuron,
+#'                    data = obs,
+#'                    endpoint = "BM",
+#'                    par = params,
+#'                    refit = FALSE,
+#'                    type = "fine",
+#'                    method="Brent")
+#' # plot
+#' plot_lik_profile(res)
+#'
+#' # parameter space explorer
+#' set.seed(1) # for reproducibility
+#' explore_space(x = list(CalibrationSet(metsulfuron, obs)),
+#'               res = res,
+#'               endpoint = "BM",
+#'               sample_size = 1000,
+#'               max_runs = 5,   # for speed, here put to 5, please increase for improved results
+#'               nr_accept = 100)
+#' }
+
+explore_space <- function(x,
+                          res,
+                          endpoint,
+                          sample_size = 1000,
+                          max_runs = 30,
+                          nr_accept = 100){
+
+  # some checks
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # check sensible use of function
+  if(length(endpoint) > 1){
+    stop("Please choose only 1 endpoint to calibrate models against")
+  }
+  if(length(names(res)) <= 1){
+    stop("parameter space exploration only makes sense for 2 or more parameters")
+  }
+  # check if the same endpoint is used throughout
+  if(!(endpoint %in% x[[1]]@scenario@endpoints)){
+    stop("Specified endpoint not present in scenario object (x)")
+  }
+  if(!(endpoint %in% colnames(x[[1]]@data))){
+    stop("Specified endpoint not present in data of scenario object (x)")
+  }
+  # check if explored parameters are part of the model
+  if(any(names(res) %in% names(x[[1]]@scenario@param) == "FALSE")){
+    stop("Profiled parameters (in res) are not part of the scenario object (x)")
+  }
+  # check if boundaries for explored parameters are available
+  if(any(names(res) %in% names(x[[1]]@scenario@param.low) == "FALSE")){
+    stop("No lower parameter boundaries available for explored parameters, please set bounds in scenario object (x)")
+  }
+  if(any(names(res) %in% names(x[[1]]@scenario@param.up) == "FALSE")){
+    stop("No upper parameter boundaries available for explored parameters, please set bounds in scenario object (x)")
+  }
+
+  # calculate log likelihood with original model, for the profiled pars
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  pred_orig <- list()
+  ll_orig <- list()
+  for (i in seq_along(x)) {
+    pred_orig[[i]] <- x[[i]]@scenario %>%
+      set_times(x[[i]]@data[, 1]) %>% # time is the 1st column, mandatory that it is the 1st column
+      simulate()
+    ll_orig[[i]] <- log_lik(
+      npars = length(res),
+      obs = x[[i]]@data[, 2], # observations are the 2nd column, mandatory that it is the 2nd column
+      pred = pred_orig[[i]][, c(endpoint)]
+    )
+  }
+  ll_orig <- sum(unlist(ll_orig))
+
+  # obtain a (random uniform) sample from each parameter's profile region,
+  # and include the original param values
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  par_sample_list <- list()
+  for(i in 1:length(res)){
+    par_sample_list[[i]] <- c(res[[i]]$orig_par_value, # original par value is put first
+                              stats::runif(sample_size,
+                                    min = res[[i]]$prof_region[1]/1.2,
+                                    max = res[[i]]$prof_region[2])*1.2)
+    names(par_sample_list)[[i]] <- names(res[i])
+  }
+  par_sample <- data.frame(par_sample_list)
+
+
+  # calculate LL, LLR for each parameter set
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  LL <- NULL
+  for (i in 1:nrow(par_sample)){
+    LL_tmp <- list()
+    for (j in seq_along(x)) {
+      pred <- x[[j]]@scenario %>%
+        set_param(param = par_sample[i, ]) %>%
+        set_times(x[[j]]@data[, 1]) %>%
+        simulate
+      LL_tmp[[j]] <- log_lik(
+        npars = length(res),
+        obs = x[[j]]@data[, 2],
+        pred = pred[, endpoint]
+      )
+    }
+    LL <- c(LL, sum(unlist(LL_tmp)))
+  }
+  # add likelihood to the dataframe
+  par_sample$LL <- LL
+
+  # calc likelihood ratio: -2*ln(likelihood ratio)
+  par_sample$LLR <- -2 * (par_sample$LL - ll_orig) # matlab BYOM L. 704
+
+  # X2 difference test to compare nested models
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # cutoffs for the Chi-square
+  # these are the values from a standard chi-square distribution table, for df 1
+  # to 10, at a alpha = 0.05 significance level,
+  # these values are used in the chi-square test to determine if a fit is significantly
+  # different from a previous one (i.e. larger than the cutoff given here)
+  chi_table <- c(3.8415, 5.9915, 7.8147, 9.4877, 11.070, 12.592, 14.067, 15.507, 16.919, 18.307)
+  chi_crit_j <- chi_table[length(res)] # cut-off for the 95% profile region
+  chi_crit_s <- chi_table[1] # cut-off for single par. CI
+
+  # clean dataset based on criteria
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  par_sample$LLR_accept <- ifelse(par_sample$LLR < chi_crit_j, "accept", "reject") # accept combinations within the profile region
+  par_sample$LLR_quality <- ifelse(par_sample$LLR < chi_crit_s, "inner", "outer") # give preference to those with 95% CI inner rim
+  # calculate nr of points within inner rim
+  inner_ind <- which(par_sample$LLR_quality == "inner") # remember which ones are in the inner rim (used/updated later in the while loop)
+  inner_size <- nrow(par_sample[inner_ind,])
+
+  # Additional sampling (repeating steps above with slight modifications)
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  sample_iter <- 1
+  while(inner_size < nr_accept){# number of accepted points should be >= nr_accept
+
+    message("resampling parameter space, iteration: ", sample_iter )
+
+    # obtain a (random normal) sample based on the previously "inner" rim samples
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    par_sample_list <- list()
+    for(i in 1:length(res)){
+      par_sample_list[[i]] <- stats::rnorm(sample_size,
+                                    mean = mean(par_sample[inner_ind, i]),
+                                    sd = stats::sd(par_sample[inner_ind, i])*1.5)
+      names(par_sample_list)[[i]] <- names(res[i])
+    }
+    par_sample_new <- data.frame(par_sample_list)
+
+    # ensure that values are all within param bounds
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    for(i in 1:length(res)){ # for each parameter
+      too_small <- which(par_sample_new[, i] < x[[1]]@scenario@param.low[names(res[i])])
+      too_large <- which(par_sample_new[, i] > x[[1]]@scenario@param.up[names(res[i])])
+      if(length(c(too_small, too_large)) > 0){ # remove samples outside boundaries (if present)
+        par_sample_new <- par_sample_new[-c(too_small, too_large), ]
+        if(nrow(par_sample_new) == 0){
+          stop("all sampled parameter values out of bounds")
+        }
+      }
+    }
+
+
+
+    # calculate LL, LLR for each parameter set
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    LL <- NULL
+    for (i in 1:nrow(par_sample_new)){
+      LL_tmp <- list()
+      for (j in seq_along(x)) {
+        pred <- x[[j]]@scenario %>%
+          set_param(param = par_sample_new[i, ]) %>%
+          set_times(x[[j]]@data[, 1]) %>%
+          simulate
+        LL_tmp[[j]] <- log_lik(
+          npars = length(res),
+          obs = x[[j]]@data[, 2],
+          pred = pred[, endpoint]
+        )
+      }
+      LL <- c(LL, sum(unlist(LL_tmp)))
+    }
+    # add likelihood to the dataframe
+    par_sample_new$LL <- LL
+
+    # calc likelihood ratio: -2*ln(likelihood ratio)
+    par_sample_new$LLR <- -2 * (par_sample_new$LL - ll_orig) # matlab BYOM L. 704
+
+
+    # clean dataset based on criteria
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    par_sample_new$LLR_accept <- ifelse(par_sample_new$LLR < chi_crit_j, "accept", "reject") # accept combinations within the profile region
+    par_sample_new$LLR_quality <- ifelse(par_sample_new$LLR < chi_crit_s, "inner", "outer") # give preference to those with 95% CI inner rim
+
+    # join with previous df
+    par_sample <- rbind(par_sample, par_sample_new)
+
+    # calculate nr of points within inner rim (and update inner_ind)
+    inner_ind <- which(par_sample$LLR_quality == "inner") # remember which ones are in the inner rim (used/updated later in the while loop)
+    inner_size <- nrow(par_sample[inner_ind,])
+
+    sample_iter <- sample_iter +1
+    if(sample_iter >= max_runs){
+      message("max nr of iterations reached, increase 'max_runs'")
+      break()
+    }
+
+  } # end while loop
+
+  # find best LLR value, and compare with original LLR (which is per definition = 0)
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  if(min(par_sample$LLR) < 0){
+    message("better optimum found in space explorer")
+    best_fit <- which(par_sample$LLR == min(par_sample$LLR))
+    par_sample$LLR_quality[best_fit] <- "Best fit"
+    plot_colors <- c("tomato", "#4DAC26", "orange", "#0571B0")
+    plot_size <- c(2.5,1.5,2.5,1.5)
+  }else{
+    plot_colors <- c("#4DAC26", "orange", "#0571B0")
+    plot_size <- c(1.5,2.5,1.5)
+  }
+  orig_fit <- 1 # 1 because we put the original par values first in the dataframe
+  par_sample[1, "LLR_quality"] <- "Original fit"
+  par_sample$LLR_quality <- as.factor(par_sample$LLR_quality)
+
+
+  # plot of all correlations
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # dummy plot to get a legend
+  p <- par_sample %>%
+    dplyr::filter(LLR_accept == "accept") %>%
+    ggplot2::ggplot( ggplot2::aes(x=names(res)[1],
+                                  y= LL,
+                                  color = LLR_quality)) +
+    ggplot2::geom_point() +
+    ggplot2::scale_color_manual(values= plot_colors)
+  leg <- GGally::grab_legend(p)
+
+  # actual plot, complete
+  full_plot <- par_sample %>%
+    dplyr::filter(LLR_accept == "accept") %>%
+    GGally::ggpairs(columns = names(res),
+                    ggplot2::aes(color = LLR_quality,
+                                 size = as.factor(LLR_quality)),
+                    upper = list(continuous = "blank"),
+                    diag = list(continuous = "blankDiag"),
+                    title="Parameter space",
+                    legend = leg)  +
+    ggplot2::scale_color_manual(values= plot_colors) +
+    ggplot2::scale_size_manual(values= plot_size) +
+    ggplot2::theme_classic()
+
+  # function to modify ggpairs output (trim empty space)
+  gpairs_lower <- function(g){
+    g$plots <- g$plots[-(1:g$nrow)]
+    g$yAxisLabels <- g$yAxisLabels[-1]
+    g$nrow <- g$nrow -1
+
+    g$plots <- g$plots[-(seq(g$ncol, length(g$plots), by = g$ncol))]
+    g$xAxisLabels <- g$xAxisLabels[-g$ncol]
+    g$ncol <- g$ncol - 1
+
+    g
+  }
+
+  # modification of the plot
+  full_plot <- gpairs_lower(full_plot)
+
+
+  # clean and return
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  par_sample <- par_sample %>%
+    dplyr::filter(LLR_accept == "accept")
+  output <- list(sample_df = par_sample,
+                 plot = full_plot)
+
+  return(output)
+
+}

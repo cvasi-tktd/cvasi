@@ -19,15 +19,16 @@ algae population is simulated on the basis of growth rates, which are
 dependent on environmental conditions (radiation, temperature and phosphorus).
 The toxicodynamic sub-model describes the effects of growth-inhibiting
 substances through a corresponding reduction in the photosynthesis rate on
-the basis of internal concentrations.
+the basis of internal concentrations. (the implementation of Weber et al.
+(2012) is followed where units differ with EFSA)
 }
 \section{State variables}{
 
 The model has four state variables:
 \itemize{
-\item \code{A}, Biomass (ug fresh wt)
-\item \code{Q}, Mass of phosphorous internal (mg P/ug fresh wt)
-\item \code{P}, Mass of phosphorous external (mg P/L)
+\item \code{A}, Biomass (ug fresh wt/mL, cells/mL *10^4)
+\item \code{Q}, Mass of phosphorous internal (mg P/L, or ug P/mL)
+\item \code{P}, Mass of phosphorous external (mg P/L, or ug P/mL)
 \item \code{C}, external substance concentration (ug/L)
 }
 }
@@ -38,15 +39,17 @@ The model has four state variables:
 \item Growth model
 \itemize{
 \item \code{mu_max}, Maximum growth rate (d-1)
-\item \code{Q_min}, Minimum intracellular P (mg P/ug fresh wt)
-\item \code{Q_max}, Maximum intracellular P (mg P/ug fresh wt)
-\item \code{v_max}, Maximum P-uptake rate at non-limited growth (mg P/ug fresh wt/d)
+\item \code{Q_min}, Minimum intracellular P (ug P/ug fresh wt)
+\item \code{Q_max}, Maximum intracellular P (ug P/ug fresh wt)
+\item \code{v_max}, Maximum P-uptake rate at non-limited growth (ug P/ug fresh wt/d)
 \item \code{k_s},   Half-saturation constant for extracellular P (mg P/L)
 \item \code{m_max}, Natural mortality rate (1/d)
 \item \code{I_opt}, Optimum light intensity for growth (uE/m²/s)
 \item \code{T_opt}, Optimum temperature for growth (°C)
 \item \code{T_max}, Maximum temperature for growth (°C)
 \item \code{T_min}, Minimum temperature for growth (°C)
+\item \code{D}, Dilution rate (1/d)
+\item \code{R_0}, Influx concentration of P (mg P/L)
 }
 \item Concentration response (Toxicodynamics)
 \itemize{
@@ -85,6 +88,13 @@ concentration (\code{C}). The derivatives are also available as additional outpu
 \item \code{dC}, external concentration derivative (ug L-1)
 }
 }
+}
+
+\section{Parameter boundaries}{
+
+Default values for parameter boundaries are set for all parameters by expert
+judgement, for calibration purposes. Values can be access from the object, and
+defaults overwritten.
 }
 
 \references{

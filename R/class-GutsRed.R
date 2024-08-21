@@ -91,6 +91,8 @@ GUTS_RED_IT <- function(param, init) {
   new("GutsRedIt",
       name = "GUTS-RED-IT",
       param.req = c("kd", "hb", "alpha", "beta"),
+      param.low = list(),
+      param.up = list(),
       endpoints = c("L"),
       init = c(D=0, H=0),
       control.req=FALSE
@@ -124,6 +126,8 @@ GUTS_RED_SD <- function(param, init) {
   new("GutsRedSd",
       name = "GUTS-RED-SD",
       param.req = c("kd", "hb", "z", "kk"),
+      param.low = list(),
+      param.up = list(),
       endpoints = c("L"),
       init = c(D=0, H=0),
       control.req=FALSE

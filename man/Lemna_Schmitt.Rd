@@ -66,63 +66,63 @@ The following model parameters are required:
 \itemize{
 \item Fate and biomass
 \itemize{
-\item k_phot_fix, logical, TRUE then k_phot_max is not changed by environmental factors, else FALSE
-\item k_phot_max, 1/d, maximum photosynthesis rate
-\item k_resp, 1/d, respiration rate
-\item k_loss, 1/d, rate of loss (e.g. flow rate)
-\item mass_per_frond, g_dw/frond, dry weight per frond
-\item BMw2BMd, g_fw/g_dw, Fresh weight/dry weight
+\item \code{k_phot_fix}, logical, TRUE then k_phot_max is not changed by environmental factors, else FALSE
+\item \code{k_phot_max}, 1/d, maximum photosynthesis rate
+\item \code{k_resp}, 1/d, respiration rate
+\item \code{k_loss}, 1/d, rate of loss (e.g. flow rate)
+\item \code{mass_per_frond}, g_dw/frond, dry weight per frond
+\item \code{BMw2BMd}, g_fw/g_dw, Fresh weight/dry weight
 }
 \item Effect
 \itemize{
-\item Emax, -, maximum effect [0,1]
-\item EC50, ug/L, midpoint of effect curve
-\item b, -, slope of effect curve
+\item \code{Emax}, -, maximum effect [0,1]
+\item \code{EC50}, ug/L, midpoint of effect curve
+\item \code{b}, -, slope of effect curve
 }
 \item Toxicokinetics
 \itemize{
-\item P_up, cm/d, Permeability for uptake
-\item AperBM, cm2/g_dw, A_leaf / d_leaf = 1/d_leaf (for circular disc, d=0.05 cm)
-\item Kbm, -, Biomass(fw) : water partition coefficient
-\item P_Temp, logical, TRUE to enable temperature dependence of cuticle permeability, else FALSE
-\item MolWeight, g/mol, Molmass of molecule (determines Q10_permeability)
+\item \code{P_up}, cm/d, Permeability for uptake
+\item \code{AperBM}, cm2/g_dw, A_leaf / d_leaf = 1/d_leaf (for circular disc, d=0.05 cm)
+\item \code{Kbm}, -, Biomass(fw) : water partition coefficient
+\item \code{P_Temp}, logical, TRUE to enable temperature dependence of cuticle permeability, else FALSE
+\item \code{MolWeight}, g/mol, Molmass of molecule (determines Q10_permeability)
 }
 \item Temperature dependence
 \itemize{
-\item Tmin, deg C, minimum temperature for growth
-\item Tmax, deg C, maximum temperature for growth
-\item Topt, deg C, optimal temperature for growth
-\item t_ref, deg C, reference temperature for respiration rate
-\item Q10, -, temperature dependence factor for respiration rate
+\item \code{Tmin}, deg C, minimum temperature for growth
+\item \code{Tmax}, deg C, maximum temperature for growth
+\item \code{Topt}, deg C, optimal temperature for growth
+\item \code{t_ref}, deg C, reference temperature for respiration rate
+\item \code{Q10}, -, temperature dependence factor for respiration rate
 }
 \item Light dependence
 \itemize{
-\item k_0, 1/d, light dependence: intercept of linear part
-\item a_k, (1/d)/(kJ/m2.d), light dependence: slope of linear part
+\item \code{k_0}, 1/d, light dependence: intercept of linear part
+\item \code{a_k}, (1/d)/(kJ/m2.d), light dependence: slope of linear part
 }
 \item Phosphorus dependence (Hill like dep.)
 \itemize{
-\item C_P, mg/L, phosphorus concentration in water
-\item CP50, mg/L, phosphorus conc. where growth rate is halfed
-\item a_p, -, Hill coefficient
-\item KiP, mg/L, p-inhibition constant for very high p-conc.
+\item \code{C_P}, mg/L, phosphorus concentration in water
+\item \code{CP50}, mg/L, phosphorus conc. where growth rate is halfed
+\item \code{a_p}, -, Hill coefficient
+\item \code{KiP}, mg/L, p-inhibition constant for very high p-conc.
 }
 \item Nitrogen dependence (Hill like dep.)
 \itemize{
-\item C_N, mg/L, nitrogen concentration in water
-\item CN50, mg/L, n-conc. where growth rate is halfed
-\item a_N, -, Hill coefficient
-\item KiN, mg/L, n-inhibition constant for very high p-conc.
+\item \code{C_N}, mg/L, nitrogen concentration in water
+\item \code{CN50}, mg/L, n-conc. where growth rate is halfed
+\item \code{a_N}, -, Hill coefficient
+\item \code{KiN}, mg/L, n-inhibition constant for very high p-conc.
 }
 \item Density dependence
 \itemize{
-\item BM50, g_dw/m2, cut off BM
+\item \code{BM50}, g_dw/m2, cut off BM
 }
 }
 
 The \code{Lemna_SchmittThold} model requires the following additional parameter:
 \itemize{
-\item threshold, ug/L, cumulative exposure threshold
+\item \code{threshold}, ug/L, cumulative exposure threshold
 }
 }
 
@@ -146,12 +146,19 @@ the last state of a simulation. Be aware that endpoint \emph{r} is incompatible
 with frond transfers.
 }
 
+\section{Parameter boundaries}{
+
+Default values for parameter boundaries are set for all parameters by expert
+judgement, for calibration purposes. Values can be access from the object, and
+defaults overwritten.
+}
+
 \section{Simulation output}{
 
 Simulation results will contain two additional columns besides state variables:
 \itemize{
-\item C_int, ug/L, internal concentration of toxicant
-\item FrondNo, -, number of fronds
+\item \code{C_int}, ug/L, internal concentration of toxicant
+\item \code{FrondNo}, -, number of fronds
 }
 
 It is possible to amend the output of \code{\link[=simulate]{simulate()}} with additional model

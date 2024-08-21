@@ -28,7 +28,7 @@ per frond number ratio).
 
 The model has two state variables:
 \itemize{
-\item \code{BM}, Biomass (g dw m-2)
+\item \code{BM}, Biomass (g dw m-2 for field studies or mg dw for lab)
 \item \code{M_int}, Mass of toxicant in plant population (mass per m2, e.g. ug m-2)
 }
 }
@@ -52,7 +52,7 @@ The model has two state variables:
 \item \code{r_A_DW}, Area per dry-weight ratio (cm2 g-1), default: \code{1000}
 \item \code{r_FW_DW}, Fresh weight per dry weight ratio (-), default: \code{16.7}
 \item \code{r_FW_V}, Fresh weight density (g cm-3), default: \code{1}
-\item \code{r_DW_TSL}, Dry weight per total shoot length ratio  (?)
+\item \code{r_DW_TSL}, Dry weight per total shoot length ratio  (g (field) or mg (lab) dw cm-1)
 \item \code{K_pw}, Partitioning coefficient plant:water (-), default: \code{1}
 \item \code{k_met}, Metabolisation rate (d-1), default: \code{0}
 }
@@ -63,6 +63,12 @@ The model has two state variables:
 
 
 None.
+}
+
+\section{Parameter boundaries}{
+
+Default values for parameter boundaries are set for all parameters by expert
+judgement, for calibration purposes. Values can be modified using \code{\link[=set_param_bounds]{set_param_bounds()}}.
 }
 
 \section{Simulation output}{

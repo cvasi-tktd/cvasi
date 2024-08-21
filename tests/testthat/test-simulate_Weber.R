@@ -22,7 +22,7 @@ test_that("Algae_Weber simulation", {
   params <- c(mu_max = 1.7380, m_max = 0.5500, v_max = 0.0520, k_s = 0.0680,
               Q_min = 0.0011, Q_max = 0.0144,
               T_opt = 27, T_min = 0, T_max = 35, I_opt = 120,
-              EC_50 = 115, b = 1.268
+              EC_50 = 115, b = 1.268, k = 0.2
   )
   # forcings
   forc_I <- data.frame(times = sim_end, I = rep(100, sim_end))

@@ -41,6 +41,10 @@ population modeling to assess the effects of time-variable exposure of
 isoproturon on the green algae Desmodesmus subspictatus and
 Pseudokirchneriella subcapitata. Environmental Toxicology and
 Chemistry, 31, 899-908. \doi{10.1002/etc.1765}
+EFSA Panel on Plant Protection Products and their Residues, 2018. Scientific
+opinion on the state of the art of Toxicokinetic/Toxicodynamic (TKTD) effect
+models for regulatory risk assessment of pesticides for aquatic organisms.
+EFSA journal 16:5377 \doi{10.2903/j.efsa.2018.5377}
 }
 \seealso{
 \link{Lemna-models}, \link{Transferable}

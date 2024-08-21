@@ -144,6 +144,10 @@ refer to \code{\link[=set_window]{set_window()}} for details.
 
 \item{\code{param}}{\code{list} of parameter key-value pairs}
 
+\item{\code{param.low}}{\code{list} of lower boundaries of parameter key-value pairs}
+
+\item{\code{param.up}}{\code{list} of upper boundaries of parameter key-value pairs}
+
 \item{\code{param.req}}{\code{character} vector of required parameters}
 
 \item{\code{forcings}}{\code{list} of \code{data.frame}s representing forcing time-series}

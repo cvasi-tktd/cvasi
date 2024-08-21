@@ -48,7 +48,7 @@ control growth is described by the differential equation
 
 The model has two state variables:
 \itemize{
-\item \code{BM}, Biomass (g dw m-2)
+\item \code{BM}, Biomass (g dw m-2 for field studies or mg dw for lab)
 \item \code{M_int}, Mass of toxicant in plant population (mass per m2, e.g. ug m-2)
 }
 }
@@ -121,6 +121,12 @@ Any transfer time point must also be an output time point. If a transfer
 occurs, simulation results of that time point will report the model state
 \strong{before} the transfer. Be aware that in order to use transfers at regular
 intervals, the simulation must start at time point zero.
+}
+
+\section{Parameter boundaries}{
+
+Default values for parameter boundaries are set for all parameters by expert
+judgement, for calibration purposes. Values can be modified using \code{\link[=set_param_bounds]{set_param_bounds()}}.
 }
 
 \references{

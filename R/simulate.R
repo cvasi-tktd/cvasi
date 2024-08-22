@@ -156,7 +156,9 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
     tr_points <- scenario@transfer.times
   }
   if(length(tr_points) > 0)
-    ends_on_transfer <- tr_points[length(tr_points)] == t_max
+    ends_on_transfer <- tail(tr_points, 1) == t_max
+  # limit vector to transfer time points which occur during the simulated period.
+  # but exclude the starting time as a potential transfer
   tr_points <- tr_points[tr_points > t_min & tr_points <= t_max]
 
   # biomass level after each transfer
@@ -187,10 +189,14 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
     out <- solver(scenario, times=period, ...)
 
     # append results to output data.frame
-    if(i==1)
+    if(i==1) {
       df <- rbind(df, out)
-    else
-      df <- rbind(df, out[-1,])
+    } else {
+      # append simulation results, but exclude values for the starting time point
+      # where the transfer occurred. the starting time point `t` could be included more
+      # than once in the `times` or `period` vector
+      df <- rbind(df, out[-seq(sum(period == t)),])
+    }
 
     # Transfer a fixed number of biomass to a new medium:
     # use last state as starting point

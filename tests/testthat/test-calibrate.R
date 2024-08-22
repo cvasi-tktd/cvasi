@@ -35,6 +35,32 @@ test_that("fit to simple dataset", {
                tolerance=tol)
 })
 
+test_that("fit to dataset with replicates", {
+  tol <- 1e-5
+
+  ##
+  ## set up a scenario to create perfect fit data
+  ##
+  rs <- simulate(minnow_it, times=rep(minnow_it@times, each=2))
+
+  # modify scenario by setting parameter `kd` to quasi-random value
+  tofit <- minnow_it %>% set_param(c(kd=0.1))
+
+  # calibrate modified scenario on synthetic data
+  calib <- calibrate(tofit,
+                     par=c(kd=0.1),
+                     data=rs[,-3],
+                     output="D",
+                     method="Brent",
+                     lower=0.001,
+                     upper=10,
+                     verbose=FALSE)
+
+  expect_equal(calib$par[["kd"]],
+               minnow_it@param$kd,
+               tolerance=tol)
+})
+
 test_that("fit to complex dataset", {
   ##
   ## fit a parameter to several synthetic datasets created using

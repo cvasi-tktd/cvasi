@@ -8,6 +8,17 @@ test_that("regular intervals", {
   expect_equal(rs[,-1], rs[c(1:3, rep(2:3, 6)),-1], tolerance=1e-6, ignore_attr=T)
 })
 
+test_that("regular intervals with redundant time-points", {
+  metsulfuron %>%
+    set_init(c(BM=1)) %>%
+    set_noexposure() %>%
+    set_times(rep(0:14, each=2)) %>%
+    set_transfer(interval=2, biomass=1) %>%
+    simulate() -> rs
+
+  expect_equal(rs$time, rep(0:14, each=2))
+})
+
 test_that("custom time points", {
   metsulfuron %>%
     set_init(c(BM=1)) %>%

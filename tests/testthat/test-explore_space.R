@@ -31,21 +31,25 @@ test_that("parameter space explorer works", {
     set_param_bounds(pars_bound)
 
   # Likelihood profiling
-  res <- lik_profile(x = metsulfuron,
-                     data = obs,
-                     endpoint = "BM",
-                     par = params,
-                     refit = FALSE,
-                     type = "fine",
-                     method="Brent")
+  suppressMessages(
+    res <- lik_profile(x = metsulfuron,
+                       data = obs,
+                       endpoint = "BM",
+                       par = params,
+                       refit = FALSE,
+                       type = "fine",
+                       method="Brent")
+  )
 
   # parameter space explorer
-  Par_exp <- explore_space(x = list(CalibrationSet(metsulfuron, obs)),
-                res = res,
-                endpoint = "BM",
-                sample_size = 1000,
-                max_runs = 1,   # for speed, here put to 1, please increase for improved results
-                nr_accept = 100)
+  suppressMessages(
+    Par_exp <- explore_space(x = list(CalibrationSet(metsulfuron, obs)),
+                  res = res,
+                  endpoint = "BM",
+                  sample_size = 1000,
+                  max_runs = 1,   # for speed, here put to 1, please increase for improved results
+                  nr_accept = 100)
+  )
 
   # tests
   expect_equal(is(Par_exp$plot), "gg")

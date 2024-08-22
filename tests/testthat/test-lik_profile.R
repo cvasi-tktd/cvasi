@@ -73,12 +73,14 @@ test_that("likelihood profiling works", {
     set_param(params)
 
   # Likelihood profiling
-  res <- lik_profile(
-    x = metsulfuron,
-    data = obs,
-    endpoint = "BM",
-    par = params[1],
-    type = "fine"
+  suppressMessages(
+    res <- lik_profile(
+      x = metsulfuron,
+      data = obs,
+      endpoint = "BM",
+      par = params[1],
+      type = "fine"
+    )
   )
 
   # tests

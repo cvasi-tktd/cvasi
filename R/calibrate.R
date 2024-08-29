@@ -157,8 +157,8 @@ calibrate_scenario <- function(x, data, endpoint, output, by, ...)
   if(nrow(data) == 0) {
     stop("parameter 'data' is empty")
   }
-  # make sure we have data.frame and not something else that behaves differently
-  data <- tibble::as_tibble(data)
+  # make sure we have a real data.frame and not something else that behaves differently
+  data <- as.data.frame(data)
   # is output column contained in data?
   if(!all(output %in% names(data))) {
     stop("Output variable missing from dataset")

@@ -1,3 +1,8 @@
+# cvasi Development version
+
+* New: Likelihood profiling with `lik_profile()` based on the routines described
+  by Tjalling Jager (doi: 10.1002/ieam.4333)
+
 # cvasi 1.1.3
 
 * Links to MOSAIC web page (mosaic.univ-lyon1.fr) had to be removed because

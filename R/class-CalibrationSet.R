@@ -82,7 +82,7 @@ caliset <- function(scenario, data, weight=1) {
 
   new("CalibrationSet",
       scenario=scenario,
-      data=data,
+      data=as.data.frame(data), # get rid of tibbles, which can cause issues
       weight=weight)
 }
 

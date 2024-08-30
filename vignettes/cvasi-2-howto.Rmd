@@ -308,7 +308,8 @@ obs_control <- Schmitt2013 %>%
   filter(ID == "T0") %>%
   select(t, BM=obs)
 
-# Fit parameter `k_phot_max` to observed data
+# Fit parameter `k_phot_max` to observed data: `k_phot_max` is a physiological
+# parameter which is typically fitted to the control data
 fit1 <- calibrate(
   x = control,
   par = c(k_phot_max = 1),

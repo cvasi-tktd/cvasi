@@ -268,7 +268,7 @@ ggplot(results) +
   labs(x="Start of window (day)", y="Effect on biomass (%)")
 ```
 
-![](../doc/figures/howto-unnamed-chunk-10-1.png)<!-- --> The effect plot
+![](../doc/figures/howto-unnamed-chunk-9-1.png)<!-- --> The effect plot
 shows the effect for the time point where each window starts. Effects
 are not available, and therefore not plotted, for time points where the
 window exceeds the simulated timeframe.
@@ -318,7 +318,7 @@ ggplot(result) +
   labs(x="Time (days)", y="Biomass (g_dw/m2)", title="Biomass transfer every three days")
 ```
 
-![](../doc/figures/howto-unnamed-chunk-11-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-10-1.png)<!-- -->
 
 Option 2: Custom time points and custom biomass
 
@@ -335,7 +335,7 @@ ggplot(result2) +
   labs(x="Time (days)", y="Biomass (g_dw/m2)", title="Biomass transfer at custom time points")
 ```
 
-![](../doc/figures/howto-unnamed-chunk-12-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
 # Call the help page of set_transfer
@@ -396,8 +396,8 @@ obs_control <- Schmitt2013 %>%
   filter(ID == "T0") %>%
   select(t, BM=obs)
 
-# Fit parameter `k_phot_max` to observed data (k_phot_max is the typical physiological
-# parameter to optimize against the control data
+# Fit parameter `k_phot_max` to observed data: `k_phot_max` is a physiological
+# parameter which is typically fitted to the control data
 fit1 <- calibrate(
   x = control,
   par = c(k_phot_max = 1),
@@ -411,26 +411,9 @@ fit1$par
 #> k_phot_max 
 #>  0.3860241
 
-# For illustrative purposes: Fit parameter `k_phot_max` and `k_resp` (need at 
-# least 2 params to do likelihood profiling)
-fit2 <- calibrate(
-  x = control,
-  par = c(k_phot_max=1,  k_resp=0),
-  data = obs_control,
-  endpoint = "BM")
-fit2$par
-#> k_phot_max     k_resp 
-#>  0.6968750  0.3070312 
-
-# decide on parameter boundaries for likelihood profiling and
-# space explorer (if defaults seem not sufficient)
-control@param.up[c("k_phot_max", "k_resp")]
-pars_bound <- list(k_resp = c(0,10), k_phot_max = c(0,30))
-
 # Update the scenario with fitted parameter and simulate it
 fitted_growth <- control %>% 
-  set_param(fit2$par) %>% 
-  set_param_bounds(pars_bound)
+  set_param(fit1$par)
 sim_mean <- fitted_growth %>%
   simulate() %>%
   mutate(trial="control")
@@ -449,30 +432,9 @@ plot_sd(
   rs_mean = sim_mean,
   obs_mean = obs_mean
 )
-
-# Likelihood profiling - physiological params
-res <- lik_profile(x = fitted_growth,
-                   data = obs_control,
-                   endpoint = "BM",
-                   par = fit2$par,
-                   refit = TRUE,
-                   type = "fine",
-                   break_prof = FALSE)
-# check outputs
-plot_lik_profile(res)
-
-# parameter space explorer
-explore_space(x = list(CalibrationSet(control, obs_control)),
-              res = res,
-              endpoint = "BM",
-              sample_size = 1000,
-              max_runs = 30,
-              nr_accept = 500)
-
-
 ```
 
-![](../doc/figures/howto-unnamed-chunk-14-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-13-1.png)<!-- -->
 
 Option 2: Create a list of *calibration sets* and then fit TK/TD model
 parameters on all datasets and exposure levels at the same time:
@@ -535,7 +497,7 @@ plot_sd(
 )
 ```
 
-![](../doc/figures/howto-unnamed-chunk-15-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-14-1.png)<!-- -->
 
 The resulting scenario with fitted parameters shows a very good fit with
 the observed effects from experiments.
@@ -1024,7 +986,7 @@ plot_sd(
 )
 ```
 
-<img src="../doc/figures/howto-unnamed-chunk-29-1.png" width="100%" />
+<img src="../doc/figures/howto-unnamed-chunk-28-1.png" width="100%" />
 
 ``` r
 
@@ -1043,4 +1005,4 @@ plot_sd(
 )
 ```
 
-<img src="../doc/figures/howto-unnamed-chunk-29-2.png" width="100%" />
+<img src="../doc/figures/howto-unnamed-chunk-28-2.png" width="100%" />

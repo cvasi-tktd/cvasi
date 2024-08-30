@@ -29,7 +29,7 @@ setMethod("set_param", c("EffectScenario","vector"), function(x, param) {
     if(length(x@param.req) > 0) {
       unused <- setdiff(names(param),x@param.req)
       if(length(unused)>0)
-        warning(paste("unused parameters:",paste(unused,collapse=",")))
+        warning(paste("ignoring parameters",paste(unused,collapse=",")))
 
       ints <- intersect(x@param.req,names(param))
       x@param[ints] <- param[ints]

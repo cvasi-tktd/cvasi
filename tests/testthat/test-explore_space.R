@@ -13,7 +13,7 @@ test_that("parameter space explorer works", {
   params <- c(k_phot_max = 5.663571,
               k_resp = 1.938689)
 
-  pars_bound = list(k_phot_max = list(0,30),
+  bounds = list(k_phot_max = list(0,30),
                     k_resp = list(0,10))
 
 
@@ -28,7 +28,7 @@ test_that("parameter space explorer works", {
     set_param(params)
 
   sc <- sc %>%
-    set_param_bounds(pars_bound)
+    set_bounds(bounds)
 
   # Likelihood profiling
   suppressMessages(

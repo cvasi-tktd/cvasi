@@ -25,6 +25,7 @@ utils::globalVariables(c(
   "V2", # <extract_focus_profile>
   "V3", # <extract_focus_profile>
   "DateTime", # <extract_focus_profile>
+  "start", # <profile_par>
   ".", # <format_table>
   "trial", # <plot_sd>
   "time", # <plot_ppc>

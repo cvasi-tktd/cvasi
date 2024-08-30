@@ -37,30 +37,26 @@
 #' @param output character vector, name of output column of [simulate()] that
 #'  is used in calibration
 #' @param data only needed if `x` is an [scenario]
-#' @param pars_bound optional list of lists (including lower and upper bound): uses defaults in `x` object, but
-#'  can be overwritten here (e.g. pars_bound <- list(k_resp = list(0,10), k_phot_max = list(0,30)) )
+#' @param bounds optional list of lists (including lower and upper bound): uses defaults in `x` object, but
+#'  can be overwritten here (e.g. bounds <- list(k_resp = list(0,10), k_phot_max = list(0,30)) )
 #' @param refit if 'TRUE' (default), refit if a better minimum is found
 #' @param type "fine" or "coarse" (default) likelihood profiling
 #' @param break_prof if 'TRUE' (default), stop the profiling if a better optimum is located
 #' @param ... additional parameters passed on to [stats::optim()] and [calibrate()]
 #'
 #' @examples
-#'
 #' # Example with Lemna model - physiological params
-#'
 #' library(dplyr)
 #'
 #' # exposure - control run
 #' exp <- Schmitt2013 %>%
 #'   filter(ID == "T0") %>%
-#'   select(t, conc)
-#' colnames(exp) = c("time", "conc")
+#'   select(time=t, conc)
 #'
 #' # observations - control run
 #' obs <- Schmitt2013 %>%
 #'   filter(ID == "T0") %>%
-#'   select(t, obs)
-#' colnames(obs) = c("t", "BM")
+#'   select(t, BM=obs)
 #'
 #' # parameters after calibration
 #' params <- c(k_phot_max = 5.663571,
@@ -78,7 +74,7 @@
 #'                    data = obs,
 #'                    output = "BM",
 #'                    par = params,
-#'                    pars_bound = list(k_resp = list(0,10),
+#'                    bounds = list(k_resp = list(0,10),
 #'                                      k_phot_max = list(0,30)),
 #'                    refit = FALSE,
 #'                    type = "fine",
@@ -106,7 +102,7 @@ lik_profile <- function(x,
                         par,
                         output,
                         data = NULL,
-                        pars_bound = NULL,
+                        bounds = NULL,
                         refit = TRUE,
                         type = c("coarse", "fine"),
                         break_prof = FALSE, # typically we do not want to stop
@@ -125,44 +121,35 @@ lik_profile <- function(x,
       }
     }
   }
-
-
   # check correct input parameters
   Check_inputs_lik_prof(par = par,
                         x = x,
                         output = output,
                         type = type)
-
   # check if type is one of the 2 options
   type <- match.arg(type)
 
   # initialize parameter list
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  pnames <- names(par) # free param names
+  # names and boundaries of free parameters
+  pnames <- names(par)
   pfree <- list(
     values = par, # free param values
-    bounds = NULL
-  ) # free param bounds
+    bounds = get_bounds(x[[1]]@scenario)
+  )
 
-  # parameter boundaries
-  # Use default values....if available (else slot stays empty)
-  for (i in seq_along(pnames)) {
-    pfree$bounds[[i]] <- list(
-      unlist(x[[1]]@scenario@param.low[[pnames[i]]]),
-      unlist(x[[1]]@scenario@param.up[[pnames[i]]])
-    )
-  }
-  names(pfree$bounds) <- pnames
-  # ....however, if values are given (for specific params),
-  # replace the defaults by user defined ones
-  if (!is.null(pars_bound)) {
-    for (i_name in names(pars_bound)) {
-      pfree$bounds[[i_name]][[1]] <- unlist(pars_bound[[i_name]])[1]
-      pfree$bounds[[i_name]][[2]] <- unlist(pars_bound[[i_name]])[2]
-    }
+  # replace defaults if custom boundaries are given
+  if(!is.null(bounds)) {
+    check_bounds(bounds)
+    pfree$bounds[names(bounds)] <- bounds
   }
 
+  # check that each parameter to profile has boundaries set
+  missing <- setdiff(names(par), names(pfree$bounds))
+  if(length(missing) > 0) {
+    cli::cli_abort("parameter boundaries missing for parameter{?s} {missing}")
+  }
 
   # Settings for profiling
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -337,7 +324,7 @@ Check_inputs_lik_prof<- function(par,
 # @return A list of containing the likelihood profiling results as a dataframe;
 # the 95% confidence interval; the original parameter value; the likelihood plot object; and
 # the recalibrated parameter values (in case a lower optimum was found)
-
+#' @global start
 profile_par <- function(par_select,
                         x, pfree, type, output,
                         max_iter, f_step_min, f_step_max,

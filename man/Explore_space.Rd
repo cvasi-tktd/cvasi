@@ -53,14 +53,12 @@ library(dplyr)
 # exposure - control run
 exp <- Schmitt2013 \%>\%
   filter(ID == "T0") \%>\%
-  select(t, conc)
-colnames(exp) = c("time", "conc")
+  select(time=t, conc)
 
 # observations - control run
 obs <- Schmitt2013 \%>\%
   filter(ID == "T0") \%>\%
-  select(t, obs)
-colnames(obs) = c("t", "BM")
+  select(t, BM=obs)
 
 # parameters after calibration
 params <- c(k_phot_max = 5.663571,
@@ -68,7 +66,7 @@ params <- c(k_phot_max = 5.663571,
             Topt = 26.7)
 
 # set parameter boundaries (if different from defaults)
-pars_bounds <- list(k_resp = list(0,10),
+bounds <- list(k_resp = list(0,10),
                   k_phot_max = list(0,30),
                   Topt = list(20, 30))
 
@@ -81,7 +79,7 @@ myscenario <- metsulfuron \%>\%
                  mass_per_frond = 0.1)) \%>\%
   set_exposure(exp) \%>\%
   set_param(params) \%>\%
-  set_param_bounds(pars_bounds)
+  set_bounds(bounds)
 
 # Likelihood profiling
 res <- lik_profile(x = myscenario,

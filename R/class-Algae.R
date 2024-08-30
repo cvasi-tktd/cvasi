@@ -148,19 +148,13 @@ Algae_Weber <- function() {
                  Q_min = 0.0011, Q_max = 0.0144, R_0 = 0.36, D = 0.5,
                  T_opt = 27, T_min = 0, T_max = 35, I_opt = 120
     ),
-    param.low = list(mu_max = 0, m_max = 0, v_max = 0,
-                 k_s = 0,
-                 Q_min = 0, Q_max = 0, R_0 = 0, D = 0,
-                 T_opt = 4, T_min = 0, T_max = 10, I_opt = 20
-    ),
-    param.up = list(mu_max = 3, m_max = 0.5, v_max = 1,
-                 k_s = 1,
-                 Q_min = 1, Q_max = 1, R_0 = 50, D = 3,
-                 T_opt = 40, T_min = 20, T_max = 50, I_opt = 300
+    param.bounds = list(
+      mu_max=c(0,3), m_max=c(0, 0.5), v_max=c(0, 1), k_s=c(0, 1),
+      Q_min=c(0, 1), Q_max=c(0, 1), R_0=c(0, 50), D=c(0, 3),
+      T_opt=c(4, 40), T_min=c(0, 20), T_max=c(10, 50), I_opt=c(20, 300)
     ),
     endpoints = c("A", "r"),
-    # growth as endpoint mu_max * f_T * f_I * f_Q * f_C?
-    forcings.req=c("T_act","I","C_in"),
+    forcings.req=c("T_act", "I"),
     control.req = TRUE,
     init = c(A = 1, Q = 0.01, P = 0.18, C = 0),
     transfer.interval = -1,
@@ -258,19 +252,13 @@ Algae_TKTD <- function() {
                    T_opt = 27, T_min = 0, T_max = 35, I_opt = 120,
                    dose_resp = 0
       ),
-      param.low = list(mu_max = 0, m_max = 0, v_max = 0,
-                       k_s = 0,
-                       Q_min = 0, Q_max = 0,
-                       T_opt = 4, T_min = 0, T_max = 10, I_opt = 20
-      ),
-      param.up = list(mu_max = 3, m_max = 0.5, v_max = 1,
-                      k_s = 1,
-                      Q_min = 1, Q_max = 1,
-                      T_opt = 40, T_min = 20, T_max = 50, I_opt = 300
+      param.bounds = list(
+        mu_max=c(0,3), m_max=c(0, 0.5), v_max=c(0, 1), k_s=c(0, 1),
+        Q_min=c(0, 1), Q_max=c(0, 1),
+        T_opt=c(4, 40), T_min=c(0, 20), T_max=c(10, 50), I_opt=c(20, 300)
       ),
       endpoints = c("A", "r"),
-      # growth as endpoint mu_max * f_T * f_I * f_Q * f_C?
-      forcings.req=c("T_act","I","C_in"),
+      forcings.req=c("T_act", "I"),
       control.req = TRUE,
       init = c(A = 1, Q = 0.01, P = 0.18, Dw = 0),
       transfer.interval = -1,
@@ -349,18 +337,11 @@ Algae_TKTD <- function() {
 Algae_Simple <- function() {
   new("AlgaeSimpleScenario",
       name = "Algae_Simple",
-      param.req = c("mu_max",
-                    "EC_50", "b", "kD",
-                    "dose_response", "scaled"
-      ),
+      param.req = c("mu_max", "EC_50", "b", "kD", "dose_response", "scaled"),
       # default values as defined by Weber et al. (2012)
-      param = list(mu_max = 1.7380, const_growth = TRUE,
-                   dose_response = 0, scaled = 0
-      ),
-      param.low = list(mu_max = 0
-      ),
-      param.up = list(mu_max = 4
-      ),
+      param = list(mu_max = 1.7380, const_growth = TRUE, dose_response = 0,
+                   scaled = 0),
+      param.bounds = list(mu_max=c(0, 4)),
       endpoints = c("A", "r"),
       forcings.req = c("f_growth"),
       forcings = list(f_growth = data.frame(time = 0, f_growth = 1)),

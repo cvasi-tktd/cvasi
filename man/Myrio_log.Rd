@@ -126,7 +126,7 @@ intervals, the simulation must start at time point zero.
 \section{Parameter boundaries}{
 
 Default values for parameter boundaries are set for all parameters by expert
-judgement, for calibration purposes. Values can be modified using \code{\link[=set_param_bounds]{set_param_bounds()}}.
+judgement, for calibration purposes. Values can be modified using \code{\link[=set_bounds]{set_bounds()}}.
 }
 
 \references{

@@ -9,7 +9,7 @@ lik_profile(
   par,
   output,
   data = NULL,
-  pars_bound = NULL,
+  bounds = NULL,
   refit = TRUE,
   type = c("coarse", "fine"),
   break_prof = FALSE,
@@ -26,8 +26,8 @@ is used in calibration}
 
 \item{data}{only needed if \code{x} is an \link{scenario}}
 
-\item{pars_bound}{optional list of lists (including lower and upper bound): uses defaults in \code{x} object, but
-can be overwritten here (e.g. pars_bound <- list(k_resp = list(0,10), k_phot_max = list(0,30)) )}
+\item{bounds}{optional list of lists (including lower and upper bound): uses defaults in \code{x} object, but
+can be overwritten here (e.g. bounds <- list(k_resp = list(0,10), k_phot_max = list(0,30)) )}
 
 \item{refit}{if 'TRUE' (default), refit if a better minimum is found}
 
@@ -75,22 +75,18 @@ as well as Jager (2021).
 [log_lik()]: R:log_lik()
 }
 \examples{
-
 # Example with Lemna model - physiological params
-
 library(dplyr)
 
 # exposure - control run
 exp <- Schmitt2013 \%>\%
   filter(ID == "T0") \%>\%
-  select(t, conc)
-colnames(exp) = c("time", "conc")
+  select(time=t, conc)
 
 # observations - control run
 obs <- Schmitt2013 \%>\%
   filter(ID == "T0") \%>\%
-  select(t, obs)
-colnames(obs) = c("t", "BM")
+  select(t, BM=obs)
 
 # parameters after calibration
 params <- c(k_phot_max = 5.663571,
@@ -108,7 +104,7 @@ res <- lik_profile(x = myscenario,
                    data = obs,
                    output = "BM",
                    par = params,
-                   pars_bound = list(k_resp = list(0,10),
+                   bounds = list(k_resp = list(0,10),
                                      k_phot_max = list(0,30)),
                    refit = FALSE,
                    type = "fine",

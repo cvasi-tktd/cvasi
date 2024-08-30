@@ -35,14 +35,12 @@
 #' # exposure - control run
 #' exp <- Schmitt2013 %>%
 #'   filter(ID == "T0") %>%
-#'   select(t, conc)
-#' colnames(exp) = c("time", "conc")
+#'   select(time=t, conc)
 #'
 #' # observations - control run
 #' obs <- Schmitt2013 %>%
 #'   filter(ID == "T0") %>%
-#'   select(t, obs)
-#' colnames(obs) = c("t", "BM")
+#'   select(t, BM=obs)
 #'
 #' # parameters after calibration
 #' params <- c(k_phot_max = 5.663571,
@@ -50,7 +48,7 @@
 #'             Topt = 26.7)
 #'
 #' # set parameter boundaries (if different from defaults)
-#' pars_bounds <- list(k_resp = list(0,10),
+#' bounds <- list(k_resp = list(0,10),
 #'                   k_phot_max = list(0,30),
 #'                   Topt = list(20, 30))
 #'
@@ -63,7 +61,7 @@
 #'                  mass_per_frond = 0.1)) %>%
 #'   set_exposure(exp) %>%
 #'   set_param(params) %>%
-#'   set_param_bounds(pars_bounds)
+#'   set_bounds(bounds)
 #'
 #' # Likelihood profiling
 #' res <- lik_profile(x = myscenario,
@@ -114,11 +112,8 @@ explore_space <- function(x,
     stop("Profiled parameters (in res) are not part of the scenario object (x)")
   }
   # check if boundaries for explored parameters are available
-  if(any(names(res) %in% names(x[[1]]@scenario@param.low) == "FALSE")){
-    stop("No lower parameter boundaries available for explored parameters, please set bounds in scenario object (x)")
-  }
-  if(any(names(res) %in% names(x[[1]]@scenario@param.up) == "FALSE")){
-    stop("No upper parameter boundaries available for explored parameters, please set bounds in scenario object (x)")
+  if(any(names(res) %in% names(x[[1]]@scenario@param.bounds) == "FALSE")){
+    stop("No parameter boundaries available for explored parameters, please set bounds in scenario object (x)")
   }
 
   # calculate log likelihood with original model, for the profiled pars
@@ -215,8 +210,9 @@ explore_space <- function(x,
     # ensure that values are all within param bounds
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     for(i in 1:length(res)){ # for each parameter
-      too_small <- which(par_sample_new[, i] < x[[1]]@scenario@param.low[names(res[i])])
-      too_large <- which(par_sample_new[, i] > x[[1]]@scenario@param.up[names(res[i])])
+      nm <- names(res)[i]
+      too_small <- which(par_sample_new[, i] < x[[1]]@scenario@param.bounds[[nm]][1])
+      too_large <- which(par_sample_new[, i] > x[[1]]@scenario@param.bounds[[nm]][2])
       if(length(c(too_small, too_large)) > 0){ # remove samples outside boundaries (if present)
         par_sample_new <- par_sample_new[-c(too_small, too_large), ]
         if(nrow(par_sample_new) == 0){

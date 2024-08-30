@@ -13,7 +13,8 @@
 #'
 #' @param x a list of [CalibrationSet] objects
 #' @param res output of 'lik_profile()' function
-#' @param endpoint character vector, of length 1 - the endpoint from the [scenario] or [CalibrationSet] that is used in calibration
+#' @param output character vector, name of output column of [simulate()] that
+#'  is used in calibration
 #' @param sample_size number of samples to draw from each parameter interval
 #' @param max_runs max number of times to redraw samples (within a smaller space), and repeat the process
 #' @param nr_accept threshold for number of points sampled within the inner circle
@@ -53,8 +54,8 @@
 #'                   k_phot_max = list(0,30),
 #'                   Topt = list(20, 30))
 #'
-#' # update metsulfuron
-#' metsulfuron <- metsulfuron %>%
+#' # create new scenario
+#' myscenario <- metsulfuron %>%
 #'   set_init(c(BM  = 5, E = 1,  M_int = 0)) %>%
 #'   set_param(list(k_0 = 5E-5,
 #'                  a_k =  0.25,
@@ -65,9 +66,9 @@
 #'   set_param_bounds(pars_bounds)
 #'
 #' # Likelihood profiling
-#' res <- lik_profile(x = metsulfuron,
+#' res <- lik_profile(x = myscenario,
 #'                    data = obs,
-#'                    endpoint = "BM",
+#'                    output = "BM",
 #'                    par = params,
 #'                    refit = FALSE,
 #'                    type = "fine",
@@ -77,9 +78,9 @@
 #'
 #' # parameter space explorer
 #' set.seed(1) # for reproducibility
-#' explore_space(x = list(CalibrationSet(metsulfuron, obs)),
+#' explore_space(x = list(CalibrationSet(myscenario, obs)),
 #'               res = res,
-#'               endpoint = "BM",
+#'               output = "BM",
 #'               sample_size = 1000,
 #'               max_runs = 5,   # for speed, here put to 5, please increase for improved results
 #'               nr_accept = 100)
@@ -87,7 +88,7 @@
 
 explore_space <- function(x,
                           res,
-                          endpoint,
+                          output,
                           sample_size = 1000,
                           max_runs = 30,
                           nr_accept = 100){
@@ -95,18 +96,18 @@ explore_space <- function(x,
   # some checks
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # check sensible use of function
-  if(length(endpoint) > 1){
-    stop("Please choose only 1 endpoint to calibrate models against")
+  if(length(output) > 1){
+    stop("Parameter `output` must have length of one")
   }
   if(length(names(res)) <= 1){
     stop("parameter space exploration only makes sense for 2 or more parameters")
   }
-  # check if the same endpoint is used throughout
-  if(!(endpoint %in% x[[1]]@scenario@endpoints)){
-    stop("Specified endpoint not present in scenario object (x)")
-  }
-  if(!(endpoint %in% colnames(x[[1]]@data))){
-    stop("Specified endpoint not present in data of scenario object (x)")
+  # check if the same output is used throughout
+  #if(!(output %in% x[[1]]@scenario@endpoints)){
+  #  stop("Specified output not present in scenario object (x)")
+  #}
+  if(!(output %in% colnames(x[[1]]@data))){
+    stop("Specified output not present in data of scenario object (x)")
   }
   # check if explored parameters are part of the model
   if(any(names(res) %in% names(x[[1]]@scenario@param) == "FALSE")){
@@ -131,7 +132,7 @@ explore_space <- function(x,
     ll_orig[[i]] <- log_lik(
       npars = length(res),
       obs = x[[i]]@data[, 2], # observations are the 2nd column, mandatory that it is the 2nd column
-      pred = pred_orig[[i]][, c(endpoint)]
+      pred = pred_orig[[i]][, c(output)]
     )
   }
   ll_orig <- sum(unlist(ll_orig))
@@ -163,7 +164,7 @@ explore_space <- function(x,
       LL_tmp[[j]] <- log_lik(
         npars = length(res),
         obs = x[[j]]@data[, 2],
-        pred = pred[, endpoint]
+        pred = pred[, output]
       )
     }
     LL <- c(LL, sum(unlist(LL_tmp)))
@@ -239,7 +240,7 @@ explore_space <- function(x,
         LL_tmp[[j]] <- log_lik(
           npars = length(res),
           obs = x[[j]]@data[, 2],
-          pred = pred[, endpoint]
+          pred = pred[, output]
         )
       }
       LL <- c(LL, sum(unlist(LL_tmp)))

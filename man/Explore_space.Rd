@@ -7,7 +7,7 @@
 explore_space(
   x,
   res,
-  endpoint,
+  output,
   sample_size = 1000,
   max_runs = 30,
   nr_accept = 100
@@ -18,7 +18,8 @@ explore_space(
 
 \item{res}{output of 'lik_profile()' function}
 
-\item{endpoint}{character vector, of length 1 - the endpoint from the \link{scenario} or \link{CalibrationSet} that is used in calibration}
+\item{output}{character vector, name of output column of \code{\link[=simulate]{simulate()}} that
+is used in calibration}
 
 \item{sample_size}{number of samples to draw from each parameter interval}
 
@@ -71,8 +72,8 @@ pars_bounds <- list(k_resp = list(0,10),
                   k_phot_max = list(0,30),
                   Topt = list(20, 30))
 
-# update metsulfuron
-metsulfuron <- metsulfuron \%>\%
+# create new scenario
+myscenario <- metsulfuron \%>\%
   set_init(c(BM  = 5, E = 1,  M_int = 0)) \%>\%
   set_param(list(k_0 = 5E-5,
                  a_k =  0.25,
@@ -83,9 +84,9 @@ metsulfuron <- metsulfuron \%>\%
   set_param_bounds(pars_bounds)
 
 # Likelihood profiling
-res <- lik_profile(x = metsulfuron,
+res <- lik_profile(x = myscenario,
                    data = obs,
-                   endpoint = "BM",
+                   output = "BM",
                    par = params,
                    refit = FALSE,
                    type = "fine",
@@ -95,9 +96,9 @@ plot_lik_profile(res)
 
 # parameter space explorer
 set.seed(1) # for reproducibility
-explore_space(x = list(CalibrationSet(metsulfuron, obs)),
+explore_space(x = list(CalibrationSet(myscenario, obs)),
               res = res,
-              endpoint = "BM",
+              output = "BM",
               sample_size = 1000,
               max_runs = 5,   # for speed, here put to 5, please increase for improved results
               nr_accept = 100)

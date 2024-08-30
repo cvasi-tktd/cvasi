@@ -7,7 +7,7 @@
 lik_profile(
   x,
   par,
-  endpoint,
+  output,
   data = NULL,
   pars_bound = NULL,
   refit = TRUE,
@@ -21,7 +21,8 @@ lik_profile(
 
 \item{par}{named vector - parameters (names and values) to be profiled}
 
-\item{endpoint}{character vector - the endpoint from the \link{scenario} or \link{CalibrationSet} that is used in calibration}
+\item{output}{character vector, name of output column of \code{\link[=simulate]{simulate()}} that
+is used in calibration}
 
 \item{data}{only needed if \code{x} is an \link{scenario}}
 
@@ -38,7 +39,7 @@ can be overwritten here (e.g. pars_bound <- list(k_resp = list(0,10), k_phot_max
 }
 \value{
 A list of containing, for each parameter profiled, the likelihood
-profiling results as a dataframe;
+profiling results as a data.frame;
 the 95\% confidence interval; the original parameter value; the likelihood plot object; and
 the recalibrated parameter values (in case a lower optimum was found)
 }
@@ -66,11 +67,9 @@ stepsize (\code{f_step_abs}), which is specified as a fraction of the best
 parameter value (\code{Xhat}) (unless it is zero, then algoritm takes
 something small).
 
-The function was inspired by the MatLab BYOM v.6.8 procedure by
-Tjalling Jager, http://debtox.info/byom.html, specifically the function (calc_proflik.m),
-as described in Jager 2021: Robust Likelihood-Based Optimization and Uncertainty Analysis of Toxicokinetic-
-Toxicodynamic Models" Integrated Environmental Assessment and Management 17:388-397
-DOI: 10.1002/ieam.4333
+The function was inspired by a MatLab BYOM v.6.8 procedure, created by
+Tjalling Jager. For details, please refer to BYOM (http://debtox.info/byom.html)
+as well as Jager (2021).
 
 [profile_par())]: R:profile_par())
 [log_lik()]: R:log_lik()
@@ -97,17 +96,17 @@ colnames(obs) = c("t", "BM")
 params <- c(k_phot_max = 5.663571,
             k_resp = 1.938689)
 
-# update metsulfuron
-metsulfuron <- metsulfuron \%>\%
+# create a scenario
+myscenario <- metsulfuron \%>\%
   set_init(c(BM  = 5, E = 1,  M_int = 0)) \%>\%
   set_exposure(exp) \%>\%
   set_param(params)
 
 # Likelihood profiling
 \donttest{
-res <- lik_profile(x = metsulfuron,
+res <- lik_profile(x = myscenario,
                    data = obs,
-                   endpoint = "BM",
+                   output = "BM",
                    par = params,
                    pars_bound = list(k_resp = list(0,10),
                                      k_phot_max = list(0,30)),
@@ -118,4 +117,9 @@ res <- lik_profile(x = metsulfuron,
 plot_lik_profile(res)
 }
 
+}
+\references{
+Jager T, 2021. Robust Likelihood-Based Optimization and Uncertainty Analysis
+of Toxicokinetic-Toxicodynamic Models. Integrated Environmental Assessment and
+Management 17:388-397. \doi{10.1002/ieam.4333}
 }

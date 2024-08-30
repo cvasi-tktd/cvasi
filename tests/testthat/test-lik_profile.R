@@ -5,43 +5,43 @@ test_that("log-likelihood gives expected error", {
   expect_error(lik_profile(model = Lemna_Schmitt(),
                            data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
                                              obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
-                           endpoint = "BM",
+                           output = "BM",
                            pars_profile = 1:11))
 
   # error for model
   # error because of misspecified model (not Calibrationset nor EffectScenario)
   expect_error(lik_profile(model = "model",
-              endpoint = "BM",
+                           output = "BM",
               pars_profile = c(5.6, 1.9)))
 
   # error because misspecified model (list, but not Calibrationset)
   expect_error(lik_profile(model = list(Lemna_Schmitt()),
-                           endpoint = "BM",
+                           output = "BM",
                            pars_profile = c(5.6, 1.9)))
 
   # error because data missing for EffectScenario
   expect_error(lik_profile(model = Lemna_Schmitt(),
-                           endpoint = "BM",
+                           output = "BM",
                            pars_profile = c(5.6, 1.9)))
 
   # errors for pars_profile
   # error because parameter vector is not a vector
   expect_error(lik_profile(model = Lemna_Schmitt(),
-                           endpoint = "BM",
+                           output = "BM",
                            data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
                                              obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
                            pars_profile = list(5.6, 1.9)))
 
   # error because parameter vector is not named
   expect_error(lik_profile(model = Lemna_Schmitt(),
-                           endpoint = "BM",
+                           output = "BM",
                            data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
                                             obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
                            pars_profile = c(5.6, 1.9)))
 
-  # errors for endpoint
+  # errors for output
   expect_error(lik_profile(model = Lemna_Schmitt(),
-                           endpoint = list("BM"),
+                           output = list("BM"),
                            data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
                                              obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
                            pars_profile = c(k_phot_max = 5.6,
@@ -49,7 +49,7 @@ test_that("log-likelihood gives expected error", {
 
   # errors for profile type
   expect_error(lik_profile(model = Lemna_Schmitt(),
-                           endpoint = "BM",
+                           output = "BM",
                            data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
                                              obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
                            pars_profile = c(k_phot_max = 5.6,
@@ -69,15 +69,15 @@ test_that("likelihood profiling works", {
   colnames(obs) = c("t", "BM")
   params <- c(k_phot_max = 3.979200,
               k_resp =  7.700779e-08)
-  metsulfuron <- metsulfuron %>%
+  sc <- metsulfuron %>%
     set_param(params)
 
   # Likelihood profiling
   suppressMessages(
     res <- lik_profile(
-      x = metsulfuron,
+      x = sc,
       data = obs,
-      endpoint = "BM",
+      output = "BM",
       par = params[1],
       type = "fine"
     )

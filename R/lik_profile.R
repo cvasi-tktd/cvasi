@@ -23,16 +23,19 @@
 #' parameter value (`Xhat`) (unless it is zero, then algoritm takes
 #' something small).
 #'
-#' The function was inspired by the MatLab BYOM v.6.8 procedure by
-#' Tjalling Jager, http://debtox.info/byom.html, specifically the function (calc_proflik.m),
-#' as described in Jager 2021: Robust Likelihood-Based Optimization and Uncertainty Analysis of Toxicokinetic-
-#' Toxicodynamic Models" Integrated Environmental Assessment and Management 17:388-397
-#' DOI: 10.1002/ieam.4333
+#' The function was inspired by a MatLab BYOM v.6.8 procedure, created by
+#' Tjalling Jager. For details, please refer to BYOM (http://debtox.info/byom.html)
+#' as well as Jager (2021).
 #'
+#' @references
+#' Jager T, 2021. Robust Likelihood-Based Optimization and Uncertainty Analysis
+#' of Toxicokinetic-Toxicodynamic Models. Integrated Environmental Assessment and
+#' Management 17:388-397. \doi{10.1002/ieam.4333}
 #'
 #' @param x either a single [scenario] or a list of [CalibrationSet] objects
 #' @param par named vector - parameters (names and values) to be profiled
-#' @param endpoint character vector - the endpoint from the [scenario] or [CalibrationSet] that is used in calibration
+#' @param output character vector, name of output column of [simulate()] that
+#'  is used in calibration
 #' @param data only needed if `x` is an [scenario]
 #' @param pars_bound optional list of lists (including lower and upper bound): uses defaults in `x` object, but
 #'  can be overwritten here (e.g. pars_bound <- list(k_resp = list(0,10), k_phot_max = list(0,30)) )
@@ -63,17 +66,17 @@
 #' params <- c(k_phot_max = 5.663571,
 #'             k_resp = 1.938689)
 #'
-#' # update metsulfuron
-#' metsulfuron <- metsulfuron %>%
+#' # create a scenario
+#' myscenario <- metsulfuron %>%
 #'   set_init(c(BM  = 5, E = 1,  M_int = 0)) %>%
 #'   set_exposure(exp) %>%
 #'   set_param(params)
 #'
 #' # Likelihood profiling
 #' \donttest{
-#' res <- lik_profile(x = metsulfuron,
+#' res <- lik_profile(x = myscenario,
 #'                    data = obs,
-#'                    endpoint = "BM",
+#'                    output = "BM",
 #'                    par = params,
 #'                    pars_bound = list(k_resp = list(0,10),
 #'                                      k_phot_max = list(0,30)),
@@ -85,7 +88,7 @@
 #' }
 #'
 #' @return A list of containing, for each parameter profiled, the likelihood
-#' profiling results as a dataframe;
+#' profiling results as a data.frame;
 #' the 95% confidence interval; the original parameter value; the likelihood plot object; and
 #' the recalibrated parameter values (in case a lower optimum was found)
 #' @export
@@ -101,7 +104,7 @@
 
 lik_profile <- function(x,
                         par,
-                        endpoint,
+                        output,
                         data = NULL,
                         pars_bound = NULL,
                         refit = TRUE,
@@ -127,7 +130,7 @@ lik_profile <- function(x,
   # check correct input parameters
   Check_inputs_lik_prof(par = par,
                         x = x,
-                        endpoint = endpoint,
+                        output = output,
                         type = type)
 
   # check if type is one of the 2 options
@@ -220,7 +223,7 @@ lik_profile <- function(x,
       x = x,
       pfree = pfree,
       type = type,
-      endpoint = endpoint,
+      output = output,
       max_iter = max_iter,
       f_step_min = f_step_min,
       f_step_max = f_step_max,
@@ -259,14 +262,14 @@ lik_profile <- function(x,
 #
 # @param x either a single [scenario] or a list of [CalibrationSet] objects
 # @param par named vector - parameters (names and values) to be profiled
-# @param endpoint character vector - the endpoint from the [scenario] or [CalibrationSet] that is used in calibration
+# @param output character vector - the output from the [scenario] or [CalibrationSet] that is used in calibration
 # @param type "fine" or "coarse" (default) likelihood profiling
 #
 # @return x as a list of [CalibrationSet], and objects error message when needed
 
 Check_inputs_lik_prof<- function(par,
                       x,
-                      endpoint,
+                      output,
                       type){
   # check if attempt to profile more params than possible ~~~~~~~~~~~~~~~~~~~
   if(length(par) > 10) {
@@ -297,8 +300,8 @@ Check_inputs_lik_prof<- function(par,
     stopifnot(!is.null(names(par)))
   }
 
-  # check endpoint ~~~~~~~~~~~~~~~~~~~
-  stopifnot(mode(endpoint) == "character")
+  # check output ~~~~~~~~~~~~~~~~~~~
+  stopifnot(mode(output) == "character")
 
 }
 
@@ -320,7 +323,7 @@ Check_inputs_lik_prof<- function(par,
 # @param x list of [CalibrationSet] objects
 # @param pfree list of parameter values and their bounds for the profiled parameter
 # @param type "fine" or "coarse" (default) likelihood profiling
-# @param endpoint `character` vector - the endpoint from the [CalibrationSet] that is used during calibration
+# @param output `character` vector - the output from the [CalibrationSet] that is used during calibration
 # @param max_iter `numeric`, maximum number of profiling iterations to attempts
 # @param f_step_min, `numeric`,min stepsize (as fraction of value that is tried)
 # @param f_step_max, `numeric`,max stepsize (as fraction of value that is tried)
@@ -336,7 +339,7 @@ Check_inputs_lik_prof<- function(par,
 # the recalibrated parameter values (in case a lower optimum was found)
 
 profile_par <- function(par_select,
-                        x, pfree, type, endpoint,
+                        x, pfree, type, output,
                         max_iter, f_step_min, f_step_max,
                         chi_crit_j, chi_crit_s, l_crit_max, l_crit_min, l_crit_stop,
                         refit,...){
@@ -363,7 +366,7 @@ profile_par <- function(par_select,
     ll_orig[[i]] <- log_lik(
       npars = length(pfree$values), # Note: only the free params (i.e. ones that you did the calibration on)
       obs = x[[i]]@data[, 2], # observations are the 2nd column, mandatory that it is the 2nd column
-      pred = pred_orig[[i]][, c(endpoint)]
+      pred = pred_orig[[i]][, c(output)]
     )
   }
 
@@ -461,7 +464,7 @@ profile_par <- function(par_select,
     fit_new <- calibrate(
       x = x,
       par = pfree_remaining,
-      endpoint = endpoint
+      output = output
     )
 
     # predict and calulate log likelihood with newly fitted model
@@ -476,7 +479,7 @@ profile_par <- function(par_select,
       ll_new[[i]] <- log_lik(
         npars = length(pfree_remaining),
         obs = x[[i]]@data[, 2],
-        pred = pred_new[[i]][, endpoint]
+        pred = pred_new[[i]][, output]
       )
     }
 
@@ -614,7 +617,7 @@ profile_par <- function(par_select,
     ggplot2::geom_point(ggplot2::aes(
       x = par_value,
       y = log_lik_rat,
-      color = res_df$start
+      color = start
     ), size = 2) +
     ggplot2::scale_color_manual(values = c("black", "orange")) +
     # connect points
@@ -661,7 +664,7 @@ profile_par <- function(par_select,
       fit_new <- cvasi::calibrate(
         x = x,
         par = pfree_remaining,
-        endpoint = endpoint
+        output = output
       )
       # save recalibrated result
       param_res[["fit_new"]] <- list(best_fit_param = c(best_par_value, fit_new$par),
@@ -685,8 +688,6 @@ profile_par <- function(par_select,
 #'
 #' @return plots
 #' @export
-
-
 plot_lik_profile <- function(x) {
   stopifnot("lik_profile" %in% class(x))
   npars <- length(x)
@@ -722,8 +723,6 @@ plot_lik_profile <- function(x) {
 #' obs = obs,
 #' pred = pred)
 #'
-#'
-
 log_lik <- function(npars, obs, pred){
   stopifnot(length(obs) == length(pred))
   stopifnot(length(npars) == 1)

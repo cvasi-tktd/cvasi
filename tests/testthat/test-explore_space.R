@@ -18,7 +18,7 @@ test_that("parameter space explorer works", {
 
 
   # update metsulfuron
-  metsulfuron <- metsulfuron %>%
+  sc <- metsulfuron %>%
     set_init(c(BM  = 5, E = 1,  M_int = 0)) %>%
     set_param(list(k_0 = 5E-5,
                    a_k =  0.25,
@@ -27,14 +27,14 @@ test_that("parameter space explorer works", {
     set_exposure(exp) %>%
     set_param(params)
 
-  metsulfuron <- metsulfuron %>%
+  sc <- sc %>%
     set_param_bounds(pars_bound)
 
   # Likelihood profiling
   suppressMessages(
-    res <- lik_profile(x = metsulfuron,
+    res <- lik_profile(x = sc,
                        data = obs,
-                       endpoint = "BM",
+                       output = "BM",
                        par = params,
                        refit = FALSE,
                        type = "fine",
@@ -43,9 +43,9 @@ test_that("parameter space explorer works", {
 
   # parameter space explorer
   suppressMessages(
-    Par_exp <- explore_space(x = list(CalibrationSet(metsulfuron, obs)),
+    Par_exp <- explore_space(x = list(CalibrationSet(sc, obs)),
                   res = res,
-                  endpoint = "BM",
+                  output = "BM",
                   sample_size = 1000,
                   max_runs = 1,   # for speed, here put to 1, please increase for improved results
                   nr_accept = 100)

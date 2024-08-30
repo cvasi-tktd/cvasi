@@ -2,13 +2,13 @@
 test_that("set param bounds works", {
 
   # test for EffectScenario
-  metsulfuron <- metsulfuron %>%
+  sc <- metsulfuron %>%
     set_param_bounds(pars_bound = list(k_phot_max = list(0,30),
                                        k_resp = list(0,10)))
 
-  expect_equal(metsulfuron@param.low[c("k_phot_max", "k_resp")],
+  expect_equal(sc@param.low[c("k_phot_max", "k_resp")],
                list(k_phot_max = 0, k_resp = 0))
-  expect_equal(metsulfuron@param.up[c("k_phot_max", "k_resp")],
+  expect_equal(sc@param.up[c("k_phot_max", "k_resp")],
                list(k_phot_max = 30, k_resp = 10))
 
   # test for CalibrationSet and list of CalibrationSets

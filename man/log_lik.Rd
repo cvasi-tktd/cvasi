@@ -36,5 +36,4 @@ log_lik(npars = length(pars),
 obs = obs,
 pred = pred)
 
-
 }

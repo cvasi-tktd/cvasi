@@ -53,7 +53,7 @@ Rsubcapitata <- Algae_TKTD() %>%
 
 usethis::use_data(Rsubcapitata, overwrite=TRUE)
 
-rm(weber_exposure, sim_end, times, forc_I, forc_T)
+rm(weber_exposure, sim_end, times, forc_I, forc_T, Rsubcapitata)
 
 
 

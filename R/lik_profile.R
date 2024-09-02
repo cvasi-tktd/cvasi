@@ -36,7 +36,7 @@
 #' @param par named vector - parameters (names and values) to be profiled
 #' @param output character vector, name of output column of [simulate()] that
 #'  is used in calibration
-#' @param data only needed if `x` is an [scenario]
+#' @param data only needed if `x` is a [scenario]
 #' @param bounds optional list of lists (including lower and upper bound): uses defaults in `x` object, but
 #'  can be overwritten here (e.g. bounds <- list(k_resp = list(0,10), k_phot_max = list(0,30)) )
 #' @param refit if 'TRUE' (default), refit if a better minimum is found

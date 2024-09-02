@@ -114,10 +114,9 @@ Myrio <- function() {
       param=list(k_photo_max=0.47, E_max=1,
                  r_A_DW=1000, r_FW_DW=16.7, r_FW_V=1,
                  K_pw=1, k_met=0),
-      param.bounds=list(k_photo_max=c(0,1), E_max=c(0,1), EC50_int=c(0,1e6),
-                        b=c(0.1,20), P=c(0,100), r_A_DW=c(10,1e5), r_FW_DW=c(1,1e3),
-                        r_FW_V=c(0.5,2), r_DW_TSL=c(0,1e6), K_pw=c(0,1e5),
-                        k_met=c(0,1e6)),
+      # boundary presets defined by expert judgement
+      param.bounds=list(k_photo_max=c(0, 1), E_max=c(0, 1), EC50_int=c(0, 1e6),
+                        b=c(0.1, 20), P=c(0, 100)),
       endpoints=c("BM", "r"),
       control.req=TRUE,
       init=c(BM=0, M_int=0),
@@ -175,10 +174,9 @@ Myrio_log <- function() {
       # default values as defined by Klein et al. (2021)
       param=list(k_photo_max=0.47, E_max=1, r_A_DW=1000,
                  r_FW_DW=16.7, r_FW_V=1, K_pw=1, k_met=0),
-      param.bounds=list(k_photo_max=c(0,1), BM_L=c(0, 1e6), E_max=c(0,1),
-                        EC50_int=c(0,1e6), b=c(0.1,20), P=c(0,100), r_A_DW=c(10,1e5),
-                        r_FW_DW=c(1,1e3), r_FW_V=c(0.5,2), r_DW_TSL=c(0,1e6),
-                        K_pw=c(0,1e5), k_met=c(0,1e6)),
+      # boundary presets defined by expert judgement
+      param.bounds=list(k_photo_max=c(0, 1), BM_L=c(0, 1e6), E_max=c(0, 1),
+                        EC50_int=c(0, 1e6), b=c(0.1, 20), P=c(0, 100)),
       endpoints=c("BM", "r"),
       control.req=TRUE,
       init=c(BM=0, M_int=0),

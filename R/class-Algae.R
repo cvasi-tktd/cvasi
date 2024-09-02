@@ -15,6 +15,7 @@
 #' isoproturon on the green algae Desmodesmus subspictatus and
 #' Pseudokirchneriella subcapitata. Environmental Toxicology and
 #' Chemistry, 31, 899-908. \doi{10.1002/etc.1765}
+#'
 #' EFSA Panel on Plant Protection Products and their Residues, 2018. Scientific
 #' opinion on the state of the art of Toxicokinetic/Toxicodynamic (TKTD) effect
 #' models for regulatory risk assessment of pesticides for aquatic organisms.
@@ -137,22 +138,16 @@ setClass("AlgaeSimpleScenario", contains = "Algae")
 Algae_Weber <- function() {
   new("AlgaeWeberScenario",
     name = "Algae_Weber",
-    param.req = c("mu_max", "m_max", "v_max", "k_s",
-      "Q_min", "Q_max", "R_0", "D",
-      "T_opt", "T_min", "T_max", "I_opt",
-      "EC_50", "b", "k"
+    param.req = c("mu_max", "m_max", "v_max", "k_s", "Q_min", "Q_max", "R_0", "D",
+                  "T_opt", "T_min", "T_max", "I_opt", "EC_50", "b", "k"
     ),
     # default values as defined by Weber et al. (2012)
-    param = list(mu_max = 1.7380, m_max = 0.0500, v_max = 0.0520,
-                 k_s = 0.0680,
+    param = list(mu_max = 1.7380, m_max = 0.0500, v_max = 0.0520, k_s = 0.0680,
                  Q_min = 0.0011, Q_max = 0.0144, R_0 = 0.36, D = 0.5,
                  T_opt = 27, T_min = 0, T_max = 35, I_opt = 120
     ),
-    param.bounds = list(
-      mu_max=c(0,3), m_max=c(0, 0.5), v_max=c(0, 1), k_s=c(0, 1),
-      Q_min=c(0, 1), Q_max=c(0, 1), R_0=c(0, 50), D=c(0, 3),
-      T_opt=c(4, 40), T_min=c(0, 20), T_max=c(10, 50), I_opt=c(20, 300)
-    ),
+    # boundary presets defined by expert judgement
+    param.bounds = list(mu_max=c(0, 4),  EC_50=c(0, 1e6), b=c(0.1, 20)),
     endpoints = c("A", "r"),
     forcings.req=c("T_act", "I"),
     control.req = TRUE,
@@ -252,11 +247,8 @@ Algae_TKTD <- function() {
                    T_opt = 27, T_min = 0, T_max = 35, I_opt = 120,
                    dose_resp = 0
       ),
-      param.bounds = list(
-        mu_max=c(0,3), m_max=c(0, 0.5), v_max=c(0, 1), k_s=c(0, 1),
-        Q_min=c(0, 1), Q_max=c(0, 1),
-        T_opt=c(4, 40), T_min=c(0, 20), T_max=c(10, 50), I_opt=c(20, 300)
-      ),
+      # boundary presets defined by expert judgement
+      param.bounds = list(mu_max=c(0, 4),  EC_50=c(0, 1e6), b=c(0.1, 20), kD=c(0, 10)),
       endpoints = c("A", "r"),
       forcings.req=c("T_act", "I"),
       control.req = TRUE,
@@ -341,7 +333,8 @@ Algae_Simple <- function() {
       # default values as defined by Weber et al. (2012)
       param = list(mu_max = 1.7380, const_growth = TRUE, dose_response = 0,
                    scaled = 0),
-      param.bounds = list(mu_max=c(0, 4)),
+      # boundary presets defined by expert judgement
+      param.bounds = list(mu_max=c(0, 4), EC_50=c(0, 1e6), b=c(0.1, 20), kD=c(0, 10)),
       endpoints = c("A", "r"),
       forcings.req = c("f_growth"),
       forcings = list(f_growth = data.frame(time = 0, f_growth = 1)),

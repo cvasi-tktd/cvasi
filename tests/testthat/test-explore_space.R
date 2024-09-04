@@ -44,6 +44,7 @@ test_that("parameter space explorer works", {
   # parameter space explorer
   suppressMessages(
     Par_exp <- explore_space(x = list(CalibrationSet(sc, obs)),
+                  par = params,
                   res = res,
                   output = "BM",
                   sample_size = 1000,
@@ -52,8 +53,7 @@ test_that("parameter space explorer works", {
   )
 
   # tests
-  expect_equal(is(Par_exp$plot), "gg")
-  expect_equal(ncol(Par_exp$sample_df), 6)
-  expect_equal(Par_exp$sample_df[1,4], 0)
-  expect_equal(Par_exp$sample_df[1,5], "accept")
+  expect_equal(ncol(Par_exp), 5)
+  expect_equal(Par_exp[1,4], 0)
+  expect_equal(Par_exp[1,5], "Original fit")
 })

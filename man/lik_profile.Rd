@@ -38,8 +38,8 @@ can be overwritten here (e.g. bounds <- list(k_resp = list(0,10), k_phot_max = l
 \item{...}{additional parameters passed on to \code{\link[stats:optim]{stats::optim()}} and \code{\link[=calibrate]{calibrate()}}}
 }
 \value{
-A list of containing, for each parameter profiled, the likelihood
-profiling results as a data.frame;
+A list containing, for each parameter profiled, the likelihood
+profiling results as a dataframe;
 the 95\% confidence interval; the original parameter value; the likelihood plot object; and
 the recalibrated parameter values (in case a lower optimum was found)
 }
@@ -86,29 +86,36 @@ exp <- Schmitt2013 \%>\%
 # observations - control run
 obs <- Schmitt2013 \%>\%
   filter(ID == "T0") \%>\%
-  select(t, BM=obs)
+   select(t, BM=obs)
 
-# parameters after calibration
-params <- c(k_phot_max = 5.663571,
-            k_resp = 1.938689)
+# update metsulfuron
+metsulfuron2 <- metsulfuron \%>\%
+  set_param(c(k_phot_fix = TRUE, k_resp = 0, Emax = 1)) \%>\%
+  set_init(c(BM = 12)) \%>\%
+  set_exposure(exp)
 
-# create a scenario
-myscenario <- metsulfuron \%>\%
-  set_init(c(BM  = 5, E = 1,  M_int = 0)) \%>\%
-  set_exposure(exp) \%>\%
-  set_param(params)
+fit <- calibrate(
+  x = metsulfuron2,
+  par = c(k_phot_max = 1, k_resp = 0),
+  data = obs,
+  output = "BM"
+)
 
 # Likelihood profiling
 \donttest{
-res <- lik_profile(x = myscenario,
-                   data = obs,
-                   output = "BM",
-                   par = params,
-                   bounds = list(k_resp = list(0,10),
-                                     k_phot_max = list(0,30)),
-                   refit = FALSE,
-                   type = "fine",
-                   method="Brent")
+res <- lik_profile(
+  x = metsulfuron2,
+  data = obs,
+  output = "BM",
+  par = fit$par,
+  pars_bound = list(
+    k_resp = list(0, 10),
+    k_phot_max = list(0, 30)
+  ),
+  refit = FALSE,
+  type = "fine",
+  method = "Brent"
+)
 # plot
 plot_lik_profile(res)
 }

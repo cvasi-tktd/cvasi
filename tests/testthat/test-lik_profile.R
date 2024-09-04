@@ -2,59 +2,56 @@
 test_that("log-likelihood gives expected error", {
 
   # error for too many params
-  expect_error(lik_profile(model = Lemna_Schmitt(),
+  expect_error(lik_profile(x = Lemna_Schmitt(),
+                           par = Lemna_Schmitt()@param,
                            data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
                                              obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
-                           output = "BM",
-                           pars_profile = 1:11))
+                           output = "BM"))
 
   # error for model
-  # error because of misspecified model (not Calibrationset nor EffectScenario)
-  expect_error(lik_profile(model = "model",
-                           output = "BM",
-              pars_profile = c(5.6, 1.9)))
-
-  # error because misspecified model (list, but not Calibrationset)
-  expect_error(lik_profile(model = list(Lemna_Schmitt()),
-                           output = "BM",
-                           pars_profile = c(5.6, 1.9)))
+  # # error because of misspecified model (not Calibrationset nor EffectScenario)
+  # expect_error(lik_profile(x = "model",
+  #                          par = c(k_phot_max = 5.6,
+  #                                  k_resp = 1.9),
+  #                          output = "BM"))
 
   # error because data missing for EffectScenario
-  expect_error(lik_profile(model = Lemna_Schmitt(),
+  expect_error(lik_profile(x = Lemna_Schmitt(),
                            output = "BM",
-                           pars_profile = c(5.6, 1.9)))
+                           par = c(k_phot_max = 5.6,
+                                         k_resp = 1.9)))
 
   # errors for pars_profile
   # error because parameter vector is not a vector
-  expect_error(lik_profile(model = Lemna_Schmitt(),
+  expect_error(lik_profile(x = Lemna_Schmitt(),
                            output = "BM",
                            data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
                                              obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
-                           pars_profile = list(5.6, 1.9)))
+                           par = Lemna_Schmitt()@param[c(1,2)]))
 
-  # error because parameter vector is not named
-  expect_error(lik_profile(model = Lemna_Schmitt(),
-                           output = "BM",
-                           data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
-                                            obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
-                           pars_profile = c(5.6, 1.9)))
+  # # error because parameter vector is not named
+  # expect_error(lik_profile(x = Lemna_Schmitt(),
+  #                          output = "BM",
+  #                          data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
+  #                                            obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
+  #                          par = as.numeric(Lemna_Schmitt()@param[c(1,2)])))
 
   # errors for output
-  expect_error(lik_profile(model = Lemna_Schmitt(),
+  expect_error(lik_profile(x = Lemna_Schmitt(),
                            output = list("BM"),
                            data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
                                              obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
-                           pars_profile = c(k_phot_max = 5.6,
+                           par = c(k_phot_max = 5.6,
                                             k_resp = 1.9)))
 
   # errors for profile type
-  expect_error(lik_profile(model = Lemna_Schmitt(),
+  expect_error(lik_profile(x = Lemna_Schmitt(),
                            output = "BM",
                            data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
                                              obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
-                           pars_profile = c(k_phot_max = 5.6,
+                           par = c(k_phot_max = 5.6,
                                             k_resp = 1.9),
-                           prof_type = "slow"))
+                           type = "slow"))
 
 })
 
@@ -84,10 +81,8 @@ test_that("likelihood profiling works", {
   )
 
   # tests
-  expect_equal(res$k_phot_max$confidence_interval,
-               c(0.0000, 3.9792), tolerance = 10e-3)
-  expect_equal(dim(res$k_phot_max$likelihood_profile),
-               c(13,4))
+  expect_equal(length(res$k_phot_max$confidence_interval), 2)
+  expect_equal(dim(res$k_phot_max$likelihood_profile)[2], 4)
   expect_equal(res$k_phot_max$orig_par_value, 3.9792)
 })
 

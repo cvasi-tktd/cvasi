@@ -32,8 +32,10 @@ pred <- c(15.43, 32.15, 66.99, 139.57, 290.82, 605.94, 1262.52, 2630.58)
 # example plot
 plot(seq(1:length(obs)), obs)
 lines(seq(1:length(obs)), pred)
-log_lik(npars = length(pars),
-obs = obs,
-pred = pred)
+log_lik(
+  npars = length(pars),
+  obs = obs,
+  pred = pred
+)
 
 }

@@ -6,15 +6,19 @@
 \usage{
 explore_space(
   x,
+  par,
   res,
   output,
   sample_size = 1000,
   max_runs = 30,
-  nr_accept = 100
+  nr_accept = 100,
+  sample_factor = 1.2
 )
 }
 \arguments{
 \item{x}{a list of \link{CalibrationSet} objects}
+
+\item{par}{best fit parameters from joined calibration}
 
 \item{res}{output of 'lik_profile()' function}
 
@@ -26,6 +30,8 @@ is used in calibration}
 \item{max_runs}{max number of times to redraw samples (within a smaller space), and repeat the process}
 
 \item{nr_accept}{threshold for number of points sampled within the inner circle}
+
+\item{sample_factor}{multiplicaton factor for sampling (95\% interval * sample factor)}
 }
 \value{
 a list containing a plot to explore the parameter space, and the dataframe
@@ -61,44 +67,57 @@ obs <- Schmitt2013 \%>\%
   select(t, BM=obs)
 
 # parameters after calibration
-params <- c(k_phot_max = 5.663571,
-            k_resp = 1.938689,
-            Topt = 26.7)
+params <- c(
+  k_phot_max = 5.663571,
+  k_resp = 1.938689,
+  Topt = 26.7
+)
 
 # set parameter boundaries (if different from defaults)
-bounds <- list(k_resp = list(0,10),
-                  k_phot_max = list(0,30),
-                  Topt = list(20, 30))
+bounds <- list(
+  k_resp = list(0, 10),
+  k_phot_max = list(0, 30),
+  Topt = list(20, 30)
+)
 
-# create new scenario
+# update metsulfuron
 myscenario <- metsulfuron \%>\%
-  set_init(c(BM  = 5, E = 1,  M_int = 0)) \%>\%
-  set_param(list(k_0 = 5E-5,
-                 a_k =  0.25,
-                 BM50 = 17600,
-                 mass_per_frond = 0.1)) \%>\%
+  set_init(c(BM = 5, E = 1, M_int = 0)) \%>\%
+  set_param(list(
+    k_0 = 5E-5,
+    a_k = 0.25,
+    BM50 = 17600,
+    mass_per_frond = 0.1
+  )) \%>\%
   set_exposure(exp) \%>\%
   set_param(params) \%>\%
   set_bounds(bounds)
 
 # Likelihood profiling
-res <- lik_profile(x = myscenario,
-                   data = obs,
-                   output = "BM",
-                   par = params,
-                   refit = FALSE,
-                   type = "fine",
-                   method="Brent")
+res <- lik_profile(
+  x = myscenario,
+  data = obs,
+  output = "BM",
+  par = params,
+  refit = FALSE,
+  type = "fine",
+  method = "Brent"
+)
 # plot
 plot_lik_profile(res)
 
 # parameter space explorer
 set.seed(1) # for reproducibility
-explore_space(x = list(CalibrationSet(myscenario, obs)),
-              res = res,
-              output = "BM",
-              sample_size = 1000,
-              max_runs = 5,   # for speed, here put to 5, please increase for improved results
-              nr_accept = 100)
+res_space <- explore_space(
+  x = list(CalibrationSet(metsulfuron, obs)),
+  par = params,
+  res = res,
+  output = "BM",
+  sample_size = 1000,
+  max_runs = 20,
+  nr_accept = 100)
+
+plot_param_space(res_space)
+
 }
 }

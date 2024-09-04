@@ -282,7 +282,7 @@ All *calibration sets* are then passed to the `calibrate()` function.
 
 The following describes an example which fits selected parameters of the
 *Lemna* model by Schmitt *et al.* (2013) to observed frond numbers from
-experiments with the herbicide *metsulfuron*:
+experiments with the herbicide *metsulfuron*: 
 
 Option 1: direct calibration with one scenario and one effect dataset
 
@@ -395,6 +395,68 @@ plot_sd(
 The resulting scenario with fitted parameters shows a very good fit with
 the observed effects from experiments.
 
+After model parameters have been calibrated during model fitting against 
+observational data, the parameter estimates obtained can be 
+further evaluated by assessing the 95% confidence intervals for each parameter 
+through likelihood profiling. 
+
+First, the profiling is conducted using the `lik_profile()` function. Then, the 
+profiles can be visualized using `plot_lik_profile()`.
+
+```{r}
+# using the calibration set and calibrated parameters from the previous Lemna 
+# Schmitt example, a likelihood profiling is done
+# We set parameter boundaries to constrain the likelihood profiling within these 
+# boundaries (this is optional)
+
+# conduct profiling
+res <- lik_profile(x = cs, # the CalibrationSet
+                   par = fit2$par, # the parameter values after calibration
+                   output = "BM", # the observational output against which to 
+                                  # compare the model fit
+                   pars_bound <- list(EC50_int = list(0.1, 4), 
+                                      b = list(1, 5),
+                                      P = list(0.0001, 0.2)))
+# visualise profiling results
+plot_lik_profile(res)
+
+# access 95% confidence intervals of profiled parameters
+res$EC50$confidence_interval
+res$b$confidence_interval
+
+```
+
+Finally, relations between estimates of the calibrated parameters can be 
+visualized using a parameter space explorer. This supports identifying potential
+parameter correlations and identifiability issues.
+
+The parameter space explorer draws random parameter sets from the 95% confidence
+intervals obtained for each parameter during likelihood profiling, and evaluates 
+the fit (likelihood) of each of these parameter sets by comparing the model with
+the original parameter set against the model with the new, randomly draw set.
+ 
+First, the parameter space exploration is conducted using the `explore_space()` 
+function. Then, the space can be visualized using `plot_lik_profile()`.
+
+```{r, eval=FALSE}
+# Call the help page for more information about the parameter space explorer
+?explore_space
+
+```
+
+```{r}
+
+# conduct space exploration
+res_space <- explore_space(
+  x = cs,
+  par = fit2$par,
+  res = res, # output of the likelihood profiling function
+  output = "BM")
+
+# visualize the parameter space
+plot_param_space(res_space)
+
+```
 
 ## Changes in parameter values over time
 

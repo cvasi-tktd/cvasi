@@ -56,35 +56,42 @@
 #' # observations - control run
 #' obs <- Schmitt2013 %>%
 #'   filter(ID == "T0") %>%
-#'   select(t, BM=obs)
+#'    select(t, BM=obs)
 #'
-#' # parameters after calibration
-#' params <- c(k_phot_max = 5.663571,
-#'             k_resp = 1.938689)
+#' # update metsulfuron
+#' metsulfuron2 <- metsulfuron %>%
+#'   set_param(c(k_phot_fix = TRUE, k_resp = 0, Emax = 1)) %>%
+#'   set_init(c(BM = 12)) %>%
+#'   set_exposure(exp)
 #'
-#' # create a scenario
-#' myscenario <- metsulfuron %>%
-#'   set_init(c(BM  = 5, E = 1,  M_int = 0)) %>%
-#'   set_exposure(exp) %>%
-#'   set_param(params)
+#' fit <- calibrate(
+#'   x = metsulfuron2,
+#'   par = c(k_phot_max = 1, k_resp = 0),
+#'   data = obs,
+#'   output = "BM"
+#' )
 #'
 #' # Likelihood profiling
 #' \donttest{
-#' res <- lik_profile(x = myscenario,
-#'                    data = obs,
-#'                    output = "BM",
-#'                    par = params,
-#'                    bounds = list(k_resp = list(0,10),
-#'                                      k_phot_max = list(0,30)),
-#'                    refit = FALSE,
-#'                    type = "fine",
-#'                    method="Brent")
+#' res <- lik_profile(
+#'   x = metsulfuron2,
+#'   data = obs,
+#'   output = "BM",
+#'   par = fit$par,
+#'   pars_bound = list(
+#'     k_resp = list(0, 10),
+#'     k_phot_max = list(0, 30)
+#'   ),
+#'   refit = FALSE,
+#'   type = "fine",
+#'   method = "Brent"
+#' )
 #' # plot
 #' plot_lik_profile(res)
 #' }
 #'
-#' @return A list of containing, for each parameter profiled, the likelihood
-#' profiling results as a data.frame;
+#' @return A list containing, for each parameter profiled, the likelihood
+#' profiling results as a dataframe;
 #' the 95% confidence interval; the original parameter value; the likelihood plot object; and
 #' the recalibrated parameter values (in case a lower optimum was found)
 #' @export
@@ -111,11 +118,11 @@ lik_profile <- function(x,
   # check inputs
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # convert to list of calibration sets if needed
-  if(length(x) == 1) {
+  if (length(x) == 1) {
     if (is_scenario(x)) {
       if (is.null(data)) {
         stop("EffectScenario provided, but missing data")
-      }else{
+      } else {
         message("EffectScenario converted into Calibrationset\n")
         x <- list(CalibrationSet(x, data))
       }
@@ -126,8 +133,15 @@ lik_profile <- function(x,
                         x = x,
                         output = output,
                         type = type)
+
   # check if type is one of the 2 options
   type <- match.arg(type)
+
+  # update scenario of calibrationset with the provided par
+  for (i in seq_along(x)) {
+    x[[i]]@scenario <- x[[i]]@scenario %>%
+      set_param(par)
+  }
 
   # initialize parameter list
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -203,7 +217,6 @@ lik_profile <- function(x,
 
   # profile parameter by parameter
   for (par_select in pnames) {
-
     # profile the parameter
     res_list[[par_select]] <- suppressWarnings(profile_par(
       par_select = par_select, # par = the parameter to profile
@@ -220,11 +233,12 @@ lik_profile <- function(x,
       l_crit_min = l_crit_min,
       l_crit_stop = l_crit_stop,
       refit = refit,
-      ...))
+      ...
+    ))
 
     # check if better optimum was found for this parameter (if so, stop profiling)
     if (break_prof) {
-      if(any(res_list[[par_select]]$likelihood_profile[, "log_lik_rat"]  < 0.00)){
+      if (any(res_list[[par_select]]$likelihood_profile[, "log_lik_rat"] < 0.00)) {
         # give warning to user
         warning(paste0("Better parameter value found for ", par, ", profiling halted"))
         class(res_list) <- c(class(res_list), "lik_profile")
@@ -236,7 +250,6 @@ lik_profile <- function(x,
   # Return result list
   class(res_list) <- c(class(res_list), "lik_profile")
   return(res_list)
-
 } # end of lik_profile function
 
 
@@ -259,7 +272,7 @@ Check_inputs_lik_prof<- function(par,
                       output,
                       type){
   # check if attempt to profile more params than possible ~~~~~~~~~~~~~~~~~~~
-  if(length(par) > 10) {
+  if (length(par) > 10) {
     stop("attempt to profile more parameters that function allows, reduce nr. of parameters")
   }
 
@@ -329,7 +342,7 @@ profile_par <- function(par_select,
                         x, pfree, type, output,
                         max_iter, f_step_min, f_step_max,
                         chi_crit_j, chi_crit_s, l_crit_max, l_crit_min, l_crit_stop,
-                        refit,...){
+                        refit, ...) {
   # initialize
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -379,10 +392,10 @@ profile_par <- function(par_select,
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   # initialize list to store results during while loop
-  log_lik_rat = c(0)
-  par_value = c(x_hat_orig)
+  log_lik_rat <- c(0)
+  par_value <- c(x_hat_orig)
   results <- list(
-    loglik = c(ll_orig[[1]]),
+    loglik = sum(unlist(ll_orig)),
     log_lik_rat = log_lik_rat,
     par_value = par_value
   )
@@ -398,7 +411,7 @@ profile_par <- function(par_select,
     # jump to a lower/upper par value ~~~~~~~~~~~~~~~~~
 
     if (is.na(x_try)) { # for 1st iteration (and 1st time changing direction), start from the minimum step size (as in BYOM)
-      f_step <- f_step_min
+      f_step <- f_step_min * abs(x_hat_orig)
       x_try <- x_hat_orig + prof_dir * f_step
     } else { # L. 619 in BYOM
       if (f_step * abs(x_try) >= f_step_abs) { # if stepsize is larger or equal to abs minimum stepsize
@@ -447,19 +460,20 @@ profile_par <- function(par_select,
     prof_param_index <- which(names(pfree[["values"]]) == par_select)
     pfree_remaining <- unlist(pfree[["values"]])[-prof_param_index]
 
-    # recalibrate
-    fit_new <- calibrate(
-      x = x,
-      par = pfree_remaining,
-      output = output
-    )
+    # # recalibrate
+    # fit_new <- calibrate(
+    #   x = x,
+    #   par = pfree_remaining,
+    #   output = output
+    # )
+
 
     # predict and calulate log likelihood with newly fitted model
     pred_new <- list()
     ll_new <- list()
 
     for (i in seq_along(x)) {
-      #pred_new[[i]] <- simulate(model[[i]]@scenario)
+      # pred_new[[i]] <- simulate(model[[i]]@scenario)
       pred_new[[i]] <- x[[i]]@scenario %>%
         set_times(x[[i]]@data[, 1]) %>% # needs to have the same timepoint as the data
         simulate()
@@ -515,7 +529,6 @@ profile_par <- function(par_select,
     }
 
     iter <- iter + 1
-
   } # end of while loop
 
 
@@ -547,38 +560,41 @@ profile_par <- function(par_select,
   orig_ind <- which(res_df$start == "Yes")
   # lower 95
   low_df <- res_df[1:orig_ind, ]
-  if(min(low_df$log_lik_rat) < 0){ # in case a lower minimum is found within the data subset
+  if (min(low_df$log_lik_rat) < 0) { # in case a lower minimum is found within the data subset
     min_ind <- which(low_df$log_lik_rat == min(low_df$log_lik_rat))
     low_df <- low_df[1:min_ind, ]
   }
-  if(nrow(low_df)>1 & !all(low_df[, "log_lik_rat"] == 0)){
+  if (nrow(low_df) > 1 & !all(low_df[, "log_lik_rat"] == 0)) {
     # needs to be at least 2 values, at least one with a ll not 0
     f_inter <- stats::approxfun(
       y = low_df$par_value,
       x = low_df$log_lik_rat, rule = 2
     )
     low95 <- f_inter(chi_crit_s)
-  }else{
+  } else {
     low95 <- low_df$par_value
-    if(length(low95) >1){low95 <- min(low95)} # in case multiple values with ll of 0, take the min param value
-
+    if (length(low95) > 1) {
+      low95 <- min(low95)
+    } # in case multiple values with ll of 0, take the min param value
   }
   # upper 95
   up_df <- res_df[orig_ind:nrow(res_df), ]
-  if(min(up_df$log_lik_rat) < 0){ # in case a lower minimum is found within the data subset
+  if (min(up_df$log_lik_rat) < 0) { # in case a lower minimum is found within the data subset
     min_ind <- which(up_df$log_lik_rat == min(up_df$log_lik_rat))
     up_df <- up_df[min_ind:nrow(up_df), ]
   }
-  if(nrow(up_df)>1 & !all(up_df[, "log_lik_rat"] == 0)){
+  if (nrow(up_df) > 1 & !all(up_df[, "log_lik_rat"] == 0)) {
     # needs to be at least 2 values, at least one with a ll not 0
     f_inter <- stats::approxfun(
       y = up_df$par_value,
       x = up_df$log_lik_rat, rule = 2
     )
     up95 <- f_inter(chi_crit_s)
-  }else{
+  } else {
     up95 <- up_df$par_value
-    if(length(up95) >1){up95 <- max(up95)} # in case multiple values with ll of 0, take the max param value
+    if (length(up95) > 1) {
+      up95 <- max(up95)
+    } # in case multiple values with ll of 0, take the max param value
   }
 
 
@@ -596,9 +612,10 @@ profile_par <- function(par_select,
     #   fill = "darkolivegreen3", alpha = 0.2
     # ) +
     ggplot2::annotate("rect",
-             xmin = -Inf, xmax = Inf,
-             ymin = min(res_df$log_lik_rat), ymax = chi_crit_s,
-             alpha = 0.3, fill = "darkolivegreen3") +
+      xmin = -Inf, xmax = Inf,
+      ymin = min(res_df$log_lik_rat), ymax = chi_crit_s,
+      alpha = 0.3, fill = "darkolivegreen3"
+    ) +
     ggplot2::geom_hline(yintercept = chi_crit_s, color = "tomato", lwd = 1.2) +
     # points for values
     ggplot2::geom_point(ggplot2::aes(
@@ -654,9 +671,10 @@ profile_par <- function(par_select,
         output = output
       )
       # save recalibrated result
-      param_res[["fit_new"]] <- list(best_fit_param = c(best_par_value, fit_new$par),
-                                     recalibration_outputs = fit_new)
-
+      param_res[["fit_new"]] <- list(
+        best_fit_param = c(best_par_value, fit_new$par),
+        recalibration_outputs = fit_new
+      )
     } else { # if no better optimum was found for this parameter
       param_res[["fit_new"]] <- "No recalibration was necessary."
     }
@@ -706,9 +724,11 @@ plot_lik_profile <- function(x) {
 #' # example plot
 #' plot(seq(1:length(obs)), obs)
 #' lines(seq(1:length(obs)), pred)
-#' log_lik(npars = length(pars),
-#' obs = obs,
-#' pred = pred)
+#' log_lik(
+#'   npars = length(pars),
+#'   obs = obs,
+#'   pred = pred
+#' )
 #'
 log_lik <- function(npars, obs, pred){
   stopifnot(length(obs) == length(pred))
@@ -720,8 +740,8 @@ log_lik <- function(npars, obs, pred){
   res <- obs - pred
   n <- length(res)
   SSE <- sum(res^2)
-  sigma <- sqrt(SSE/(n-k))
-  sigma_unbiased <- sigma * sqrt((n - k)/n)
+  sigma <- sqrt(SSE / (n - k))
+  sigma_unbiased <- sigma * sqrt((n - k) / n)
   # log likelihood for normal probability density
   LL <- sum(log(stats::dnorm(x = obs, mean = pred, sd = sigma_unbiased)))
   return(LL)

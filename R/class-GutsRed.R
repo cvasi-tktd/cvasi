@@ -47,8 +47,7 @@
 #' A value of zero (`0.0`) denotes *no effect* on organism survival. A value of
 #' one (`1.0`) denotes a lethality rate of 100%, i.e. no survivors.
 #'
-#' In addition, the surival rate over time can be derived for all output time
-#' points using [survival()].
+#' The survival probability `S` is available in the return value of [simulate()].
 #'
 #' @references
 #' EFSA PPR Panel (EFSA Panel on Plant Protection Products and their Residues),
@@ -77,6 +76,13 @@ setClass("GutsRedIt", contains="EffectScenario")
 #' @inheritSection GUTS-RED-models State variables
 #' @inheritSection GUTS-RED-models IT model parameters
 #' @inheritSection GUTS-RED-models Effects
+#' @section Simulation output:
+#' The return value of [simulate()] will contain values for the state variables,
+#' as well as an additional column `S` which represents the survival probability
+#' for each time point. `S` is calculated as described in EFSA (2018) as
+#' *S = (1- F(t))*. The background hazard rate `hb` is already considered in state
+#' variable `H` and therefore does not occur as an additional term to derive `S`.
+#'
 #' @inherit GUTS-RED-models references
 #'
 #' @param param optional named `list` or `vector` with model parameters
@@ -114,6 +120,13 @@ GUTS_RED_IT <- function(param, init) {
 #' @inheritSection GUTS-RED-models Effects
 #' @inherit GUTS-RED-models references
 #' @inheritParams GUTS_RED_IT
+#' @section Simulation output:
+#' The return value of [simulate()] will contain values for the state variables,
+#' as well as an additional column `S` which represents the survival probability
+#' for each time point. `S` is calculated as described in EFSA (2018) as
+#' *S = exp(-H)*. The background hazard rate `hb` is already considered in state
+#' variable `H` and therefore does not occur as an additional term to derive `S`.
+#'
 #' @return an S4 object of type [GutsRedSd-class]
 #'
 #' @export

@@ -1,6 +1,7 @@
 #' Survival rate
 #'
-#' Derives the survival rate of individuals for *Reduced GUTS* models
+#' *Deprecated function*. Derives the survival rate of individuals for
+#' *Reduced GUTS* models. Was replaced by [simulate()].
 #'
 #' The survival rate describes the survival probability at each
 #' time point. The function simulates the *GUTS* scenario and appends a column
@@ -20,6 +21,7 @@
 #' @inherit GUTS-RED-models references
 #' @seealso [GUTS-RED-models]
 #'
+#' @autoglobal
 #' @examples
 #' # calculate survival rate
 #' minnow_it %>% survival()
@@ -33,18 +35,11 @@ survival <- function(scenario, ...) {
   if(length(scenario) > 1 | is.data.frame(scenario))
     stop("multiple scenarios supplied")
 
-  df <- simulate(scenario, ...)
-
-  if(is_GUTS_IT(scenario)) {
-    # EFSA Scientific Opinion on TKTD models, p. 33
-    # doi:10.2903/j.efsa.2018.5377
-    FS <- (1 / (1 + (cummax(df$D) / scenario@param[["alpha"]])^(-scenario@param[["beta"]])))
-    df$survival <- (1 - FS) * exp(-df$H)
-  } else if(is_GUTS_SD(scenario)) {
-    # EFSA Scientific Opinion on TKTD models, p. 33
-    # doi:10.2903/j.efsa.2018.5377
-    df$survival <- exp(-df$H) # background hazard rate included in H (if enabled)
-  } else
-    stop("model not supported")
-  df
+  lifecycle::deprecate_soft("1.2.0", "survival()", "simulate()")
+  if(is_GUTS(scenario)) {
+    df <- simulate(scenario, ...) %>%
+    dplyr::rename(survival=S)
+    return(df)
+  }
+  stop("model not supported")
 }

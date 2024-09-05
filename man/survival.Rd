@@ -15,7 +15,8 @@ survival(scenario, ...)
 a \code{data.frame} containing simulation results
 }
 \description{
-Derives the survival rate of individuals for \emph{Reduced GUTS} models
+\emph{Deprecated function}. Derives the survival rate of individuals for
+\emph{Reduced GUTS} models. Was replaced by \code{\link[=simulate]{simulate()}}.
 }
 \details{
 The survival rate describes the survival probability at each

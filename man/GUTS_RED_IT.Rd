@@ -19,6 +19,15 @@ an S4 object of type \linkS4class{GutsRedIt}
 Reduced \emph{General Unified Threshold models of Survival} (GUTS) with
 individual tolerance (\emph{IT}).
 }
+\section{Simulation output}{
+
+The return value of \code{\link[=simulate]{simulate()}} will contain values for the state variables,
+as well as an additional column \code{S} which represents the survival probability
+for each time point. \code{S} is calculated as described in EFSA (2018) as
+\emph{S = (1- F(t))}. The background hazard rate \code{hb} is already considered in state
+variable \code{H} and therefore does not occur as an additional term to derive \code{S}.
+}
+
 \section{State variables}{
 
 The following list describes the default names and standard units of \emph{GUTS-RED}
@@ -47,8 +56,7 @@ The effect endpoint \code{L} (lethality) is available for \emph{GUTS-RED} models
 A value of zero (\code{0.0}) denotes \emph{no effect} on organism survival. A value of
 one (\code{1.0}) denotes a lethality rate of 100\%, i.e. no survivors.
 
-In addition, the surival rate over time can be derived for all output time
-points using \code{\link[=survival]{survival()}}.
+The survival probability \code{S} is available in the return value of \code{\link[=simulate]{simulate()}}.
 }
 
 \references{

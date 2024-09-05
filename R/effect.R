@@ -181,11 +181,7 @@ fx_GUTS_RED_IT <- function(scenario, ...) {
     scenario@param$hb <- 0
 
   res <- simulate(scenario, ...)
-  # EFSA Scientific Opinion on TKTD models, p. 33
-  # doi:10.2903/j.efsa.2018.5377
-  FS <- (1/(1+(max(res$D)/scenario@param[["alpha"]])^(-scenario@param[["beta"]])))
-  survival <- (1-FS)*exp(-res$H[nrow(res)])
-  return(c("L"=1 - survival))
+  c("L"=1 - tail(res$S, n=1))
 }
 
 # Calculate effect of GUTS-RED-SD scenario
@@ -196,10 +192,7 @@ fx_GUTS_RED_SD <- function(scenario, ...) {
     scenario@param$hb <- 0
 
   res <- simulate(scenario, ...)
-  # EFSA Scientific Opinion on TKTD models, p. 33
-  # doi:10.2903/j.efsa.2018.5377
-  survival <- exp(-res$H[nrow(res)])
-  return(c("L"=1 - survival))
+  c("L"=1 - tail(res$S, n=1))
 }
 
 # Calculate effect of Lemna scenario

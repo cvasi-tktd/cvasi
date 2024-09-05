@@ -44,5 +44,6 @@ utils::globalVariables(c(
   "model", # <set_param_multi>
   "name", # <set_param_multi>
   "desc", # <set_param_multi>
+  "S", # <survival>
   NULL
 ))

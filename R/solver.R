@@ -47,12 +47,16 @@ solver_GUTS_RED_SD <- function(scenario, times, approx=c("linear","constant"),
   approx <- match.arg(approx)
 
   # make sure that parameters are present and in required order
-  params <- params[c("kd","hb","z","kk")]
+  params <- params[c("kd", "hb", "z", "kk")]
 
-  as.data.frame(ode(y=scenario@init, times=times, parms=params, dllname="cvasi",
+  df <- as.data.frame(ode(y=scenario@init, times=times, parms=params, dllname="cvasi",
       initfunc="gutsredsd_init", func="gutsredsd_func", initforc="gutsredsd_forc",
       forcings=scenario@exposure@series, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
       outnames=c("Cw"), method=method, hmax=hmax, ...))
+  # Derive survival probability, see EFSA Scientific Opinion on TKTD models, p. 33
+  # doi:10.2903/j.efsa.2018.5377
+  df$S <- exp(-df$H) # background hazard rate included in H (if enabled)
+  df
 }
 #' @include class-GutsRed.R
 #' @describeIn solver Numerically integrates GUTS-RED-SD models
@@ -80,12 +84,17 @@ solver_GUTS_RED_IT <- function(scenario, times, approx=c("linear","constant"),
   approx <- match.arg(approx)
 
   # make sure that parameters are present and in required order
-  params <- params[c("kd","hb")]
+  odeparams <- params[c("kd","hb")]
 
-  as.data.frame(ode(y=scenario@init, times=times, parms=params, dllname="cvasi",
+  df <- as.data.frame(ode(y=scenario@init, times=times, parms=odeparams, dllname="cvasi",
                     initfunc="gutsredit_init", func="gutsredit_func", initforc="gutsredit_forc",
                     forcings=scenario@exposure@series, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
                     outnames=c("Cw"), method=method, hmax=hmax, ...))
+  # Derive survival probability, EFSA Scientific Opinion on TKTD models, p. 33
+  # doi:10.2903/j.efsa.2018.5377
+  FS <- (1 / (1 + (cummax(df$D) / params["alpha"])^(-params["beta"])))
+  df$S <- (1 - FS) * exp(-df$H)
+  df
 }
 #' @include class-GutsRed.R
 #' @describeIn solver Numerically integrates GUTS-RED-IT models

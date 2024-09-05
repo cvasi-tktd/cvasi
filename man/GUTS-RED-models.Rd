@@ -65,8 +65,7 @@ The effect endpoint \code{L} (lethality) is available for \emph{GUTS-RED} models
 A value of zero (\code{0.0}) denotes \emph{no effect} on organism survival. A value of
 one (\code{1.0}) denotes a lethality rate of 100\%, i.e. no survivors.
 
-In addition, the surival rate over time can be derived for all output time
-points using \code{\link[=survival]{survival()}}.
+The survival probability \code{S} is available in the return value of \code{\link[=simulate]{simulate()}}.
 }
 
 \references{

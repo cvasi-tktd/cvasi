@@ -59,27 +59,29 @@
 #'    select(t, BM=obs)
 #'
 #' # update metsulfuron
-#' metsulfuron2 <- metsulfuron %>%
-#'   set_param(c(k_phot_fix = TRUE, k_resp = 0, Emax = 1)) %>%
+#' myscenario <- metsulfuron %>%
+#'   set_param(c(k_phot_fix = TRUE,Emax = 1)) %>%
 #'   set_init(c(BM = 12)) %>%
 #'   set_exposure(exp)
 #'
 #' fit <- calibrate(
-#'   x = metsulfuron2,
-#'   par = c(k_phot_max = 1, k_resp = 0),
+#'   x = myscenario,
+#'   par = c(k_phot_max = 1),
 #'   data = obs,
-#'   output = "BM"
+#'   output = "BM",
+#'   lower=0,
+#'   upper=1,
+#'   method="Brent"
 #' )
 #'
 #' # Likelihood profiling
 #' \donttest{
 #' res <- lik_profile(
-#'   x = metsulfuron2,
+#'   x = myscenario,
 #'   data = obs,
 #'   output = "BM",
 #'   par = fit$par,
 #'   pars_bound = list(
-#'     k_resp = list(0, 10),
 #'     k_phot_max = list(0, 30)
 #'   ),
 #'   refit = FALSE,

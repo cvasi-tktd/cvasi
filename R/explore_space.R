@@ -87,7 +87,7 @@
 #' # parameter space explorer
 #' set.seed(1) # for reproducibility
 #' res_space <- explore_space(
-#'   x = list(CalibrationSet(metsulfuron, obs)),
+#'   x = list(CalibrationSet(myscenario, obs)),
 #'   par = params,
 #'   res = res,
 #'   output = "BM",

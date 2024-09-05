@@ -2,11 +2,11 @@
 test_that("log-likelihood gives expected error", {
 
   # error for too many params
-  expect_error(lik_profile(x = Lemna_Schmitt(),
+  expect_error(suppressMessages(lik_profile(x = Lemna_Schmitt(),
                            par = Lemna_Schmitt()@param,
                            data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
                                              obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
-                           output = "BM"))
+                           output = "BM")))
 
   # error for model
   # # error because of misspecified model (not Calibrationset nor EffectScenario)
@@ -16,18 +16,18 @@ test_that("log-likelihood gives expected error", {
   #                          output = "BM"))
 
   # error because data missing for EffectScenario
-  expect_error(lik_profile(x = Lemna_Schmitt(),
+  expect_error(suppressMessages(lik_profile(x = Lemna_Schmitt(),
                            output = "BM",
                            par = c(k_phot_max = 5.6,
-                                         k_resp = 1.9)))
+                                         k_resp = 1.9))))
 
   # errors for pars_profile
   # error because parameter vector is not a vector
-  expect_error(lik_profile(x = Lemna_Schmitt(),
+  expect_error(suppressMessages(lik_profile(x = Lemna_Schmitt(),
                            output = "BM",
                            data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
                                              obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
-                           par = Lemna_Schmitt()@param[c(1,2)]))
+                           par = Lemna_Schmitt()@param[c(1,2)])))
 
   # # error because parameter vector is not named
   # expect_error(lik_profile(x = Lemna_Schmitt(),
@@ -37,21 +37,21 @@ test_that("log-likelihood gives expected error", {
   #                          par = as.numeric(Lemna_Schmitt()@param[c(1,2)])))
 
   # errors for output
-  expect_error(lik_profile(x = Lemna_Schmitt(),
+  expect_error(suppressMessages(lik_profile(x = Lemna_Schmitt(),
                            output = list("BM"),
                            data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
                                              obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
                            par = c(k_phot_max = 5.6,
-                                            k_resp = 1.9)))
+                                            k_resp = 1.9))))
 
   # errors for profile type
-  expect_error(lik_profile(x = Lemna_Schmitt(),
+  expect_error(suppressMessages(lik_profile(x = Lemna_Schmitt(),
                            output = "BM",
                            data = data.frame(t = c(0, 3, 5, 7, 7.01, 10, 12, 14),
                                              obs = c(12, 38, 92, 176, 176, 627, 1283, 2640)),
                            par = c(k_phot_max = 5.6,
                                             k_resp = 1.9),
-                           type = "slow"))
+                           type = "slow")))
 
 })
 

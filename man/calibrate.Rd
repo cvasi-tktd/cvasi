@@ -20,11 +20,11 @@ calibrate(x, ...)
   err_fun,
   as_tibble = deprecated(),
   catch_errors = deprecated(),
-  verbose = FALSE,
+  verbose = TRUE,
   ...
 )
 
-\S4method{calibrate}{CalibrationSet}(x, par, output, err_fun, verbose = FALSE, ...)
+\S4method{calibrate}{CalibrationSet}(x, par, output, err_fun, verbose = TRUE, ...)
 
 \S4method{calibrate}{list}(
   x,
@@ -36,12 +36,12 @@ calibrate(x, ...)
   err_fun,
   as_tibble = deprecated(),
   catch_errors = deprecated(),
-  verbose = FALSE,
+  verbose = TRUE,
   ...
 )
 }
 \arguments{
-\item{x}{either a single \link{scenario} or a list of \link{CalibrationSet} objects to be fitted}
+\item{x}{either a single \link{scenario} or a list of \link{caliset} objects to be fitted}
 
 \item{...}{additional parameters passed on to \code{\link[stats:optim]{stats::optim()}} and \code{\link[=simulate]{simulate()}}}
 
@@ -62,7 +62,7 @@ into multiple distinct trials and datasets before fitting}
 \item{metric_fun}{\emph{deprecated}, please use \code{err_fun} instead}
 
 \item{err_fun}{vectorized error function to calculate an error term that is
-minimized during optimization, must accept exactly two vectorized numeric
+minimized during optimization, must accept exactly four vectorized numeric
 arguments, defaults to sum of squared errors}
 
 \item{as_tibble}{\emph{deprecated}, result can no longer be returned as a tibble}
@@ -95,9 +95,9 @@ results of one or more experimental replicates under identical conditions.
 \item One or more datasets of observed data are fitted each to a scenario which
 describes the experimental conditions during observation, such as exposure
 level and environmental properties. Each combination of dataset and scenario
-is represented by a \link[=CalibrationSet]{calibration set}. During fitting,
-all \emph{calibration sets} are evaluated and a total error term is calculated by
-summing the error of each \emph{calibration set}.
+is represented by a \link[=caliset]{calibration set}. During fitting,
+all \emph{calibration sets} are evaluated and a total error term is calculated
+over all observed and predicted values.
 }
 \subsection{Observed data}{
 
@@ -121,19 +121,24 @@ A minimal observed dataset could look like this:
 
 By default, the total sum of squared errors is used as the target
 function which is minimized during fitting. A custom error function can be
-supplied by the user: The function must accept two numeric vectorized
-arguments and return a numeric of length one, i.e. the error value.
+supplied by the user: The function must accept four vectorized
+arguments and return a numeric of length one, i.e. the total error value
+which gets \emph{minimized} by \code{calibrate()}.
 
 Example of a custom error function which returns the sum of absolute errors:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{my_absolute_error <- function(observed, simulated) \{
-  sum(abs(observed - simulated))
+\if{html}{\out{<div class="sourceCode">}}\preformatted{my_absolute_error <- function(observed, predicted, weights, tags) \{
+  sum(abs(observed - predicted))
 \}
 }\if{html}{\out{</div>}}
 
-When using \emph{calibration sets}, the error term is calculated for each \emph{calibration
-set} individually, the weighting factor is applied to the error of each set,
-and then all error terms are summed up.
+The arguments to the error function will contain all observed and predicted
+values, as well as any weights and tags that were defined by the \emph{calibration sets}.
+As tags are optional, the fourth argument may be a list containing \code{NULL} values.
+The fourth argument can be used to pass additional information to the error
+function: For example, the tag may identify the study from where the data
+originates from and the error function could group and evaluate the data
+accordingly.
 }
 }
 \section{Methods (by class)}{
@@ -142,7 +147,7 @@ and then all error terms are summed up.
 
 \item \code{calibrate(CalibrationSet)}: Fit using a \link{CalibrationSet}
 
-\item \code{calibrate(list)}: Fit using a list of \link{CalibrationSet} objects
+\item \code{calibrate(list)}: Fit using a list of \link{caliset} objects
 
 }}
 \examples{

@@ -14,9 +14,9 @@
 #' 2) One or more datasets of observed data are fitted each to a scenario which
 #'   describes the experimental conditions during observation, such as exposure
 #'   level and environmental properties. Each combination of dataset and scenario
-#'   is represented by a [calibration set][CalibrationSet]. During fitting,
-#'   all *calibration sets* are evaluated and a total error term is calculated by
-#'   summing the error of each *calibration set*.
+#'   is represented by a [calibration set][caliset]. During fitting,
+#'   all *calibration sets* are evaluated and a total error term is calculated
+#'   over all observed and predicted values.
 #'
 #' ### Observed data
 #' Experimental, or effect, data must be supplied as a `data.frame` in long format
@@ -38,28 +38,33 @@
 #' ### Error function
 #' By default, the total sum of squared errors is used as the target
 #' function which is minimized during fitting. A custom error function can be
-#' supplied by the user: The function must accept two numeric vectorized
-#' arguments and return a numeric of length one, i.e. the error value.
+#' supplied by the user: The function must accept four vectorized
+#' arguments and return a numeric of length one, i.e. the total error value
+#' which gets *minimized* by `calibrate()`.
 #'
 #' Example of a custom error function which returns the sum of absolute errors:
 #' ```
-#' my_absolute_error <- function(observed, simulated) {
-#'   sum(abs(observed - simulated))
+#' my_absolute_error <- function(observed, predicted, weights, tags) {
+#'   sum(abs(observed - predicted))
 #' }
 #' ```
 #'
-#' When using *calibration sets*, the error term is calculated for each *calibration
-#' set* individually, the weighting factor is applied to the error of each set,
-#' and then all error terms are summed up.
+#' The arguments to the error function will contain all observed and predicted
+#' values, as well as any weights and tags that were defined by the *calibration sets*.
+#' As tags are optional, the fourth argument may be a list containing `NULL` values.
+#' The fourth argument can be used to pass additional information to the error
+#' function: For example, the tag may identify the study from where the data
+#' originates from and the error function could group and evaluate the data
+#' accordingly.
 #'
-#' @param x either a single [scenario] or a list of [CalibrationSet] objects to be fitted
+#' @param x either a single [scenario] or a list of [caliset] objects to be fitted
 #' @param par named numeric vector with parameters to fit and their start values
 #' @param endpoint *deprecated* `character`, please use `output` instead
 #' @param output `character`, name of a single output column of [simulate()] to
 #'   optimize on
 #' @param metric_fun *deprecated*, please use `err_fun` instead
 #' @param err_fun  vectorized error function to calculate an error term that is
-#'   minimized during optimization, must accept exactly two vectorized numeric
+#'   minimized during optimization, must accept exactly four vectorized numeric
 #'   arguments, defaults to sum of squared errors
 #' @param as_tibble *deprecated*, result can no longer be returned as a tibble
 #' @param catch_errors *deprecated*, simulation errors are always caught
@@ -122,7 +127,7 @@ setMethod("calibrate", "EffectScenario",
            err_fun,
            as_tibble=deprecated(),
            catch_errors=deprecated(),
-           verbose=FALSE,
+           verbose=TRUE,
            ...) {
     calibrate_scenario(x=x,
                        par=par,
@@ -186,14 +191,14 @@ calibrate_scenario <- function(x, data, endpoint, output, by, ...)
 #' @describeIn calibrate Fit using a [CalibrationSet]
 #' @include class-CalibrationSet.R
 setMethod("calibrate", "CalibrationSet",
-          function(x, par, output, err_fun, verbose=FALSE, ...) {
+          function(x, par, output, err_fun, verbose=TRUE, ...) {
             calibrate_set(x=list(x), par=par, output=output, err_fun=err_fun,
                           verbose=verbose, ...)
           }
 )
 
 #' @export
-#' @describeIn calibrate Fit using a list of [CalibrationSet] objects
+#' @describeIn calibrate Fit using a list of [caliset] objects
 setMethod("calibrate", "list",
           function(x,
                    par,
@@ -204,7 +209,7 @@ setMethod("calibrate", "list",
                    err_fun,
                    as_tibble=deprecated(),
                    catch_errors=deprecated(),
-                   verbose=FALSE,
+                   verbose=TRUE,
                    ...)
             calibrate_set(x=x,
                           par=par,
@@ -332,8 +337,11 @@ optim_set <- function(par, sets, par_names, output, err_fun, verbose=verbose,
   if(is.null(names(par))) {
     names(par) <- par_names
   }
-  # total error
-  err_total <- 0
+
+  obs <- c()
+  pred <- c()
+  wgts <- c()
+  tags <- list()
 
   # cycle through all calibration sets, i.e. scenario and data combinations
   for(i in seq_along(sets))
@@ -388,13 +396,30 @@ optim_set <- function(par, sets, par_names, output, err_fun, verbose=verbose,
       return(1e15) # penalize parameters causing issues, requires a finite value for 'L-BFGS-B' to work
     }
 
-    # calculate and sum up error term values
-    err_total <- err_total + err_fun(data[, output], out[, output]) * set@weight
+    obs <- c(obs, data[, output])
+    pred <- c(pred, out[, output])
+    # if only one weight defined, then apply the same weight to all data points
+    wgts <- c(wgts, ifelse(length(set@weight) == 1, rep(set@weight, times=nrow(out)), set@weight))
+    # tags can also be non-atomic types, so we put them in a list
+    tags <- append(tags, rep(list(set@tag), times=nrow(out)))
   }
+
+  # calculate error term/target function value on all data points at once
+  err_total <- err_fun(obs, pred, wgts, tags)
 
   if(verbose) {
     message(paste(", Error:", err_total))
   }
 
   err_total
+}
+
+
+# Sum of squared errors with optional weights
+# @param orig observed data
+# @param pred predicted data
+# @param weights weighting factor for each data point
+# @param tags optional study tag, e.g. to identify where data originates from
+sse <- function(obs, pred, weights=1, tags=NULL) {
+  sum((obs - pred)^2 * weights, na.rm = TRUE)
 }

@@ -12,16 +12,24 @@
 #' instead of a basic [scenario]. Please refer to [sequence()] for details.
 #'
 #' ### Weighting
-#' If more than one *calibration set* is used for fitting, then an optional
-#' weighting factor can be used to scale the error term of the affected *set*.
+#' An optional weighting factor can be used to scale the error term of a
+#' whole *set* or of individual data points when fitting parameters using e.g.
+#' [calibrate()].
+#'
+#' The vector of weights must either be of length one or have the same length
+#' as the dataset. In the former case, the same weight will be applied to all
+#' values in the dataset. In the latter, individual weights are applied
+#' for each data point.
+#'
 #' @usage caliset(scenario, data, weight = 1.0)
 #'
 #' @param scenario a [scenario] describing conditions during the experiment
 #' @param data a `data.frame` with observed data in long format containing two
 #'   columns: the 1st column with `numeric` time points and 2nd column with
 #'   `numeric` data to fit to.
-#' @param weight optional `numeric` weight to be applied to this dataset's error
-#'   term during fitting, default values is 1.0.
+#' @param weight optional `numeric` weight to be applied when calculating the
+#'  error term for each data point. Default value is `1.0`, i.e. no weighting.
+#' @param tag optional value to identify the data, e.g. a study number
 #'
 #' @returns `caliset()` returns a *calibration set* object
 #' @export
@@ -64,30 +72,45 @@ setClass("CalibrationSet",
   slots=list(
    scenario="ANY",
    data="data.frame",
-   weight="numeric"
+   weight="numeric",
+   tag="ANY"
   )
 )
 
 # Creates a *calibration set*
 #' @export
-caliset <- function(scenario, data, weight=1) {
+caliset <- function(scenario, data, weight=1, tag=NULL) {
   if(!is.data.frame(data))
-    stop("parameter 'data' must be a data.frame")
+    stop("argument 'data' must be a data.frame")
   if(length(data) < 2)
-    stop("parameter 'data' must have at least two columns")
+    stop("argument 'data' must have at least two columns")
   if(!is.numeric(weight))
-    stop("parameter 'weight' must be numeric")
-  if(is.infinite(weight) | is.na(weight) | is.nan(weight))
-    stop("parameter 'weight' must be finite numeric value")
+    stop("argument 'weight' must be numeric")
+  if(any(is.infinite(weight) | is.na(weight) | is.nan(weight)))
+    stop("argument 'weight' must be finite numeric value")
+  # apply the same weight to all data points in dataset
+  if(length(weight) == 1) {
+    weight <- rep(weight, times=nrow(data))
+  }
+  # else: length of weight vector must match the dataset
+  if(length(weight) != nrow(data)) {
+    stop("argument 'weight' must have the same length as 'data'")
+  }
+  # get rid of tibbles and other tabular data structures which differ from
+  # data.frame in subtle ways when selecting subsets with base R
+  data <- as.data.frame(data)
 
   new("CalibrationSet",
       scenario=scenario,
-      data=as.data.frame(data), # get rid of tibbles, which can cause issues
-      weight=weight)
+      data=data,
+      weight=weight,
+      tag=tag
+      )
 }
 
-# Alias for `caliset()`
+# Outdated alias for `caliset()`
 #' @export
 CalibrationSet <- function(...) {
+  lifecycle::deprecate_soft("1.2.0", "CalibrationSet()", "caliset()")
   caliset(...)
 }

@@ -15,8 +15,10 @@ caliset(scenario, data, weight = 1.0)
 columns: the 1st column with \code{numeric} time points and 2nd column with
 \code{numeric} data to fit to.}
 
-\item{weight}{optional \code{numeric} weight to be applied to this dataset's error
-term during fitting, default values is 1.0.}
+\item{weight}{optional \code{numeric} weight to be applied when calculating the
+error term for each data point. Default value is \code{1.0}, i.e. no weighting.}
+
+\item{tag}{optional value to identify the data, e.g. a study number}
 }
 \value{
 \code{caliset()} returns a \emph{calibration set} object
@@ -35,8 +37,14 @@ or flow rates changed, this can be represented by using a \emph{scenario sequenc
 instead of a basic \link{scenario}. Please refer to \code{\link[=sequence]{sequence()}} for details.
 \subsection{Weighting}{
 
-If more than one \emph{calibration set} is used for fitting, then an optional
-weighting factor can be used to scale the error term of the affected \emph{set}.
+An optional weighting factor can be used to scale the error term of a
+whole \emph{set} or of individual data points when fitting parameters using e.g.
+\code{\link[=calibrate]{calibrate()}}.
+
+The vector of weights must either be of length one or have the same length
+as the dataset. In the former case, the same weight will be applied to all
+values in the dataset. In the latter, individual weights are applied
+for each data point.
 }
 }
 \examples{

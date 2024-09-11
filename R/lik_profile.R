@@ -32,7 +32,7 @@
 #' of Toxicokinetic-Toxicodynamic Models. Integrated Environmental Assessment and
 #' Management 17:388-397. \doi{10.1002/ieam.4333}
 #'
-#' @param x either a single [scenario] or a list of [CalibrationSet] objects
+#' @param x either a single [scenario] or a list of [caliset] objects
 #' @param par named vector - parameters (names and values) to be profiled
 #' @param output character vector, name of output column of [simulate()] that
 #'  is used in calibration
@@ -123,10 +123,10 @@ lik_profile <- function(x,
   if (length(x) == 1) {
     if (is_scenario(x)) {
       if (is.null(data)) {
-        stop("EffectScenario provided, but missing data")
+        stop("Scenario provided, but data is missing")
       } else {
-        message("EffectScenario converted into Calibrationset\n")
-        x <- list(CalibrationSet(x, data))
+        message("Scenario converted to calibration set")
+        x <- list(caliset(x, data))
       }
     }
   }
@@ -262,12 +262,12 @@ lik_profile <- function(x,
 # @description internal function to check if the parameters of the [lik_profile()]
 # function are set correctly
 #
-# @param x either a single [scenario] or a list of [CalibrationSet] objects
+# @param x either a single [scenario] or a list of [caliset] objects
 # @param par named vector - parameters (names and values) to be profiled
-# @param output character vector - the output from the [scenario] or [CalibrationSet] that is used in calibration
+# @param output character vector - the output from the [scenario] or [caliset] that is used in calibration
 # @param type "fine" or "coarse" (default) likelihood profiling
 #
-# @return x as a list of [CalibrationSet], and objects error message when needed
+# @return x as a list of [caliset], and objects error message when needed
 
 Check_inputs_lik_prof<- function(par,
                       x,
@@ -275,21 +275,21 @@ Check_inputs_lik_prof<- function(par,
                       type){
   # check if attempt to profile more params than possible ~~~~~~~~~~~~~~~~~~~
   if (length(par) > 10) {
-    stop("attempt to profile more parameters that function allows, reduce nr. of parameters")
+    stop("attempt to profile more parameters that function allows, reduce no. of parameters")
   }
 
   # check model (x)~~~~~~~~~~~~~~~~~~~
   # check if Calibrationset or EffectScenario is provided, and convert EffectScenario to CalibrationSet
   if (is.list(x)) {
     if (is(x[[1]]) != "CalibrationSet") {
-      warning("incorrect model specified, please enter an EffectScenario or list of 1 or more CalibrationSets\n")
+      warning("incorrect model specified, please provide a scenario or a list of calibration sets")
       stopifnot(any(is(x[[1]]) == "CalibrationSet"))
     }
   } else { ## input is not a list
     if (is_scenario(x)) {
       # all fine
     } else { # input is not a list, and also not an EffectScenario
-      warning("incorrect model specified, please enter an EffectScenario or list of 1 or more CalibrationSets\n")
+      warning("incorrect model specified, please provide a scenario or a list of calibration sets")
       stopifnot(is_scenario(x))
     }
   }
@@ -322,10 +322,10 @@ Check_inputs_lik_prof<- function(par,
 # DOI: 10.1002/ieam.4333
 #
 # @param par `character`, the parameter to be profiled
-# @param x list of [CalibrationSet] objects
+# @param x list of [caliset] objects
 # @param pfree list of parameter values and their bounds for the profiled parameter
 # @param type "fine" or "coarse" (default) likelihood profiling
-# @param output `character` vector - the output from the [CalibrationSet] that is used during calibration
+# @param output `character` vector - the output from the [caliset] that is used during calibration
 # @param max_iter `numeric`, maximum number of profiling iterations to attempts
 # @param f_step_min, `numeric`,min stepsize (as fraction of value that is tried)
 # @param f_step_max, `numeric`,max stepsize (as fraction of value that is tried)
@@ -353,7 +353,7 @@ profile_par <- function(par_select,
 
 
   # print name of parameter being profiled
-  message("Profiling:", par_select, "\n")
+  message("Profiling: ", par_select)
 
   # get best fit value (i.e., calibrated value)
   x_hat_orig <- pfree$values[[par_select]]
@@ -388,7 +388,7 @@ profile_par <- function(par_select,
     }
   }
 
-  message("start param value:", round(x_hat_orig, 3), "LL:", round(sum(unlist(ll_orig)), 3), "\n")
+  message("start param value: ", round(x_hat_orig, 3), "LL:", round(sum(unlist(ll_orig)), 3))
 
   # refit the model with the par fixed to lower values, and then higher values
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -667,7 +667,7 @@ profile_par <- function(par_select,
         x[[i]]@scenario <- x[[i]]@scenario %>% set_param(param = best_par_value)
       }
       # recalibrate
-      fit_new <- cvasi::calibrate(
+      fit_new <- calibrate(
         x = x,
         par = pfree_remaining,
         output = output

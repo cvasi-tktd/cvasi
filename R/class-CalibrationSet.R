@@ -21,7 +21,7 @@
 #' values in the dataset. In the latter, individual weights are applied
 #' for each data point.
 #'
-#' @usage caliset(scenario, data, weight = 1.0)
+#' @usage caliset(scenario, data, weight = 1.0, tag = NULL)
 #'
 #' @param scenario a [scenario] describing conditions during the experiment
 #' @param data a `data.frame` with observed data in long format containing two
@@ -63,7 +63,7 @@
 #' fit$par
 #'
 #' @name CalibrationSet
-#' @aliases CalibrationSet-class caliset
+#' @aliases CalibrationSet-class caliset CalibrationSet
 NULL
 
 #' @export

@@ -362,7 +362,7 @@ test_that("EFSA LPx propiconazole", {
       set_param(c(kd=2.179, hb=0.02683, kk=0.1237, z=16.89)) %>%
       set_exposure(exp) %>%
       epx(level=50) %>%
-      pull(L.EP50) %>%
+      dplyr::pull(L.EP50) %>%
       round(digits=0)
   }
 
@@ -371,7 +371,7 @@ test_that("EFSA LPx propiconazole", {
       set_param(c(kd=0.7194, hb=0.01579, alpha=17.69, beta=6.7)) %>%
       set_exposure(exp) %>%
       epx(level=50) %>%
-      pull(L.EP50) %>%
+      dplyr::pull(L.EP50) %>%
       round(digits=0)
   }
 
@@ -390,7 +390,7 @@ test_that("EFSA LPx propiconazole", {
   expect_equal(mf_sd(exp$D1ditch), 3)
   expect_equal(mf_it(exp$D1ditch), 3)
   # Cereals, D1 stream
-  expect_equal(mf_sd(exp$D1stream), 20, tolerance=1)
+  expect_equal(mf_sd(exp$D1stream), 20, tolerance=0.06)
   expect_equal(mf_it(exp$D1stream), 24)
   # Cereals, D3 ditch
   expect_equal(mf_sd(exp$D3ditch), 12)
@@ -399,14 +399,14 @@ test_that("EFSA LPx propiconazole", {
   expect_equal(mf_sd(exp$D4pond), 12)
   expect_equal(mf_it(exp$D4pond), 12)
   # Cereals, D4 stream
-  expect_equal(mf_sd(exp$D4stream), 205, tolerance=1)
-  expect_equal(mf_it(exp$D4stream), 250, tolerance=1)
+  expect_equal(mf_sd(exp$D4stream), 205, tolerance=0.02)
+  expect_equal(mf_it(exp$D4stream), 250, tolerance=0.02)
   # Cereals, D5 pond
   expect_equal(mf_sd(exp$D5pond), 12)
   expect_equal(mf_it(exp$D5pond), 12)
   # Cereals, D5 stream
-  expect_equal(mf_sd(exp$D5stream), 195, tolerance=1)
-  expect_equal(mf_it(exp$D5stream), 237, tolerance=1)
+  expect_equal(mf_sd(exp$D5stream), 195, tolerance=0.02)
+  expect_equal(mf_it(exp$D5stream), 237, tolerance=0.01)
   # Cereals, R4 stream
   expect_equal(mf_sd(exp$R4stream), 39)
   expect_equal(mf_it(exp$R4stream), 39)

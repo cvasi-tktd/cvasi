@@ -410,7 +410,7 @@ profiles can be visualized using `plot_lik_profile()`.
 # boundaries (this is optional)
 
 # conduct profiling
-res <- lik_profile(x = cs, # the CalibrationSet
+res <- lik_profile(x = cs, # the calibration set
                    par = fit2$par, # the parameter values after calibration
                    output = "BM", # the observational output against which to 
                                   # compare the model fit

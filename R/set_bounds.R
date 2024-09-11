@@ -1,13 +1,13 @@
 #' Set boundaries of model parameters
 #'
 #' Modifies the boundaries of model parameters for one or more [scenario] or
-#' [CalibrationSet] objects.
+#' [caliset] objects.
 #'
 #'
-#' @param x vector of [scenario] or [CalibrationSet] objects
+#' @param x vector of [scenario] or [caliset] objects
 #' @param bounds named list of numerical vectors, where the first level lists the parameters
 #' by name, and the second level lists the lower and upper boundary
-#' @return [scenario] or [CalibrationSet] with modified parameter boundaries
+#' @return [scenario] or [caliset] with modified parameter boundaries
 #' @export
 #' @include class-EffectScenario.R
 #' @examples

@@ -6,7 +6,7 @@
 \alias{caliset}
 \title{Calibration set}
 \usage{
-caliset(scenario, data, weight = 1.0)
+caliset(scenario, data, weight = 1.0, tag = NULL)
 }
 \arguments{
 \item{scenario}{a \link{scenario} describing conditions during the experiment}

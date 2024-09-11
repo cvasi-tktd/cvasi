@@ -1,4 +1,13 @@
-# wrapper functions
+#
+# The code below contains an alternative model implementation of the GUTS-RED-IT
+# and GUTS-RED-SD models which was published with the `morse` package, version
+# 3.2.7 and before. The `morse` implementation is used as a means to compare model
+# results numerically.
+#
+
+
+# wrapper functions extract LPx values from morse's return values in a format
+# that is compatible with this package
 morse_sd <- function(scenario) {
   param <- scenario@param
   exp <- scenario@exposure@series

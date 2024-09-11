@@ -17,7 +17,7 @@ lik_profile(
 )
 }
 \arguments{
-\item{x}{either a single \link{scenario} or a list of \link{CalibrationSet} objects}
+\item{x}{either a single \link{scenario} or a list of \link{caliset} objects}
 
 \item{par}{named vector - parameters (names and values) to be profiled}
 

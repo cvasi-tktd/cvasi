@@ -457,7 +457,7 @@ The package function `calibrate()` supports the following operation modes:
 
 Parameter fitting builds upon the *R* function `stats::optim()` and it exposes full
 control over the fitting process. In this context, a dataset is represented by a
-`CalibrationSet` object which consists of a scenario, observed data, and an
+*calibration set* object which consists of a scenario, observed data, and an
 optional weighting term.
 Please refer to the [Modeling Howto](cvasi-2-howto.html) for a description of the
 fitting process using `calibrate()`.

@@ -14,7 +14,6 @@
 ^.*\.csv$
 ^doc$
 ^Meta$
-^tests/testthat/_snaps$
 
 # RMarkdown files and outputs
 ^man/figures$

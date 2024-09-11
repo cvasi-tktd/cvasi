@@ -16,17 +16,17 @@ set_bounds(x, bounds)
 \S4method{set_bounds}{list,list}(x, bounds)
 }
 \arguments{
-\item{x}{vector of \link{scenario} or \link{CalibrationSet} objects}
+\item{x}{vector of \link{scenario} or \link{caliset} objects}
 
 \item{bounds}{named list of numerical vectors, where the first level lists the parameters
 by name, and the second level lists the lower and upper boundary}
 }
 \value{
-\link{scenario} or \link{CalibrationSet} with modified parameter boundaries
+\link{scenario} or \link{caliset} with modified parameter boundaries
 }
 \description{
 Modifies the boundaries of model parameters for one or more \link{scenario} or
-\link{CalibrationSet} objects.
+\link{caliset} objects.
 }
 \examples{
 metsulfuron \%>\%

@@ -43,7 +43,7 @@ test_that("parameter space explorer works", {
 
   # parameter space explorer
   suppressMessages(
-    Par_exp <- explore_space(x = list(CalibrationSet(sc, obs)),
+    Par_exp <- explore_space(x = list(caliset(sc, obs)),
                   par = params,
                   res = res,
                   output = "BM",

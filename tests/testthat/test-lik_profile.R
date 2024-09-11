@@ -9,7 +9,7 @@ test_that("log-likelihood gives expected error", {
                            output = "BM")))
 
   # error for model
-  # # error because of misspecified model (not Calibrationset nor EffectScenario)
+  # # error because of misspecified model (not calibration set nor scenario)
   # expect_error(lik_profile(x = "model",
   #                          par = c(k_phot_max = 5.6,
   #                                  k_resp = 1.9),

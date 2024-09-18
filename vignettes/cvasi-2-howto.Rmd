@@ -415,9 +415,9 @@ res <- lik_profile(x = cs, # the calibration set
                    par = fit2$par, # the parameter values after calibration
                    output = "BM", # the observational output against which to 
                                   # compare the model fit
-                   pars_bound <- list(EC50_int = list(0.1, 4), 
-                                      b = list(1, 5),
-                                      P = list(0.0001, 0.2)))
+                   bounds = list(EC50_int = list(0.1, 4), 
+                                 b = list(1, 5),
+                                 P = list(0.0001, 0.2)))
 # visualise profiling results
 plot_lik_profile(res)
 

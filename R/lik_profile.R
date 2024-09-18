@@ -81,7 +81,7 @@
 #'   data = obs,
 #'   output = "BM",
 #'   par = fit$par,
-#'   pars_bound = list(
+#'   bounds = list(
 #'     k_phot_max = list(0, 30)
 #'   ),
 #'   refit = FALSE,

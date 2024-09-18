@@ -531,9 +531,9 @@ res <- lik_profile(x = cs, # the calibration set
                    par = fit2$par, # the parameter values after calibration
                    output = "BM", # the observational output against which to 
                                   # compare the model fit
-                   pars_bound <- list(EC50_int = list(0.1, 4), 
-                                      b = list(1, 5),
-                                      P = list(0.0001, 0.2)))
+                   bounds = list(EC50_int = list(0.1, 4), 
+                                 b = list(1, 5),
+                                 P = list(0.0001, 0.2)))
 #> Profiling: EC50
 #> start param value: 0.507LL:-244.118
 #> hit 95% Conf Region, changing direction
@@ -592,9 +592,6 @@ res_space <- explore_space(
 
 # visualize the parameter space
 plot_param_space(res_space)
-#> Registered S3 method overwritten by 'GGally':
-#>   method from   
-#>   +.gg   ggplot2
 ```
 
 ![](../doc/figures/howto-unnamed-chunk-17-1.png)<!-- -->

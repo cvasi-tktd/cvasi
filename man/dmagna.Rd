@@ -3,18 +3,18 @@
 \docType{data}
 \name{dmagna}
 \alias{dmagna}
-\title{A DEBtox Daphnia magna scenario}
+\title{A DEBtox scenario of Daphnia magna}
 \format{
-An object of class \code{DebDaphnia} of length 1.
+An object of class \code{DebTox} of length 1.
 }
 \usage{
 dmagna
 }
 \description{
 Species and substance parameters were collected from test runs of the
-original DEBtox Daphnia model.
+original \link{DEBtox} Daphnia model.
 }
 \seealso{
-\code{\link[=DEB_Daphnia]{DEB_Daphnia()}}
+\code{\link[=DEBtox]{DEBtox()}}
 }
 \keyword{datasets}

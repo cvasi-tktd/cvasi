@@ -9,6 +9,7 @@ param <- list(
   Rm = 16.69,
   f = 1,
   hb = 0.001608,
+  a = 1,
   Lf = 0,
   Lj = 0,
   Tlag = 0,
@@ -41,7 +42,7 @@ exposure <- data.frame(time=c(0, 0.99, 1, 6.99, 7, 7.99, 8, 21),
 # output times
 times <- cumsum(c(0, rep(21.42/99,99)))
 
-DEB_Daphnia() %>%
+DEBtox() %>%
   set_tag("dmagna") %>%
   set_init(init) %>%
   set_param(param) %>%

@@ -333,93 +333,9 @@ solver_DEB_abj <- function(scenario, times, approx=c("linear","constant"), f=1,
 }
 #' @include class-Deb.R
 #' @describeIn solver Numerically integrates DEB_abj models
-setMethod("solver", "DebAbj", function(scenario, times, ...) solver_DEB_abj(scenario, times, ...))
-
 #' @importFrom utils head tail
 #' @importFrom deSolve ode
-solver_DEB_Daphnia <- function(scenario, times, approx=c("linear", "constant"),
-                               f=1, method="ode45", ...) {
-  # use time points from scenario if nothing else is provided
-  if(missing(times))
-    times <- scenario@times
-  # check if at least two time points are present
-  if(length(times)<2) stop("times vector is not an interval")
-
-  params <- scenario@param
-  if(is.list(params))
-    params <- unlist(params)
-  approx <- match.arg(approx)
-
-  if(scenario@init[["L"]] < params[["L0"]])
-    warning("initial L is smaller than parameter L0")
-
-  # make sure that parameters are present and in required order
-  params_req <- c("L0", "Lp", "Lm", "rB", "Rm", "f", "hb", "Lf", "Lj", "Tlag",
-                  "kd", "zb", "bb", "zs", "bs", "FBV", "KRV", "kap", "yP",
-                  "Lm_ref", "len", "Tbp", "MoA", "FB")
-  # Not all parameters are required by the ODE
-  params_ode <- setdiff(params_req, c("len", "Tbp"))
-  # additional output variables
-  outnames <- c("f", "fR", "kd", "s", "sA", "h", "xu", "xe", "xG", "xR")
-
-  # check for missing parameters
-  params.missing <- setdiff(params_req, names(params))
-  if(length(params.missing)>0)
-    stop(paste("missing parameters:",paste(params.missing,sep=",",collapse=",")))
-
-  # check if any parameter is negative
-  if(any(head(params,-1)<0))
-    stop(paste("parameter out of bounds:",paste(names(params)[which(head(params,-1)<0)],sep=",")))
-
-  # only one forcings time-series: exposure
-  forcings <- list(scenario@exposure@series)
-
-  # This is a means to include a delay caused by the brood pouch in species
-  # like Daphnia. The repro data are for the appearance of neonates, but egg
-  # production occurs earlier. This globally shifts the model output in this
-  # function below. This way, the time vector in the data does not need to be
-  # manipulated, and the model plots show the neonate production as expected.
-  bp <- params[["Tbp"]] > 0 # consider brood-pouch delay?
-  if(bp) {
-    tbp <- times[times > params[["Tbp"]]] - params[["Tbp"]] # extra times needed to calculate brood-pouch delay
-    ordering <- order(c(times, tbp))
-    loct <- c(rep(F, length(times)), rep(T, length(tbp)))[ordering]
-    times <- sort(c(times, tbp))
-  }
-
-  # run solver
-  out <- ode(y=scenario@init, times=times, parms=params[params_ode], dllname="cvasi",
-             initfunc="debtox_daphnia_init", func="debtox_daphnia_func",
-             initforc="debtox_daphnia_forc", forcings=forcings,
-             fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
-             outnames=outnames, method=method, ...)
-  out <- as.data.frame(out)
-
-  # Since we need to find the maximum of length over time, a large time
-  # vector is needed. We cannot use the events function to find the exact
-  # point at which length becomes negative, since the events functions only
-  # looks at states, and not at the derivatives!
-  if(params["len"] == 2) { # when animal cannot shrink in length (but does on weight!)
-    out[, "L"] <- cummax(out[, "L"])
-  }
-
-  out[, "S"] <- pmax(0, out[, "S"]) # make sure survival does not get negative
-  # In some cases, it may become just a bit negative, which means zero.
-
-  # if we need a brood-pouch delay ...
-  if(bp) {
-    Xbp <- out[loct, "R"]
-
-    # Select the correct time points to return to the calling function
-    out <- out[!loct, ]
-    # put in the brood-pouch ones we asked for
-    out[, "R"] <- c(rep(0, nrow(out) - length(Xbp)), Xbp)
-  }
-  out
-}
-#' @include class-Deb.R
-#' @describeIn solver Numerically integrates DEB_Daphnia models
-setMethod("solver", "DebDaphnia", solver_DEB_Daphnia)
+setMethod("solver", "DebAbj", function(scenario, times, ...) solver_DEB_abj(scenario, times, ...))
 
 
 # Solver function for Algae_Weber models

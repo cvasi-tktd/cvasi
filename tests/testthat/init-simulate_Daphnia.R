@@ -62,6 +62,7 @@ tfs_param <- list(
   Rm = 16.69,
   f = 1,
   hb = 0.001608,
+  a = 1, # disable new parameter
   Lf = 0,
   Lj = 0,
   Tlag = 0,

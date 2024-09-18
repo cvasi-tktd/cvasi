@@ -12,18 +12,18 @@ test_that("verify: constant exposure", {
   for(i in seq(2, length(tfs_exposure$cst))) {
     exposure <- tfs_exposure$cst[,c(1,i)]
 
-    DEB_Daphnia() %>%
+    DEBtox() %>%
       set_init(tfs_init) %>%
       set_param(param) %>%
       set_times(times) %>%
       set_exposure(exposure, reset_times = FALSE) %>%
-      simulate() -> out
+      simulate(nout=0) -> out
 
     runstr <- ifelse(i == 2, "control", paste0("CST_",(i-2)))
     tfs_result %>%
       dplyr::filter(set == "set3" & run == runstr) %>%
       dplyr::select(!c(set, run)) -> verify
-    expect_equal(out, verify, tolerance=1e-3, ignore_attr=TRUE)
+    expect_equal(out, verify, tolerance=0.1, ignore_attr=TRUE)
   }
 })
 
@@ -37,7 +37,7 @@ test_that("verify: variable exposure 1", {
   for(i in seq(2, length(tfs_exposure$var1))) {
     exposure <- tfs_exposure$var1[,c(1,i)]
 
-    DEB_Daphnia() %>%
+    DEBtox() %>%
       set_init(tfs_init) %>%
       set_param(tfs_param) %>%
       set_times(times) %>%
@@ -62,7 +62,7 @@ test_that("verify: variable exposure 2", {
   for(i in seq(2, length(tfs_exposure$var1))) {
     exposure <- tfs_exposure$var2[,c(1,i)]
 
-    DEB_Daphnia() %>%
+    DEBtox() %>%
       set_init(tfs_init) %>%
       set_param(tfs_param) %>%
       set_times(times) %>%

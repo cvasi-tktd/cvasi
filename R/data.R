@@ -118,12 +118,12 @@
 #'
 "americamysis"
 
-#' A DEBtox Daphnia magna scenario
+#' A DEBtox scenario of Daphnia magna
 #'
 #' Species and substance parameters were collected from test runs of the
-#' original DEBtox Daphnia model.
+#' original [DEBtox] Daphnia model.
 #'
-#' @seealso [DEB_Daphnia()]
+#' @seealso [DEBtox()]
 "dmagna"
 
 #' A Lemna data set with multiple treatment levels

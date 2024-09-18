@@ -108,6 +108,6 @@ americamysis \%>\% simulate()
 \seealso{
 Other DEB models: 
 \code{\link{DEB-models}},
-\code{\link{DEB_Daphnia}()}
+\code{\link{DEBtox}()}
 }
 \concept{DEB models}

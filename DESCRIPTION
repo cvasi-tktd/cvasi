@@ -78,6 +78,9 @@ Collate:
     'is.R'
     'lik_profile.R'
     'log.R'
+    'solver.R'
+    'model-debtox.R'
+    'model-deb_daphnia.R'
     'morse.R'
     'package.R'
     'pll.R'
@@ -94,7 +97,6 @@ Collate:
     'set_window.R'
     'show.R'
     'simulate.R'
-    'solver.R'
     'survival.R'
     'utils-pipe.R'
 Suggests: 

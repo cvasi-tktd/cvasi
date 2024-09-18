@@ -366,7 +366,8 @@ fit2 <- calibrate(
   output="BM",
   method="L-BFGS-B",
   lower=c(0, 0.1, 0),
-  upper=c(1000, 10, 0.1)
+  upper=c(1000, 10, 0.1),
+  verbose=FALSE
 )
 fit2$par
 
@@ -620,7 +621,7 @@ class tree gives an overview of the scenario classes in use:
     |
     |__ DebScenario
         |__ DebAbj
-        |__ DebDaphnia
+        |__ DebTox
 
 To give an example, to implement a variant of a *Lemna* model, it would be advisable
 to derive from the class `Lemna` to benefit from already implemented features

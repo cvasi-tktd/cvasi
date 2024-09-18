@@ -8,13 +8,13 @@
 Supported models:
 \itemize{
 \item \link{DEB_abj}
-\item \link{DEB_Daphnia}
+\item \link{DEBtox}
 }
 }
 \seealso{
 Other DEB models: 
-\code{\link{DEB_Daphnia}()},
-\code{\link{DEB_abj}()}
+\code{\link{DEB_abj}()},
+\code{\link{DEBtox}()}
 
 Other scenarios: 
 \code{\link{Algae-models}},

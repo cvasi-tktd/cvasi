@@ -187,7 +187,7 @@ void debtox_func(int *neq, double *t, double *y, double *ydot, double *yout, int
   double s = bb * fmax(0, Dw - zb); // stress level for metabolic effects
   double h = bs * fmax(0, Dw - zs); // hazard rate for effects on survival
 
-  //h = fmin(111, h); // maximise the hazard rate to 99% mortality in 1 hour
+  h = fmin(111, h); // maximise the hazard rate to 99% mortality in 1 hour
   // Note: this helps in extreme conditions, as the system becomes stiff for
   // very high hazard rates. This is especially needed for EPx calculations,
   // where the MF is increased until there is effect on all endpoints!
@@ -288,11 +288,5 @@ void debtox_func(int *neq, double *t, double *y, double *ydot, double *yout, int
     if(*ip > 11) yout[11] = xe;
     if(*ip > 12) yout[12] = xG;
     if(*ip > 13) yout[13] = xR;
-
-	if(*ip > 14) {
-		yout[14] = FB;
-	    yout[15] = a;
-		yout[16] = hb;
-	}
   }
 }

@@ -5,7 +5,7 @@
 * The function `survival()` has been deprecated. Survival probabilities of
   affected models are now part of the return value of `simulate()`.
 * The function `DEB_Daphnia()` has been superseded by the more appropriatly
-  names `DEBtox()`. The former function is still available, but will show a
+  named `DEBtox()`. The former function is still available, but will show a
   warning when used.
 * The `DEBtox()` model equations have been updated to conform with *BYOM*'s
   *DEBtox 2019* module version 4.7.
@@ -14,7 +14,7 @@
   currently only used in likelihood profiling.
 * New function `set_bounds()` to set or modify parameter bounds for one or more
   scenarios or calibration sets.
-* Custom error functions supplied to `calibrate()` must not accept four arguments;
+* Custom error functions supplied to `calibrate()` must accept four arguments;
   the error function will be supplied with all observed and predicted values in
   one call. The two additional parameters represent optional weights and
   study IDs.

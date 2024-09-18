@@ -670,7 +670,8 @@ profile_par <- function(par_select,
       fit_new <- calibrate(
         x = x,
         par = pfree_remaining,
-        output = output
+        output = output,
+        verbose = FALSE
       )
       # save recalibrated result
       param_res[["fit_new"]] <- list(

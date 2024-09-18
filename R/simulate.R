@@ -27,6 +27,22 @@
 #' using argument `hmax` or by decreasing the error tolerances `atol` and `rtol`.
 #' These arguments are passed to the solver, see e.g. [deSolve::lsoda()] for details.
 #'
+#' ### Optional output variables
+#' Some models support adding intermediary model variables to the return value
+#' of `simulate()`. Analyzing the additional outputs may be helpful to understand
+#' model behavior and support finding potential issues in model parameterization.
+#'
+#' Optional outputs are enabled by setting the parameter `nout` to a value greater
+#' than zero. If `nout` is set to `n`, then the first `n` optional output columns
+#' will be returned along the normal simulation result.
+#'
+#' Which optional outputs are available depends on the model/scenario at hand.
+#' Please refer to the model documentation for details.
+#' As an example, the [GUTS-RED-IT][GUTS_RED_IT()] model supports adding the
+#' external toxicant concentration to the output by setting `nout=1`:
+#'
+#' `minnow_it %>% simulate(nout=1)`
+#'
 #' ### Numerical precision and stability
 #' Each model was assigned a default ODE solver which handles most of the
 #' occurring inputs well. In most cases, this will be an explicit numerical

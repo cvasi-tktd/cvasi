@@ -62,7 +62,7 @@ into multiple distinct trials and datasets before fitting}
 \item{metric_fun}{\emph{deprecated}, please use \code{err_fun} instead}
 
 \item{err_fun}{vectorized error function to calculate an error term that is
-minimized during optimization, must accept exactly four vectorized numeric
+minimized during optimization, must accept exactly four vectorized
 arguments, defaults to sum of squared errors}
 
 \item{as_tibble}{\emph{deprecated}, result can no longer be returned as a tibble}

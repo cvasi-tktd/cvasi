@@ -53,6 +53,24 @@ using argument \code{hmax} or by decreasing the error tolerances \code{atol} and
 These arguments are passed to the solver, see e.g. \code{\link[deSolve:lsoda]{deSolve::lsoda()}} for details.
 }
 
+\subsection{Optional output variables}{
+
+Some models support adding intermediary model variables to the return value
+of \code{simulate()}. Analyzing the additional outputs may be helpful to understand
+model behavior and support finding potential issues in model parameterization.
+
+Optional outputs are enabled by setting the parameter \code{nout} to a value greater
+than zero. If \code{nout} is set to \code{n}, then the first \code{n} optional output columns
+will be returned along the normal simulation result.
+
+Which optional outputs are available depends on the model/scenario at hand.
+Please refer to the model documentation for details.
+As an example, the \link[=GUTS_RED_IT]{GUTS-RED-IT} model supports adding the
+external toxicant concentration to the output by setting \code{nout=1}:
+
+\code{minnow_it \%>\% simulate(nout=1)}
+}
+
 \subsection{Numerical precision and stability}{
 
 Each model was assigned a default ODE solver which handles most of the

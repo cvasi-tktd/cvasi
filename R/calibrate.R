@@ -64,7 +64,7 @@
 #'   optimize on
 #' @param metric_fun *deprecated*, please use `err_fun` instead
 #' @param err_fun  vectorized error function to calculate an error term that is
-#'   minimized during optimization, must accept exactly four vectorized numeric
+#'   minimized during optimization, must accept exactly four vectorized
 #'   arguments, defaults to sum of squared errors
 #' @param as_tibble *deprecated*, result can no longer be returned as a tibble
 #' @param catch_errors *deprecated*, simulation errors are always caught

@@ -14,7 +14,7 @@
  * Copyright (c) 2024, Nils Kehrein
  *
  * This source code is licensed under the MIT-style license found in the
- * debtox_license.txt file in the package directory `inst/`.
+ * debtox_license.txt file in the package directory.
  *
  * Literature:
  * Jager T, 2020: Revisiting simplified DEBtox models for analysing
@@ -288,7 +288,7 @@ void debtox_func(int *neq, double *t, double *y, double *ydot, double *yout, int
     if(*ip > 11) yout[11] = xe;
     if(*ip > 12) yout[12] = xG;
     if(*ip > 13) yout[13] = xR;
-	
+
 	if(*ip > 14) {
 		yout[14] = FB;
 	    yout[15] = a;

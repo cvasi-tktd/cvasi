@@ -44,13 +44,15 @@ the 95\% confidence interval; the original parameter value; the likelihood plot 
 the recalibrated parameter values (in case a lower optimum was found)
 }
 \description{
-The aim of the function is 2-fold: 1) estimate a 95\% confidence
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
+The aim of the function is two-fold: 1) estimate a 95\% confidence
 around each parameter of a calibrated model, and 2) see if perhaps a local minimum was found rather
 than a global minimum. To achieve this, the likelihood profiling goes through
-every parameter one by one (using [profile_par())]. For each parameter,
+every parameter one by one. For each parameter,
 the model is sequentially refit with the parameter value set to
 increasingly lower and higher values, and the likelihood of the model given the
-data calculated (using [log_lik()]). The likelihood is then compared
+data calculated (using \code{\link[=log_lik]{log_lik()}}). The likelihood is then compared
 to the likelihood of the original model (using a likelihood ratio). This leads
 to the development of a likelihood profile, from which a plot a 95\%
 confidence interval for the parameter is derived.
@@ -70,9 +72,6 @@ something small).
 The function was inspired by a MatLab BYOM v.6.8 procedure, created by
 Tjalling Jager. For details, please refer to BYOM (http://debtox.info/byom.html)
 as well as Jager (2021).
-
-[profile_par())]: R:profile_par())
-[log_lik()]: R:log_lik()
 }
 \examples{
 # Example with Lemna model - physiological params

@@ -1,9 +1,12 @@
 #' Likelihood profiling
 #'
-#' @description The aim of the function is 2-fold: 1) estimate a 95% confidence
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
+#' The aim of the function is two-fold: 1) estimate a 95% confidence
 #' around each parameter of a calibrated model, and 2) see if perhaps a local minimum was found rather
 #' than a global minimum. To achieve this, the likelihood profiling goes through
-#' every parameter one by one (using [profile_par())]. For each parameter,
+#' every parameter one by one. For each parameter,
 #' the model is sequentially refit with the parameter value set to
 #' increasingly lower and higher values, and the likelihood of the model given the
 #' data calculated (using [log_lik()]). The likelihood is then compared

@@ -1,4 +1,4 @@
-# cvasi Development version
+# cvasi 1.2.0
 
 * New likelihood profiling with `lik_profile()` based on the routines described
   by Tjalling Jager (doi: 10.1002/ieam.4333) and implemented in *BYOM*

@@ -15,13 +15,14 @@ plot_ppc_combi(table, xy_lim = NULL)
 a ggplot2 plot object
 }
 \description{
-The function expects a data.frame with four mandatory and one optional
+The function expects a data.frame with five mandatory and one optional
 column. The mandatory columns are as follows:
 \itemize{
 \item \code{pred}: mean of predictions e.g. frond number for lemna
 \item \code{max}: maximum of predictions
 \item \code{min}: minimum of predictions
 \item \code{obs}: observations
+\item \code{PPC}: color code
 The optional column is to be named \code{study} and contains a study identifier.
 If more than one study identifier is present in the table, individual
 studies will be plotted in different colors and a legend will be displayed.

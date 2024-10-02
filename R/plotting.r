@@ -355,12 +355,13 @@ plot_ppc <- function(rs_mean,
 
 #' Create PPC plot for one or more datasets
 #'
-#' The function expects a data.frame with four mandatory and one optional
+#' The function expects a data.frame with five mandatory and one optional
 #' column. The mandatory columns are as follows:
 #' - `pred`: mean of predictions e.g. frond number for lemna
 #' - `max`: maximum of predictions
 #' - `min`: minimum of predictions
 #' - `obs`: observations
+#' - `PPC`: color code
 #' The optional column is to be named `study` and contains a study identifier.
 #' If more than one study identifier is present in the table, individual
 #' studies will be plotted in different colors and a legend will be displayed.
@@ -425,17 +426,16 @@ plot_ppc_combi <- function(table, xy_lim = NULL) {
     "%"
   )
 
-  plot <- ggplot2::ggplot() +
+  plot <- ggplot2::ggplot(table) +
     ggplot2::geom_abline(linetype = "dashed") +
     ggplot2::geom_linerange(
       ggplot2::aes(obs,
-        ymin = obs$min,
-        ymax = obs$max,
-        color = obs$PPC
+        ymin = min,
+        ymax = max,
+        color = PPC
       ),
       alpha = 0.7,
-      linewidth = 1.1,
-      data = table
+      linewidth = 1.1
     ) +
     ggplot2::scale_color_identity()
 
@@ -445,8 +445,7 @@ plot_ppc_combi <- function(table, xy_lim = NULL) {
         pred,
         color = study
       ),
-      size = 1.5,
-      data = table
+      size = 1.5
     ) +
     ggplot2::coord_cartesian(xlim = c(0, xy_lim), ylim = c(0, xy_lim)) +
     ggplot2::labs(x = "Observed", y = "Predicted", title = title) +

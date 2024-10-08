@@ -61,7 +61,7 @@ The package contains the following vignettes
 They can also be accessed locally by executing an *R* statement such as:
 
 ``` r
-vignette("manual", package="cvasi")
+vignette("cvasi-1-manual", package="cvasi")
 ```
 
 ## Usage
@@ -81,13 +81,13 @@ GUTS_RED_IT() %>%
 scenario %>%
   simulate(times=1:400) %>%
   tail()
-#>     time           D H
-#> 395  395 0.004429420 0
-#> 396  396 0.004427206 0
-#> 397  397 0.004424993 0
-#> 398  398 0.004422781 0
-#> 399  399 0.004420570 0
-#> 400  400 0.004418360 0
+#>     time           D H        S
+#> 395  395 0.004429420 0 0.998655
+#> 396  396 0.004427206 0 0.998655
+#> 397  397 0.004424993 0 0.998655
+#> 398  398 0.004422781 0 0.998655
+#> 399  399 0.004420570 0 0.998655
+#> 400  400 0.004418360 0 0.998655
 ```
 
 Calculation of effects:

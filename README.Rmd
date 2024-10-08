@@ -73,7 +73,7 @@ The package contains the following vignettes
 
 They can also be accessed locally by executing an *R* statement such as:
 ```{r, eval=FALSE}
-vignette("manual", package="cvasi")
+vignette("cvasi-1-manual", package="cvasi")
 ```
 
 

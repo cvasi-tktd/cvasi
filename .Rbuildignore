@@ -21,7 +21,6 @@
 # GitHub files
 ^\.github$
 ^README\.html$
-^README\.md$
 ^README\.Rmd$
 ^LICENSE\.md$
 ^CONTRIBUTING.md$

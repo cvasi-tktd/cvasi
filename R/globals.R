@@ -32,10 +32,9 @@ utils::globalVariables(c(
   "time", # <plot_ppc>
   "trial", # <plot_ppc>
   "obs", # <plot_ppc_combi>
+  "PPC", # <plot_ppc_combi>
   "pred", # <plot_ppc_combi>
   "study", # <plot_ppc_combi>
-  "min", # <plot_ppc_combi>
-  "max", # <plot_ppc_combi>
   "EPx", # <plot_epx>
   "len", # <plot_epx>
   "scenario", # <pull_metadata>

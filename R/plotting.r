@@ -371,8 +371,7 @@ plot_ppc <- function(rs_mean,
 #' @param table `data.frame` containing return values of calls to `plot_ppc()`
 #' @param xy_lim optional `numeric`, limits of x and y axis for plotting
 #' @return a ggplot2 plot object
-#' @global obs pred study min max
-
+#' @autoglobal
 plot_ppc_combi <- function(table, xy_lim = NULL) {
   if (!is.data.frame(table)) stop("table not a data.frame")
 

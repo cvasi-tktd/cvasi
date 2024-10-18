@@ -1,3 +1,10 @@
+# cvasi Development version
+
+* Improved `import_toxswa()`: now supports scaling of imported time series,
+  importing selected *TOXSWA* output variables, as well as importing selected
+  substance concentrations
+* Small bugfix in `plot_ppc()`
+
 # cvasi 1.2.0
 
 * New likelihood profiling with `lik_profile()` based on the routines described

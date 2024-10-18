@@ -102,6 +102,7 @@ Collate:
 Suggests: 
     future,
     testthat,
+    withr,
     knitr,
     rmarkdown,
     roxyglobals

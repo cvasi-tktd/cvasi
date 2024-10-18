@@ -2,19 +2,64 @@
 % Please edit documentation in R/import_toxswa.R
 \name{import_toxswa}
 \alias{import_toxswa}
-\title{Read TOXSWA exposure profiles from out-files}
+\title{Import \emph{TOXSWA} exposure series}
 \usage{
-import_toxswa(pathtofiles, profileNames = NA)
+import_toxswa(
+  filepath,
+  output_var = "ConLiqWatLay",
+  output_unit = "ug/L",
+  time_unit = "days",
+  substance = NULL,
+  split = FALSE
+)
 }
 \arguments{
-\item{pathtofiles}{paths to toxswa files that should be read}
+\item{filepath}{vector of strings with absolute or relative paths to files}
 
-\item{profileNames}{a vector of names to be used for the loaded toxswa files. if "NA" the filename without extension will be used}
+\item{output_var}{character, single output variable from \emph{TOXSWA} that is
+imported, defaults to \emph{ConLiqWatLay}}
+
+\item{output_unit}{character, target unit of the imported output variable,
+defaults to \emph{ug/L}, syntax must be compatible with \code{\link[units:units]{units::units()}}}
+
+\item{time_unit}{character, target unit of the imported time scale,
+defaults to \emph{days}, syntax must be compatible with \code{\link[units:units]{units::units()}}}
+
+\item{substance}{optional vector of characters, if set, only the substance
+codes defined in this vector are imported}
+
+\item{split}{logical, if \code{TRUE} then one series will be returned for each
+substance found in the \emph{TOXSWA} files, else all substances per file will
+be in one \emph{data.frame}. Defaults to \code{FALSE}}
 }
 \value{
-list of exposure profiles each with two columns (time and concentration)
+list of \emph{data.frame} objects with exposure series. Each \emph{data.frame} has at
+least three columns:
+\itemize{
+\item \code{time}: numerical time scale, always starts at zero
+\item \code{timestamp}: time as datetime objects such as \code{POSIXct}
+\item one or more additional columns for each imported substance
+}
 }
 \description{
-Read several TOXSWA exposure profiles from out-files at their corresponding
-paths given by'pathtofiles'.
+Read one or more \emph{TOXSWA} exposure series from \emph{TOXSWA}'s \code{.out} files. By default, the
+concentration dissolved in water (\emph{ConLiqWatLay}) at the end of the simulated waterbody
+(i.e. at the maximum of the \emph{x} dimension) is returned. The unit of the time
+scale as well as of the imported model output variable can be scaled as needed.
+}
+\details{
+The numerical time scale is shifted to always start at time zero (0.0).
+Numerical columns of the returned \emph{data.frame} objects will be of type
+\link[units:units]{units::units}. Please be aware that the use of \code{units} objects may not be
+supported by all functions in this package. However, \code{\link[=set_times]{set_times()}} and
+\code{\link[=set_exposure]{set_exposure()}} can handle \code{units} objects safely.
+
+Incomplete list of alternative \emph{TOXSWA} v5.5.3 output variables:
+\itemize{
+\item \emph{ConLiqWatLay}: Concentration dissolved in water (g/m3)
+\item \emph{ConLiqSed}: Concentration in pore water sediment (g/m3)
+\item \emph{ConSysWatLay}: Total concentration in water (g/m3)
+\item \emph{CntSorSusSol}: Content sorbed to suspended solids (g/kg)
+\item \emph{CntSorSed}: Content sorbed to sediment (g/kg)
+}
 }

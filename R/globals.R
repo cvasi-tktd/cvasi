@@ -22,10 +22,12 @@ utils::globalVariables(c(
   "FrondNo", # <derive_range>
   "data", # <derive_range>
   "gridExtra", # <derive_range>
-  "V1", # <extract_focus_profile>
-  "V2", # <extract_focus_profile>
-  "V3", # <extract_focus_profile>
-  "DateTime", # <extract_focus_profile>
+  "V1", # <import_toxswa>
+  "V3", # <import_toxswa>
+  "value", # <import_toxswa>
+  "name", # <import_toxswa>
+  "time", # <import_toxswa>
+  "timestamp", # <import_toxswa>
   "start", # <profile_par>
   ".", # <format_table>
   "trial", # <plot_sd>

@@ -4,13 +4,15 @@
 \alias{import_swash}
 \title{SWASH project exposure profile import}
 \usage{
-import_swash(swash_dir)
+import_swash(swash_dir, ...)
 }
 \arguments{
 \item{swash_dir}{path to the SWASH project directory}
+
+\item{...}{arguments passed on to \code{\link[=import_toxswa]{import_toxswa()}}}
 }
 \value{
-a list of exposure profiles each with two columns (time and concentration)
+a list of imported exposure series, see \code{\link[=import_toxswa]{import_toxswa()}} for details
 }
 \description{
 Read all TOXSWA files within a SWASH project directory.

@@ -93,9 +93,7 @@ set_exposure_dfr <- function(scenarios, series, ...) {
   if(length(series) == 2) {
     # coerce to data.frame to avoid issues with data.frame-like types
     series <- as.data.frame(series)
-    if(is.numeric(series[,1]) & is.numeric(series[,2])) {
-      return(set_exposure(scenarios, ExposureSeries(series), ...))
-    }
+    return(set_exposure(scenarios, ExposureSeries(series), ...))
   }
   stop("data.frame does not contain a valid time-series")
 }
@@ -103,9 +101,25 @@ set_exposure_dfr <- function(scenarios, series, ...) {
 # single ExposureSeries object
 #' @noRd
 set_exposure_exs <- function(scenarios, series, reset_times=TRUE) {
+  # coerce to data.frame to avoid issues with data.frame-like types
+  df <- as.data.frame(series@series)
+  # check data.frame structure
+  if(length(df) != 2)
+    stop("exposure series must have exactly two columns")
+  if(!is.numeric(df[,1]) | !is.numeric(df[,2]))
+    stop("exposure series columns must be numeric")
+
+  # remove any `units` information to avoid issues
+  if(any(has_units(df[,1]) | has_units(df[,2])))
+    df <- units::drop_units(df)
+
+  # assign checked data.frame to scenario but keep also any additional data from
+  # exposure series object
+  series@series <- df
   scenarios@exposure <- series
   if(reset_times)
-    scenarios@times <- series@series[,1]
+    scenarios <- set_times(scenarios, series@series[,1])
+
   scenarios
 }
 

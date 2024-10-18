@@ -47,7 +47,7 @@ set_endpoints <- function(x, endpoints) {
 #' @seealso [simulate()]
 #' @param x vector of [scenarios]
 #' @param times `numerical` vector
-#' @return Vector of modified `ExposureScenario` objects
+#' @return Vector of modified [scenarios]
 #' @export
 #' @examples
 #' # Set simulated period to [2,4] with output intervals of length 1
@@ -59,6 +59,9 @@ set_times <- function(x, times) {
   if(is.vector(x)) {
     return(sapply(x, function(sc) set_times(sc,times)))
   }
+  # convert `units` objects to base numericals to avoid issues
+  if(any(has_units(times)))
+    times <- units::drop_units(times)
   if(!is.vector(times) | !is.numeric(times))
     stop("invalid type")
 
@@ -70,10 +73,11 @@ set_times <- function(x, times) {
 #'
 #' Updates the model parameter `MoA` to a certain value
 #'
-#' @param x vector of `EffectScenario` objects
-#' @param code a code for a mode of action
+#' @param x vector of [scenarios]
+#' @param code a code for a mode of action, refer to model description for
+#'   details
 #'
-#' @return modified `EffectScenario` objects
+#' @return modified [scenarios]
 #' @export
 #'
 #' @examples

@@ -63,3 +63,9 @@ has_irregular_transfer <- function(x) {
 
   length(x@transfer.times) > 0
 }
+
+has_units <- function(x) {
+  if(length(x) > 1)
+    return(sapply(x, has_units))
+  is(x, 'units')
+}

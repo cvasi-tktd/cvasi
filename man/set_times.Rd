@@ -12,7 +12,7 @@ set_times(x, times)
 \item{times}{\code{numerical} vector}
 }
 \value{
-Vector of modified \code{ExposureScenario} objects
+Vector of modified \link{scenarios}
 }
 \description{
 Minimum and maximum output times define the simulated period for a scenario.

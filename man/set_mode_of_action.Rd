@@ -10,12 +10,13 @@ set_mode_of_action(x, code)
 set_moa(x, code)
 }
 \arguments{
-\item{x}{vector of \code{EffectScenario} objects}
+\item{x}{vector of \link{scenarios}}
 
-\item{code}{a code for a mode of action}
+\item{code}{a code for a mode of action, refer to model description for
+details}
 }
 \value{
-modified \code{EffectScenario} objects
+modified \link{scenarios}
 }
 \description{
 Updates the model parameter \code{MoA} to a certain value

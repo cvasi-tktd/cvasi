@@ -5,6 +5,12 @@
   substance concentrations
 * function `import_exposure_text()` moved to the *cvasi.ui* package
 * Small bugfix in `plot_ppc()`
+* `morse()` renamed to `import_morse()`, the function now supports loading
+  parameter sets from *morse* objects directly, as well as from *.RData* and
+  *.RDS* files
+* parameters to `import_morse()` renamed to a more canonical standard, i.e.
+  `find.IT` to `find_it`, `find.SD` to `find_sd` and so forth. Using the old
+  parameter names still works but will raise a warning.
 
 # cvasi 1.2.0
 

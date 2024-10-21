@@ -4,7 +4,7 @@
 #' exposure series. Model parameters were derived from an acute fish toxicity
 #' study of the fathead minnow and chlorpyrifos by Geiger *et al.* (1988).
 #' The dataset is also referred to as *GUTS Ring-test dataset C* by
-#' EFSA (2018). Fitted parameters were estimated using the [morse] package.
+#' EFSA (2018). Fitted parameters were estimated using the *morse* package.
 #'
 #' The background mortality rate (`hb`) was set to zero.
 #'
@@ -30,7 +30,7 @@
 #' exposure series. Model parameters were derived from an acute fish toxicity
 #' study of the fathead minnow and chlorpyrifos by Geiger *et al.* (1988).
 #' The dataset is also referred to as *GUTS Ring-test dataset C* by
-#' EFSA (2018). Fitted parameters were estimated using the [morse] package.
+#' EFSA (2018). Fitted parameters were estimated using the *morse* package.
 #'
 #' The background mortality rate (`hb`) was set to zero.
 #'

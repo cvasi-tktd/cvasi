@@ -27,7 +27,7 @@ get_vars <- function(x) {
 #'
 #' @return vector of `character`
 #' @aliases get_model,ANY-method get_model,list-method get_model,EffectScenario-method
-#'   get_model,parameter_set-method get_model_name
+#'   get_model,ParameterSet-method get_model_name
 #' @export
 #'
 #' @examples
@@ -59,7 +59,7 @@ get_model_name <- function(x) {
 #'
 #' @return vector of `character`
 #' @aliases get_tag,ANY-method get_tag,list-method get_tag,EffectScenario-method
-#'   get_tag,parameter_set-method
+#'   get_tag,ParameterSet-method
 #' @seealso [set_tag()]
 #' @export
 #'

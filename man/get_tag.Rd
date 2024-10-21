@@ -5,7 +5,7 @@
 \alias{get_tag,ANY-method}
 \alias{get_tag,list-method}
 \alias{get_tag,EffectScenario-method}
-\alias{get_tag,parameter_set-method}
+\alias{get_tag,ParameterSet-method}
 \title{Get scenario tag}
 \usage{
 get_tag(x)

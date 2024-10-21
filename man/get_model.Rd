@@ -5,7 +5,7 @@
 \alias{get_model,ANY-method}
 \alias{get_model,list-method}
 \alias{get_model,EffectScenario-method}
-\alias{get_model,parameter_set-method}
+\alias{get_model,ParameterSet-method}
 \alias{get_model_name}
 \title{Get model name}
 \usage{

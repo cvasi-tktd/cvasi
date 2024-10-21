@@ -18,7 +18,7 @@ The scenario consists of a parameterized GUTS-RED-SD model and a constant
 exposure series. Model parameters were derived from an acute fish toxicity
 study of the fathead minnow and chlorpyrifos by Geiger \emph{et al.} (1988).
 The dataset is also referred to as \emph{GUTS Ring-test dataset C} by
-EFSA (2018). Fitted parameters were estimated using the \link{morse} package.
+EFSA (2018). Fitted parameters were estimated using the \emph{morse} package.
 }
 \details{
 The background mortality rate (\code{hb}) was set to zero.

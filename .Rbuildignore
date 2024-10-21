@@ -4,8 +4,6 @@
 ^data-raw$
 
 # ignore large test data files
-^tests/minnow_fit.it.rds$
-^tests/minnow_fit.sd.rds$
 ^tests/data/EFSA_propiconazole/.*\.xlsx$
 ^tests/data/EFSA_propiconazole/.*\.rds$
 

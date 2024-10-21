@@ -18,17 +18,17 @@ setMedian <- function(fit) {
 dat <- read.table(file='data-raw/Ring-test-dataset-C.txt',sep='\t',header=T)
 sdat <- morse::survData(dat)
 
-# fit RED-IT model
+# fit GUTS-RED-IT model
 #fit.it <- morse::survFit(sdat, model_type = 'IT')
 #fit.it <- setMedian(fit.it)
-#saveRDS(fit.it,"tests/minnow_fit.it.rds")
-fit.it <- readRDS("tests/minnow_fit.it.rds")
+#saveRDS(fit.it,"data-raw/minnow_fit.it.rds")
+fit.it <- readRDS("data-raw/minnow_fit.it.rds")
 
-# fit RED-SD model
+# fit GUTS-RED-SD model
 #fit.sd <- morse::survFit(sdat, model_type = 'SD')
 #fit.sd <- setMedian(fit.sd)
-#saveRDS(fit.sd,"tests/minnow_fit.sd.rds")
-fit.sd <- readRDS("tests/minnow_fit.sd.rds")
+#saveRDS(fit.sd,"data-raw/minnow_fit.sd.rds")
+fit.sd <- readRDS("data-raw/minnow_fit.sd.rds")
 
 # export effect scenarios
 GUTS_RED_IT() %>%

@@ -3,6 +3,7 @@
 * Improved `import_toxswa()`: now supports scaling of imported time series,
   importing selected *TOXSWA* output variables, as well as importing selected
   substance concentrations
+* function `import_exposure_text()` moved to the *cvasi.ui* package
 * Small bugfix in `plot_ppc()`
 
 # cvasi 1.2.0

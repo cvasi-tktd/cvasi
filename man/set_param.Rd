@@ -3,26 +3,26 @@
 \name{set_param}
 \alias{set_param}
 \alias{set_param,EffectScenario,vector-method}
-\alias{set_param,EffectScenario,parameter_set-method}
-\alias{set_param,list,parameter_set-method}
+\alias{set_param,EffectScenario,ParameterSet-method}
+\alias{set_param,list,ParameterSet-method}
 \alias{set_param,list,vector-method}
 \alias{set_param,ScenarioSequence,vector-method}
-\alias{set_param,ScenarioSequence,parameter_set-method}
+\alias{set_param,ScenarioSequence,ParameterSet-method}
 \title{Set model parameters}
 \usage{
 set_param(x, param)
 
 \S4method{set_param}{EffectScenario,vector}(x, param)
 
-\S4method{set_param}{EffectScenario,parameter_set}(x, param)
+\S4method{set_param}{EffectScenario,ParameterSet}(x, param)
 
-\S4method{set_param}{list,parameter_set}(x, param)
+\S4method{set_param}{list,ParameterSet}(x, param)
 
 \S4method{set_param}{list,vector}(x, param)
 
 \S4method{set_param}{ScenarioSequence,vector}(x, param)
 
-\S4method{set_param}{ScenarioSequence,parameter_set}(x, param)
+\S4method{set_param}{ScenarioSequence,ParameterSet}(x, param)
 }
 \arguments{
 \item{x}{object(s) to modify}

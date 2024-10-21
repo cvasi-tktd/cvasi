@@ -13,7 +13,7 @@
 #'   list of \linkS4class{parameter_set} objects
 #' @return Vector of modified objects
 #' @export
-#' @include class-EffectScenario.R class-parameter_set.R
+#' @include class-EffectScenario.R class-ParameterSet.R
 #' @examples
 #' Lemna_Schmitt() %>% set_param(c(Emax=1,EC50=0.12))
 setGeneric("set_param", function(x, param) standardGeneric("set_param"))
@@ -49,7 +49,7 @@ setMethod("set_param", c("EffectScenario","vector"), function(x, param) {
 # single scenarios, single parameter_set
 #' @rdname set_param
 #' @export
-setMethod("set_param", c("EffectScenario","parameter_set"), function(x, param) {
+setMethod("set_param", c("EffectScenario","ParameterSet"), function(x, param) {
   if(is_param_match(x, param)) {
     x <- set_param(x, param@param)
     return(x)
@@ -60,7 +60,7 @@ setMethod("set_param", c("EffectScenario","parameter_set"), function(x, param) {
 # multiple scenarios, single parameter_set
 #' @rdname set_param
 #' @export
-setMethod("set_param", c("list","parameter_set"), function(x, param) {
+setMethod("set_param", c("list","ParameterSet"), function(x, param) {
   sapply(x, set_param, param)
 })
 
@@ -86,7 +86,7 @@ setMethod("set_param", c("ScenarioSequence","vector"), function(x, param) {
 # for a scenario sequence, apply set to each scenario in sequence
 #' @rdname set_param
 #' @export
-setMethod("set_param", c("ScenarioSequence","parameter_set"), function(x, param) {
+setMethod("set_param", c("ScenarioSequence","ParameterSet"), function(x, param) {
   x@scenarios <- lapply(x@scenarios, set_param, param)
   x
 })

@@ -42,7 +42,6 @@ Imports:
     deSolve,
     lemna,
     lubridate,
-    attempt,
     units,
     lifecycle
 RoxygenNote: 7.3.2
@@ -61,8 +60,8 @@ Collate:
     'class-GutsRed.R'
     'class-Lemna.R'
     'class-Myriophyllum.R'
+    'class-ParameterSet.R'
     'class-ScenarioSequence.R'
-    'class-parameter_set.R'
     'data.R'
     'dose_response.R'
     'effect.R'

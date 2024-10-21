@@ -1,7 +1,7 @@
 test_that("get_model", {
   s1 <- new("EffectScenario", name="foo")
   s2 <- new("EffectScenario", name="bar")
-  p3 <- new("parameter_set", model="baz")
+  p3 <- new("ParameterSet", model="baz")
 
   # empty argument
   expect_equal(get_model(list()), list())
@@ -18,7 +18,7 @@ test_that("get_model", {
 test_that("get_tag", {
   s1 <- new("EffectScenario", tag="foo")
   s2 <- new("EffectScenario", tag="bar")
-  p3 <- new("parameter_set", tag="baz")
+  p3 <- new("ParameterSet", tag="baz")
 
   # empty argument
   expect_equal(get_tag(list()), list())

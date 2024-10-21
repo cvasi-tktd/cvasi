@@ -3,7 +3,7 @@
 is_parameter_set <- function(x) {
   if(is.list(x))
     return(sapply(x, is_parameter_set))
-  is(x, "parameter_set")
+  is(x, "ParameterSet")
 }
 
 # checks if a parameter_set objects matches a certain scenario

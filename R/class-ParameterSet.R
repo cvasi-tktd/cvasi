@@ -1,11 +1,16 @@
 #' @export
-setClass("parameter_set",
+setClass("ParameterSet",
          slots=list(
            model="character",
            tag="character",
            param="list"
          )
 )
+
+# for backwards compatability
+#' @export
+setClass("parameter_set", contains="ParameterSet")
+
 
 #' Set of model parameters
 #' @param model `character`, a string containing a model name, e.g. `"GUTS-RED-IT"`
@@ -14,10 +19,10 @@ setClass("parameter_set",
 #' @slot model `character`, a string containing a model name, e.g. `"GUTS-RED-IT"`
 #' @slot tag `character`, an optional identifier
 #' @slot param named `list` of model parameters
-#' @return an S4 object of type [parameter_set-class]
+#' @return an S4 object of type [ParameterSet-class]
 #'
 #' @export
-#' @aliases parameter_set-class
+#' @aliases ParameterSet-class parameter_set-class
 #' @examples
 #' # create a parameter set and assign it
 #' ps <- parameter_set("GUTS-RED-IT", list(kd=0.12, hb=0.3))
@@ -45,7 +50,7 @@ parameter_set <- function(model, param=list(), tag=NA_character_) {
     stop("list of parameters must only  contain atomic types")
   }
 
-  new("parameter_set",
+  new("ParameterSet",
       model=model,
       tag=tag,
       param=as.list(param)

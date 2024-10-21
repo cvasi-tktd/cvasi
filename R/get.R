@@ -41,7 +41,7 @@ setMethod("get_model", "list", function(x) sapply(x, get_model))
 #' @export
 setMethod("get_model", "EffectScenario", function(x) return(x@name))
 #' @export
-setMethod("get_model", "parameter_set", function(x) return(x@model))
+setMethod("get_model", "ParameterSet", function(x) return(x@model))
 # get_model-method Deprecated alias for `get_name()`
 #' @export
 get_model_name <- function(x) {
@@ -79,4 +79,4 @@ setMethod("get_tag", "list", function(x) sapply(x, get_tag))
 #' @export
 setMethod("get_tag", "EffectScenario", function(x) return(x@tag))
 #' @export
-setMethod("get_tag", "parameter_set", function(x) return(x@tag))
+setMethod("get_tag", "ParameterSet", function(x) return(x@tag))

@@ -2,12 +2,12 @@
 #'
 #' Loads GUTS model parameters which were fitted by the morse package.
 #'
-#' @param fit Either a string with a file path to *.Rdata* or *.RDS* file
-#'   containing a *morse* fit, or a *morse* fit object
-#' @param find_sd a logical value. If `TRUE`, it will try to find fitted parameters of the GUTS-RED-SD model
-#' @param find_it  a logical value. If `TRUE`, it will try to find fitted parameters of the GUTS-RED-IT model
+#' @param fit Either a string with a file path to an *.Rdata* or *.RDS* file
+#'   containing a *morse* fit, or a *morse* fit object itself
+#' @param find_sd a logical value. If `TRUE`, it will try to find fitted parameters of a *GUTS-RED-SD* model
+#' @param find_it  a logical value. If `TRUE`, it will try to find fitted parameters of a *GUTS-RED-IT* model
 #' @param reset_hb a logical value. If `TRUE`, the background hazard rate `hb` is set to zero
-#' @param params `character`, if `"estim"` then only the best-fit parameter sets are
+#' @param params `character`, if set to `"estim"` then only the best-fit parameters are
 #'  imported, else all parameter sets in the MCM chains are returned
 #' @param mcmc_size optional `integer`, sets the maximum number of imported parameter sets per MCMC.
 #'   By default, all MSMS parameter samples are imported.
@@ -26,7 +26,7 @@
 #' try(import_morse("path/to/morse_fit.RData"))
 #'
 #' # import parameters for a specific model
-#' try(import_morse("path/to/morse_fit.RData", find.IT=TRUE, find.SD=FALSE))
+#' try(import_morse("path/to/morse_fit.RData", find_it=TRUE, find_sd=FALSE))
 #'
 #' # modify model objects
 #' try(models %>% set_param(import_morse("path/to/morse_fit.RData")))
@@ -152,6 +152,9 @@ import_morse <- function(fit, find_sd=TRUE, find_it=TRUE, reset_hb=TRUE,
 }
 
 # for backwards compatibility
+#' @param ... Arguments passed on to `import_morse()`
+#' @describeIn import_morse deprecated alias
+#' @export
 morse <- function(...) {
   lifecycle::deprecate_soft("1.3.0", "morse()", "import_morse()")
   import_morse(...)

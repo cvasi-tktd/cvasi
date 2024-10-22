@@ -1,7 +1,7 @@
 test_that("basic import", {
   fn <- testthat::test_path(file.path("../data/TOXSWA", "testonil.out"))
 
-  rs <- import_toxswa(fn, time_unit="days", output_unit="ug/L")
+  rs <- import_toxswa(fn, time_unit="days", output_unit="ug/L", split=FALSE)
   expect_equal(length(rs), 1)
   expect_equal(names(rs), "testonil")
   expect_equal(length(rs[[1]]), 4)
@@ -16,7 +16,7 @@ test_that("basic import", {
   expect_equal(units::deparse_unit(rs[[1]]$metabolite), "ug L-1")
 
   # multiple files
-  rs <- import_toxswa(c(fn, fn))
+  rs <- import_toxswa(c(fn, fn), split=FALSE)
   expect_equal(length(rs), 2)
   expect_equal(names(rs), c("testonil", "testonil"))
   expect_equal(rs[[1]], rs[[2]])
@@ -29,13 +29,13 @@ test_that("basic import", {
 test_that("unit conversion", {
   fn <- testthat::test_path(file.path("../data/TOXSWA", "testonil.out"))
   # time units
-  rsd <- import_toxswa(fn, time_unit="days")
-  rsh <- import_toxswa(fn, time_unit="hours")
+  rsd <- import_toxswa(fn, time_unit="days", split=FALSE)
+  rsh <- import_toxswa(fn, time_unit="hours", split=FALSE)
   expect_equal(as.numeric(rsd[[1]]$time) * 24,
                as.numeric(rsh[[1]]$time))
   # output var units
-  rsm <- import_toxswa(fn, output_unit="mg/L")
-  rsu <- import_toxswa(fn, output_unit="ug/L")
+  rsm <- import_toxswa(fn, output_unit="mg/L", split=FALSE)
+  rsu <- import_toxswa(fn, output_unit="ug/L", split=FALSE)
   expect_equal(as.numeric(rsm[[1]]$substance) * 1000,
                as.numeric(rsu[[1]]$substance))
   expect_equal(as.numeric(rsm[[1]]$metabolite) * 1000,
@@ -48,9 +48,9 @@ test_that("unit conversion", {
 test_that("filter substance", {
   fn <- testthat::test_path(file.path("../data/TOXSWA", "testonil.out"))
 
-  rs <- import_toxswa(fn, substance="substance")
+  rs <- import_toxswa(fn, substance="substance", split=FALSE)
   expect_equal(names(rs[[1]]), c("time", "timestamp", "substance"))
-  rs <- import_toxswa(fn, substance="metabolite")
+  rs <- import_toxswa(fn, substance="metabolite", split=FALSE)
   expect_equal(names(rs[[1]]), c("time", "timestamp", "metabolite"))
 
   expect_error(import_toxswa(fn, substance="foo"))
@@ -63,6 +63,18 @@ test_that("split by substance", {
   expect_equal(length(rs), 2)
   expect_equal(names(rs[[1]]), c("time", "timestamp", "substance"))
   expect_equal(names(rs[[2]]), c("time", "timestamp", "metabolite"))
+})
+
+test_that("aliases", {
+  fn <- testthat::test_path(file.path("../data/TOXSWA", "testonil.out"))
+
+  rs <- import_toxswa(fn, alias="foo", split=FALSE)
+  expect_equal(length(rs), 1)
+  expect_equal(names(rs), "foo")
+
+  rs <- import_toxswa(fn, alias="foo", split=TRUE)
+  expect_equal(length(rs), 2)
+  expect_equal(names(rs), c("foo_substance", "foo_metabolite"))
 })
 
 test_that("invalid file contents", {

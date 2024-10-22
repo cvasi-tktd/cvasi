@@ -5,16 +5,20 @@
 \title{Import \emph{TOXSWA} exposure series}
 \usage{
 import_toxswa(
-  filepath,
+  files,
+  alias = NA,
   output_var = "ConLiqWatLay",
   output_unit = "ug/L",
   time_unit = "days",
   substance = NULL,
-  split = FALSE
+  split = TRUE
 )
 }
 \arguments{
-\item{filepath}{vector of strings with absolute or relative paths to files}
+\item{files}{vector of strings with absolute or relative paths to files}
+
+\item{alias}{optional vector with strings, will be used as an alias to identify
+a TOXSWA series instead of its filename}
 
 \item{output_var}{character, single output variable from \emph{TOXSWA} that is
 imported, defaults to \emph{ConLiqWatLay}}
@@ -30,7 +34,7 @@ codes defined in this vector are imported}
 
 \item{split}{logical, if \code{TRUE} then one series will be returned for each
 substance found in the \emph{TOXSWA} files, else all substances per file will
-be in one \emph{data.frame}. Defaults to \code{FALSE}}
+be in one \emph{data.frame}. Defaults to \code{TRUE}}
 }
 \value{
 list of \emph{data.frame} objects with exposure series. Each \emph{data.frame} has at

@@ -36,7 +36,9 @@ import_swash <- function(swash_dir, ...){
 #' - *CntSorSusSol*: Content sorbed to suspended solids (g/kg)
 #' - *CntSorSed*: Content sorbed to sediment (g/kg)
 #'
-#' @param filepath vector of strings with absolute or relative paths to files
+#' @param files vector of strings with absolute or relative paths to files
+#' @param alias optional vector with strings, will be used as an alias to identify
+#'   a TOXSWA series instead of its filename
 #' @param output_var character, single output variable from *TOXSWA* that is
 #'   imported, defaults to *ConLiqWatLay*
 #' @param output_unit character, target unit of the imported output variable,
@@ -47,7 +49,7 @@ import_swash <- function(swash_dir, ...){
 #'   codes defined in this vector are imported
 #' @param split logical, if `TRUE` then one series will be returned for each
 #'   substance found in the *TOXSWA* files, else all substances per file will
-#'   be in one *data.frame*. Defaults to `FALSE`
+#'   be in one *data.frame*. Defaults to `TRUE`
 #' @export
 #' @autoglobal
 #' @return list of *data.frame* objects with exposure series. Each *data.frame* has at
@@ -56,26 +58,29 @@ import_swash <- function(swash_dir, ...){
 #'   - `timestamp`: time as datetime objects such as `POSIXct`
 #'   - one or more additional columns for each imported substance
 #'
-import_toxswa <- function(filepath, output_var="ConLiqWatLay", output_unit="ug/L",
-                           time_unit="days", substance=NULL, split=FALSE) {
-  if(length(filepath) == 0) {
-    stop("filepath vector is empty")
+import_toxswa <- function(files, alias=NA, output_var="ConLiqWatLay", output_unit="ug/L",
+                           time_unit="days", substance=NULL, split=TRUE) {
+  if(length(files) == 0) {
+    stop("files vector is empty")
   }
   if(length(output_var) != 1)
     stop("Exactly one output variable must be selected")
+
   # vectorized file list
-  if(length(filepath) > 1) {
-    return(sapply(filepath, import_toxswa, output_var=output_var, output_unit=output_unit,
-                  time_unit=time_unit, substance=substance, split=split, USE.NAMES=FALSE))
+  if(length(files) > 1) {
+    return(purrr::map2(files, alias, import_toxswa, output_var=output_var, output_unit=output_unit,
+                  time_unit=time_unit, substance=substance, split=split) %>%
+           purrr::list_flatten())
   }
 
-  if(any(is.na(filepath)) | !is.character(filepath))
-    stop("filepath vector contains invalid values")
-  if(!file.exists(filepath))
-    stop("file does not exists: ", filepath)
+  # for now we assume that `files` contains a path to a file
+  if(any(is.na(files)) | !is.character(files))
+    stop("files vector contains invalid values")
+  if(!file.exists(files))
+    stop("file does not exists: ", files)
 
-  headers <- paste0("V", seq(1, max(utils::count.fields(filepath, sep=""))))
-  df <- utils::read.table(filepath, header=FALSE, col.names=headers, fill=TRUE)
+  headers <- paste0("V", seq(1, max(utils::count.fields(files, sep=""))))
+  df <- utils::read.table(files, header=FALSE, col.names=headers, fill=TRUE)
 
   comments <- df %>%
     dplyr::filter(V1=="*") %>%
@@ -154,7 +159,12 @@ import_toxswa <- function(filepath, output_var="ConLiqWatLay", output_unit="ug/L
                "conc"=units::deparse_unit(as.data.frame(data)[,3]))
   attr(data, "units") <- myunits
 
-  fn <- tools::file_path_sans_ext(basename(filepath))
+  # use file w/o extension as fallback option, otherwise use supplied alias
+  if(is.na(alias))
+    fn <- tools::file_path_sans_ext(basename(files))
+  else
+    fn <- alias
+
   result <- list()
   # split series by substance?
   if(split) {

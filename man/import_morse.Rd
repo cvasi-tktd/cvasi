@@ -2,6 +2,7 @@
 % Please edit documentation in R/import_morse.R
 \name{import_morse}
 \alias{import_morse}
+\alias{morse}
 \title{Import \code{morse} model parameters}
 \usage{
 import_morse(
@@ -17,18 +18,20 @@ import_morse(
   mcmc.size = deprecated(),
   file = deprecated()
 )
+
+morse(...)
 }
 \arguments{
-\item{fit}{Either a string with a file path to \emph{.Rdata} or \emph{.RDS} file
-containing a \emph{morse} fit, or a \emph{morse} fit object}
+\item{fit}{Either a string with a file path to an \emph{.Rdata} or \emph{.RDS} file
+containing a \emph{morse} fit, or a \emph{morse} fit object itself}
 
-\item{find_sd}{a logical value. If \code{TRUE}, it will try to find fitted parameters of the GUTS-RED-SD model}
+\item{find_sd}{a logical value. If \code{TRUE}, it will try to find fitted parameters of a \emph{GUTS-RED-SD} model}
 
-\item{find_it}{a logical value. If \code{TRUE}, it will try to find fitted parameters of the GUTS-RED-IT model}
+\item{find_it}{a logical value. If \code{TRUE}, it will try to find fitted parameters of a \emph{GUTS-RED-IT} model}
 
 \item{reset_hb}{a logical value. If \code{TRUE}, the background hazard rate \code{hb} is set to zero}
 
-\item{params}{\code{character}, if \code{"estim"} then only the best-fit parameter sets are
+\item{params}{\code{character}, if set to \code{"estim"} then only the best-fit parameters are
 imported, else all parameter sets in the MCM chains are returned}
 
 \item{mcmc_size}{optional \code{integer}, sets the maximum number of imported parameter sets per MCMC.
@@ -43,6 +46,8 @@ By default, all MSMS parameter samples are imported.}
 \item{mcmc.size}{\emph{deprecated}\verb{,} alias for parameter \code{mcmc_size}}
 
 \item{file}{\emph{deprecated}\verb{,} alias for parameter \code{fit}}
+
+\item{...}{Arguments passed on to \code{import_morse()}}
 }
 \value{
 list of \link{parameter_set} objects
@@ -50,12 +55,17 @@ list of \link{parameter_set} objects
 \description{
 Loads GUTS model parameters which were fitted by the morse package.
 }
+\section{Functions}{
+\itemize{
+\item \code{morse()}: deprecated alias
+
+}}
 \examples{
 # import all parameter fits
 try(import_morse("path/to/morse_fit.RData"))
 
 # import parameters for a specific model
-try(import_morse("path/to/morse_fit.RData", find.IT=TRUE, find.SD=FALSE))
+try(import_morse("path/to/morse_fit.RData", find_it=TRUE, find_sd=FALSE))
 
 # modify model objects
 try(models \%>\% set_param(import_morse("path/to/morse_fit.RData")))

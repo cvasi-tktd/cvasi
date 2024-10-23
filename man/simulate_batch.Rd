@@ -2,26 +2,30 @@
 % Please edit documentation in R/simulate.R
 \name{simulate_batch}
 \alias{simulate_batch}
-\title{Batch simulation of several effect scenarios}
+\title{Batch simulation using multiple exposure series}
 \usage{
-simulate_batch(model_base, treatments, param_sample = NULL)
+simulate_batch(model_base, treatments, param_sample = deprecated())
 }
 \arguments{
 \item{model_base}{effect scenario object with mean parameters}
 
 \item{treatments}{treatments exposure levels as data frame (time, conc, trial)}
 
-\item{param_sample}{data.frame with parameter sample}
+\item{param_sample}{\emph{deprecated} parameter, no longer in use}
 }
 \value{
 a \code{data.frame} with simulation results
 }
 \description{
-An effect scenario contains only one exposure level. Consequently, the
-simulation of an effect scenario (e.g. metsulfuron \%>\% simulate will return
-the results for one exposure level only). However, in a laboratory experiment
-examining the effects of different exposure levels on a biological system,
-a batch simulation approach would involve running multiple simulations with
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+A convenience function to simulate a single base scenario with one or more
+exposure series. This aims at reproducing the setup and results of common
+effect studies.
+}
+\details{
+A scenario contains only one exposure series. However, laboratory experiments
+commonly examine the effects of multiple exposure levels on a biological system.
+A batch simulation approach would involve running multiple simulations with
 varying exposure or treatment conditions. To illustrate, if the objective is
 to examine the impact of a substance on cell growth, the simulation model
 could be designed to replicate the cell growth dynamics under varying
@@ -33,15 +37,10 @@ The first column contains the time, the second column the concentration, and
 the third column the trial name (exposure level, e.g. 'T1', 'T2', 'T3').
 }
 \examples{
+t1 <- data.frame(time=0:10, conc=0, trial="control")  # 1st treatment level
+t2 <- data.frame(time=0:10, conc=1, trial="T1")       # 2nd treatment level
+treatments <- rbind(t1, t2)
 
-exposure <- data.frame(time = Schmitt2013$t,
-            conc = Schmitt2013$conc,
-           trial = Schmitt2013$ID)
-
-sim_result <- simulate_batch(model_base = metsulfuron,
-                            treatments = exposure)
-
-
-
-
+metsulfuron \%>\%
+  simulate_batch(treatments)
 }

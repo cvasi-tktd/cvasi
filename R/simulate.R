@@ -298,13 +298,16 @@ simulate_seq <- function(seq, times, ...) {
   df
 }
 
-#' Batch simulation of several effect scenarios
+#' Batch simulation using multiple exposure series
 #'
-#' An effect scenario contains only one exposure level. Consequently, the
-#' simulation of an effect scenario (e.g. metsulfuron %>% simulate will return
-#' the results for one exposure level only). However, in a laboratory experiment
-#' examining the effects of different exposure levels on a biological system,
-#' a batch simulation approach would involve running multiple simulations with
+#' `r lifecycle::badge("experimental")`
+#' A convenience function to simulate a single base scenario with one or more
+#' exposure series. This aims at reproducing the setup and results of common
+#' effect studies.
+#'
+#' A scenario contains only one exposure series. However, laboratory experiments
+#' commonly examine the effects of multiple exposure levels on a biological system.
+#' A batch simulation approach would involve running multiple simulations with
 #' varying exposure or treatment conditions. To illustrate, if the objective is
 #' to examine the impact of a substance on cell growth, the simulation model
 #' could be designed to replicate the cell growth dynamics under varying
@@ -317,25 +320,22 @@ simulate_seq <- function(seq, times, ...) {
 #'
 #' @param model_base effect scenario object with mean parameters
 #' @param treatments treatments exposure levels as data frame (time, conc, trial)
-#' @param param_sample data.frame with parameter sample
+#' @param param_sample *deprecated* parameter, no longer in use
 #' @return a `data.frame` with simulation results
 #' @export
 #' @examples
+#' t1 <- data.frame(time=0:10, conc=0, trial="control")  # 1st treatment level
+#' t2 <- data.frame(time=0:10, conc=1, trial="T1")       # 2nd treatment level
+#' treatments <- rbind(t1, t2)
 #'
-#' exposure <- data.frame(time = Schmitt2013$t,
-#'             conc = Schmitt2013$conc,
-#'            trial = Schmitt2013$ID)
-#'
-#' sim_result <- simulate_batch(model_base = metsulfuron,
-#'                             treatments = exposure)
-#'
-#'
-#'
-#'
-simulate_batch <- function(model_base,
-                           treatments,
-                           param_sample = NULL
-                           ) {
+#' metsulfuron %>%
+#'   simulate_batch(treatments)
+simulate_batch <- function(model_base, treatments, param_sample=deprecated()) {
+  if(is_present(param_sample)) {
+    if(!is.null(param_sample)) {
+      lifecycle::deprecate_stop("1.3.0", "simulate_batch(param_sample)")
+    }
+  }
   # Check if columns 'time' and 'conc' exist
   if(!("time" %in% colnames(treatments)) || !("conc" %in% colnames(treatments))) {
     stop("Columns 'time' and/or 'conc' not found in treatments dataframe.")
@@ -358,31 +358,14 @@ simulate_batch <- function(model_base,
   # simulate
   df <- data.frame()
   df_one_run <- data.frame()
-  if (is.null(param_sample)) { # run best fit params for all treatments
-    simulated_results <- purrr::map(list_of_effect_sets, ~ .x %>%
-                                      simulate(sim_times = sim_times))
-    # add trial name
-    simulated_results <- purrr::map2(
-      simulated_results,
-      exp_levels,
-      ~ dplyr::mutate(.x, trial = .y)
-    )
-    df <- dplyr::bind_rows(simulated_results)
-  } else { # run parameter sample for all treatments
-    for (i in 1:nrow(param_sample)) {
-      simulated_results <- purrr::map(list_of_effect_sets, ~ .x %>%
-                                        set_param(param_sample[i, ]) %>%
-                                        simulate(sim_times = sim_times))
-      # add trial name
-      simulated_results <- purrr::map2(
-        simulated_results,
-        exp_levels,
-        ~ dplyr::mutate(.x, trial = .y)
-      )
-      # bind
-      df_one_run <- dplyr::bind_rows(simulated_results)
-      df <- rbind(df, df_one_run)
-    }
-  }
+  simulated_results <- purrr::map(list_of_effect_sets, ~ .x %>%
+                                    simulate())
+  # add trial name
+  simulated_results <- purrr::map2(
+    simulated_results,
+    exp_levels,
+    ~ dplyr::mutate(.x, trial = .y)
+  )
+  df <- dplyr::bind_rows(simulated_results)
   return(df)
 }

@@ -1,22 +1,16 @@
 test_that("simulate_batch", {
+  t1 <- data.frame(time=0:10, conc=0, trial="control")
+  t2 <- data.frame(time=0:10, conc=1, trial="T1")
+  treatments <- rbind(t1, t2)
 
-  exposure <- data.frame(time = Schmitt2013$t,
-              conc = Schmitt2013$conc,
-              trial = Schmitt2013$ID)
+  rs1 <- metsulfuron %>% set_exposure(t1[,c(1,2)]) %>% simulate()
+  rs2 <- metsulfuron %>% set_exposure(t2[,c(1,2)]) %>% simulate()
+  rsb <- metsulfuron %>% simulate_batch(treatments)
 
-  out <- simulate_batch(model_base = metsulfuron,
-                               treatments = exposure)
-  expect_equal(nrow(exposure), nrow(out))
+  expect_equal(dplyr::select(rsb, !trial), rbind(rs1, rs2), ignore_attr=T, tolerance=1e-5)
+  expect_equal(rsb$trial, rep(c("control","T1"), each=nrow(rs1)))
+})
 
-  tol <- 1e-5
-
-  expect_equal(out[1,"BM"], 50)
-  expect_equal(out[41,"BM"], 50)
-  expect_equal(out[1,"trial"], "T0")
-  expect_equal(out[41,"trial"], "T3.2")
-  expect_equal(out[8,"BM"],91.13051, tolerance=tol)
-  expect_equal(out[16,"BM"], 85.35812, tolerance=tol)
-  expect_equal(out[8,"M_int"], 0, tolerance=tol)
-  expect_equal(out[16,"M_int"], 9.645036, tolerance=tol)
-
+test_that("deprecated parameter", {
+  expect_error(simulate_batch(metsulfuron, data.frame(), param_sample=23))
 })

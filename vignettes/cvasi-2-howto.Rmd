@@ -604,8 +604,8 @@ class tree gives an overview of the scenario classes in use:
     |    
     |   Transferable
     |___|__ Lemna
-    |   |   |__ LemnaSchmittScenario
-    |   |   |__ LemnaSetacScenario
+    |   |   |__ LemnaSchmitt
+    |   |   |__ LemnaSetac
     |   |
     |   |__ Myriophyllum
     |   |   |__ MyrioExpScenario

@@ -305,14 +305,3 @@ test_that("Lemna simulation irregular transfers", {
   sc.reg %>% set_transfer(times=c(21)) -> sc.irg
   expect_equal(simulate(sc.reg), simulate(sc.irg), tolerance=tol)
 })
-
-# Make sure that simulation results of this package and 'lemna' are identical,
-# the 'lemna' package vouches for correct model implementation
-test_that("Lemna_SETAC simulation", {
-  # results from lemna package
-  lemna::lemna(lemna::focusd1, times=0:10, hmax=0.01, ode_mode="c") -> orig
-  # results using this package
-  simulate(focusd1, times=0:10, hmax=0.01) -> out
-
-  expect_equal(out, orig, ignore_attr=TRUE, tolerance=1e-8)
-})

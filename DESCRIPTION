@@ -23,7 +23,6 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     cli,
-    glue,
     rlang,
     stringr,
     dplyr,
@@ -40,7 +39,6 @@ Imports:
     ggplot2,
     GGally,
     deSolve,
-    lemna,
     lubridate,
     units,
     lifecycle
@@ -57,8 +55,6 @@ Collate:
     'class-Transferable.R'
     'class-Algae.R'
     'class-Deb.R'
-    'class-GutsRed.R'
-    'class-Lemna.R'
     'class-Myriophyllum.R'
     'class-ParameterSet.R'
     'class-ScenarioSequence.R'
@@ -80,6 +76,10 @@ Collate:
     'solver.R'
     'model-debtox.R'
     'model-deb_daphnia.R'
+    'model-guts_red.R'
+    'model-lemna_setac.R'
+    'model-lemna_schmitt.R'
+    'model-macrophytes.R'
     'package.R'
     'pll.R'
     'plotting.r'
@@ -99,11 +99,12 @@ Collate:
     'utils-pipe.R'
 Suggests: 
     future,
-    testthat,
-    withr,
     knitr,
+    lemna,
     rmarkdown,
-    roxyglobals
+    roxyglobals,
+    testthat,
+    withr
 Depends: 
     R (>= 3.5.0)
 VignetteBuilder: knitr

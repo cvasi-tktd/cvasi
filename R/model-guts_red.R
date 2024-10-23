@@ -1,3 +1,7 @@
+########################
+## Organizing man pages
+########################
+
 #' GUTS-RED models
 #'
 #' Reduced *General Unified Threshold models of Survival* (GUTS) with stochastic
@@ -61,12 +65,21 @@
 #' @family scenarios
 NULL
 
+
+########################
+## Class definitions
+########################
+
 #' @export
 setClass("GutsRedSd", contains="EffectScenario")
 
 #' @export
 setClass("GutsRedIt", contains="EffectScenario")
 
+
+########################
+## Constructors
+########################
 
 #' GUTS-RED-IT scenario
 #'
@@ -148,3 +161,116 @@ GUTS_RED_SD <- function(param, init) {
 
   o
 }
+
+
+########################
+## Simulation
+########################
+
+# @param scenario Scenario object
+# @param times numeric vector, time points for result set
+# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
+# @param hmax numeric, maximum step length in time, see [deSolve::ode()]
+# @param ... additional arguments passed to [deSolve::ode()]
+# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
+# @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
+# @param method string, numerical solver used by [deSolve::ode()]
+#' @importFrom deSolve ode
+solver_GUTS_RED_SD <- function(scenario, times, approx=c("linear","constant"),
+                               f=1, method="lsoda", hmax=1, ...) {
+  # use time points from scenario if nothing else is provided
+  if(missing(times))
+    times <- scenario@times
+  # check if at least two time points are present
+  if(length(times)<2) stop("times vector is not an interval")
+
+  params <- scenario@param
+  if(is.list(params))
+    params <- unlist(params)
+  approx <- match.arg(approx)
+
+  # make sure that parameters are present and in required order
+  params <- params[c("kd", "hb", "z", "kk")]
+
+  df <- as.data.frame(ode(y=scenario@init, times=times, parms=params, dllname="cvasi",
+                          initfunc="gutsredsd_init", func="gutsredsd_func", initforc="gutsredsd_forc",
+                          forcings=scenario@exposure@series, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
+                          outnames=c("Cw"), method=method, hmax=hmax, ...))
+  # Derive survival probability, see EFSA Scientific Opinion on TKTD models, p. 33
+  # doi:10.2903/j.efsa.2018.5377
+  df$S <- exp(-df$H) # background hazard rate included in H (if enabled)
+  df
+}
+#' @include solver.R
+#' @describeIn solver Numerically integrates GUTS-RED-SD models
+setMethod("solver", "GutsRedSd", function(scenario, times, ...) solver_GUTS_RED_SD(scenario, times, ...))
+
+# @param scenario Scenario object
+# @param times numeric vector, time points for result set
+# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
+# @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
+# @param method string, numerical solver used by [deSolve::ode()]
+# @param hmax numeric, maximum step length in time, see [deSolve::ode()]
+# @param ... additional arguments passed to [deSolve::ode()]
+#' @importFrom deSolve ode
+solver_GUTS_RED_IT <- function(scenario, times, approx=c("linear","constant"),
+                               f=1, method="lsoda", hmax=1, ...) {
+  # use time points from scenario if nothing else is provided
+  if(missing(times))
+    times <- scenario@times
+  # check if at least two time points are present
+  if(length(times)<2) stop("times vector is not an interval")
+
+  params <- scenario@param
+  if(is.list(params))
+    params <- unlist(params)
+  approx <- match.arg(approx)
+
+  # make sure that parameters are present and in required order
+  odeparams <- params[c("kd","hb")]
+
+  df <- as.data.frame(ode(y=scenario@init, times=times, parms=odeparams, dllname="cvasi",
+                          initfunc="gutsredit_init", func="gutsredit_func", initforc="gutsredit_forc",
+                          forcings=scenario@exposure@series, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
+                          outnames=c("Cw"), method=method, hmax=hmax, ...))
+  # Derive survival probability, EFSA Scientific Opinion on TKTD models, p. 33
+  # doi:10.2903/j.efsa.2018.5377
+  FS <- (1 / (1 + (cummax(df$D) / params["alpha"])^(-params["beta"])))
+  df$S <- (1 - FS) * exp(-df$H)
+  df
+}
+#' @describeIn solver Numerically integrates GUTS-RED-IT models
+setMethod("solver", "GutsRedIt", function(scenario, times, ...) solver_GUTS_RED_IT(scenario, times, ...) )
+
+
+########################
+## Effects
+########################
+
+# Calculate effect of GUTS-RED-IT scenario
+fx_GUTS_RED_IT <- function(scenario, ...) {
+  # we avoid the control run if we just set the background mortality to zero
+  # as it would cancel out anyways
+  if(scenario@param$hb > 0)
+    scenario@param$hb <- 0
+
+  res <- simulate(scenario, ...)
+  c("L"=1 - tail(res$S, n=1))
+}
+
+# Calculate effect of GUTS-RED-SD scenario
+fx_GUTS_RED_SD <- function(scenario, ...) {
+  # we save the control run if we just set the background mortality to zero
+  # as it would cancel out, anyways
+  if(scenario@param$hb > 0)
+    scenario@param$hb <- 0
+
+  res <- simulate(scenario, ...)
+  c("L"=1 - tail(res$S, n=1))
+}
+
+#' @include fx.R
+#' @describeIn fx Survival and lethality in [GUTS-RED-models]
+setMethod("fx", "GutsRedSd", function(scenario, ...) fx_GUTS_RED_SD(scenario, ...))
+#' @describeIn fx Survival and lethality in [GUTS-RED-models]
+setMethod("fx", "GutsRedIt", function(scenario, ...) fx_GUTS_RED_IT(scenario, ...))

@@ -87,7 +87,7 @@ void myrio_forc(void (* odeforcs)(int *, double *))
  * @param b slope parameter (-)
  * @return value from the interval [0,1]
  */
-double fCint_photo(double C_int_unb) {
+double fCint_photo_(double C_int_unb) {
   double pow_C_int_b = pow(C_int_unb, b);
   return(1 - E_max * pow_C_int_b / (pow(EC50_int, b) + pow_C_int_b));
 }
@@ -119,7 +119,7 @@ void myrio_func(int *neq, double *t, double *y, double *ydot, double *yout, int*
   //
 
   // Photosynthesis dependency function
-  double f_photo = fCint_photo(C_int_unb);
+  double f_photo = fCint_photo_(C_int_unb);
 
   //
   // Population growth

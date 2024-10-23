@@ -11,6 +11,16 @@
 * parameters to `import_morse()` renamed to a more canonical standard, i.e.
   `find.IT` to `find_it`, `find.SD` to `find_sd` and so forth. Using the old
   parameter names still works but will raise a warning.
+* Model equations of the `Lemna_SETAC()` model by Klein et al. was integrated
+  into the package. This removes package `lemna` as a dependency.
+* Scenario defaults of `Lemna_SETAC()` were modified to ease scenario creation
+  and to reflect common study conditions:
+    * Initial biomass set to `0.0012` 
+    * Parameter default `k_photo_fixed=TRUE`
+    * Forcings default to constant non-zero conditions; temperature (°C) `temp=12`, 
+      irradiance (kJ m-2 d-1) `irr=15000`, Phosphorus concentratio (mg P L-1) `P=0.3`,
+      Nitrogen concentration (mg N L-1) `N=0.6`. These defaults only take effect
+      if parameter `k_photo_fixed=FALSE`.
 
 # cvasi 1.2.0
 

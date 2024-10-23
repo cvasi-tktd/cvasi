@@ -61,7 +61,7 @@ sequence_check <- function(seq) {
       next
     }
     if(length(cur@times) == 0) {
-      warning(glue::glue("scenario at index {i} has no output times"))
+      warning(sprintf("scenario #%d has no output times", i))
       next
     }
     # skip further check for first element in sequence
@@ -80,9 +80,9 @@ sequence_check <- function(seq) {
     end <- tail(prev@times, 1)
     start <- head(cur@times, 1)
     if(end < start) {
-      warning(glue::glue("output time gap between scenario {i-1}  and {i}: [_, {end}], [{start}, _]"))
+      warning(sprintf("output time gap between scenario #%d  and #%d: [_, %g], [%g, _]", i-1, i, end, start))
     } else if(start < end) {
-      warning(glue::glue("output time overlap between scenario {i-1} and {i}: [_, {end}], [{start}, _]"))
+      warning(sprintf("output time overlap between scenario #%d and #%d: [_, %g], [%g, _]", i-1, i, end, start))
     }
   }
 }

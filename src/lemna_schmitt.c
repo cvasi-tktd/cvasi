@@ -103,7 +103,7 @@ double f_P(void);
 /*
  * Parameter initializer
  */
-void lemna_init(void (* odeparms)(int *, double *))
+void lemna_schmitt_init(void (* odeparms)(int *, double *))
 {
   int N=31;
   odeparms(&N, parms);
@@ -115,7 +115,7 @@ void lemna_init(void (* odeparms)(int *, double *))
 /*
  * Forcings initializer
  */
-void lemna_forc(void (* odeforcs)(int *, double *))
+void lemna_schmitt_forc(void (* odeforcs)(int *, double *))
 {
   int N=3;
   odeforcs(&N, forc);
@@ -186,7 +186,7 @@ double f_E(double C_active)
 /**
  * Derivatives
  */
-void lemna_func(int *neq, double *t, double *y, double *ydot, double *yout, int*ip)
+void lemna_schmitt_func(int *neq, double *t, double *y, double *ydot, double *yout, int*ip)
 {
   if(*neq < 3)
     Rf_error("invalid number of state variables");

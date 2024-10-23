@@ -36,7 +36,7 @@ the EPx plot are returned as a list for later modification}
 a grid of ggplots
 }
 \description{
-Plot EPx values
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 }
 \examples{
 ti <- 0:21

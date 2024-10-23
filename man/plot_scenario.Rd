@@ -17,6 +17,7 @@ plot_scenario(model_base, plot_col = 2, trial_number = NULL)
 plot of the results for one \verb{effect scenario}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Sometimes it is helpful if the user can plot results of one effect
 scenario. This is for instance the case for test simulations or predictions
 for one profile. This function runs the simulation for one effect scenario

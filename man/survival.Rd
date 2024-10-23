@@ -15,8 +15,10 @@ survival(scenario, ...)
 a \code{data.frame} containing simulation results
 }
 \description{
-\emph{Deprecated function}. Derives the survival rate of individuals for
-\emph{Reduced GUTS} models. Was replaced by \code{\link[=simulate]{simulate()}}.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+Derives the survival rate of individuals for
+\emph{Reduced GUTS} models. Function was replaced by output of \code{\link[=simulate]{simulate()}} and
+will be removed in a later version.
 }
 \details{
 The survival rate describes the survival probability at each

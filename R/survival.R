@@ -1,7 +1,9 @@
 #' Survival rate
 #'
-#' *Deprecated function*. Derives the survival rate of individuals for
-#' *Reduced GUTS* models. Was replaced by [simulate()].
+#' `r lifecycle::badge("deprecated")`
+#' Derives the survival rate of individuals for
+#' *Reduced GUTS* models. Function was replaced by output of [simulate()] and
+#' will be removed in a later version.
 #'
 #' The survival rate describes the survival probability at each
 #' time point. The function simulates the *GUTS* scenario and appends a column

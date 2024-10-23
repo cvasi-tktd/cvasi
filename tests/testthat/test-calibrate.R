@@ -196,7 +196,7 @@ test_that("fit to calibration set", {
 })
 
 test_that("failed simulations during fitting", {
-  source(test_path("class-DummyScenario.R"))
+  source(test_path("class-DummyScenario.R"), local=TRUE)
 
   fail <- DummyFails()
   fail@param$foo <- 1

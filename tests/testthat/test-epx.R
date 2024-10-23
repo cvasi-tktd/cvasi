@@ -46,7 +46,7 @@ test_that("factor cutoff", {
 })
 
 test_that("ep_only", {
-  source(test_path("class-DummyScenario.R"))
+  source(test_path("class-DummyScenario.R"), local=TRUE)
 
   sc <- DummyScenario()
 
@@ -62,7 +62,7 @@ test_that("ep_only", {
 })
 
 test_that("long_format", {
-  source(test_path("class-DummyScenario.R"))
+  source(test_path("class-DummyScenario.R"), local=TRUE)
 
   sc <- DummyScenario() %>% set_exposure(data.frame(t=0, c=1))
 
@@ -84,7 +84,7 @@ test_that("long_format", {
 })
 
 test_that("error handling", {
-  source(test_path("class-DummyScenario.R"))
+  source(test_path("class-DummyScenario.R"), local=TRUE)
 
   # only a single scenario and it failed
   expect_warning(rs <- epx(DummyFails(), level=10))

@@ -1,30 +1,6 @@
 ########################
-## Organizing man pages
-########################
-
-#' Lemna models
-#'
-#' Overview of supported *Lemna* models
-#'
-#' - [Lemna_Schmitt()] by Schmitt *et al.* (2013)
-#' - [Lemna_SETAC()] by Klein *et al.* (2021)
-#'
-#' @inheritSection Transferable Biomass transfer
-#' @name Lemna-models
-#' @family Lemna models
-#' @family scenarios
-#' @seealso [Macrophyte-models]
-#' @aliases Lemna-class
-NULL
-
-########################
 ## Class definition
 ########################
-
-# Generic Lemna class
-#' @include class-EffectScenario.R class-Transferable.R
-#' @export
-setClass("Lemna", contains=c("Transferable","EffectScenario"))
 
 # Lemna model class (Klein et al. 2021)
 #' @export
@@ -248,7 +224,7 @@ Lemna_SETAC <- function() {
 #
 # @return data.frame
 #' @importFrom deSolve ode
-solver_Lemna_SETAC <- function(scenario, times, approx = c("linear","constant"),
+solver_lemna_setac <- function(scenario, times, approx = c("linear","constant"),
                                f=0, nout=2, method="lsoda", hmax=0.1, ...) {
   if(missing(times))
     times <- scenario@times
@@ -297,7 +273,7 @@ solver_Lemna_SETAC <- function(scenario, times, approx = c("linear","constant"),
 }
 #' @include solver.R
 #' @describeIn solver Numerically integrates Lemna_SETAC models
-setMethod("solver", "LemnaSetac", function(scenario, times, ...) solver_Lemna_SETAC(scenario, times, ...) )
+setMethod("solver", "LemnaSetac", function(scenario, times, ...) solver_lemna_setac(scenario, times, ...) )
 
 
 ########################
@@ -305,7 +281,7 @@ setMethod("solver", "LemnaSetac", function(scenario, times, ...) solver_Lemna_SE
 ########################
 
 # Calculate effect of Lemna scenario
-fx_Lemna <- function(scenario, ...) {
+fx_lemna <- function(scenario, ...) {
   efx_r <- "r" %in% scenario@endpoints
   # TODO move to a validate_scenario function, this takes precious time on every effect() call
   if(efx_r & has_transfer(scenario))
@@ -322,4 +298,4 @@ fx_Lemna <- function(scenario, ...) {
 
 #' @include fx.R
 #' @describeIn fx Effect at end of simulation of [Lemna-models]
-setMethod("fx", "Lemna", function(scenario, ...) fx_Lemna(scenario, ...))
+setMethod("fx", "Lemna", function(scenario, ...) fx_lemna(scenario, ...))

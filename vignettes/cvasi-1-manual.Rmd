@@ -1,7 +1,7 @@
 ---
 title: "User Manual"
-author: "Nils Kehrein"
-date: "03 May, 2024"
+author: "N. Kehrein"
+date: "24 Octobre, 2024"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -26,6 +26,8 @@ knitr::opts_chunk$set(
 
 ```{r setup, include=FALSE}
 library(cvasi)
+library(purrr)
+library(dplyr)
 ```
 
 The *cvasi* package is a software library that extends the features of the
@@ -163,8 +165,13 @@ a particular model. The *cvasi* package supports multiple TKTD models, for insta
    - `Lemna_Schmitt()`, published by Schmitt *et al.* (2013)
    - `Lemna_SETAC()`, published by Klein *et al.* (2021)
    - `Myrio()`, an adaption of Klein *et al.* (2021) to *Myriophyllum* at Tier 2C
+- Algae models
+   - `Algae_Weber()`, published by Weber *et al.* (2012)
+   - `Algae_TKTD()`, based on Weber *et al.* (2012), but with scaled damage
+   - `Algae_Simple()`, simplified growth model without external forcing variables
 - Dynamic Energy Budget (*DEB*) models
    - `DEB_abj()`, the *abj* model with type M acceleration
+   - `DEBtox()`, as implemented in the *DEBtox2019* module of [*BYOM*](https://www.debtox.info/byom.html)
 
 The listed functions create objects that will carry all
 data and settings to fully describe a scenario. In case of a *GUTS-RED-IT*

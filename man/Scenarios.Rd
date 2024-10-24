@@ -178,13 +178,7 @@ in exposure pattern.}
 }}
 
 \seealso{
-Other scenarios: 
-\code{\link{Algae-models}},
-\code{\link{DEB-models}},
-\code{\link{GUTS-RED-models}},
-\code{\link{Lemna-models}},
-\code{\link{Macrophyte-models}},
-\code{\link{Myriophyllum-models}},
+Other scenario-related: 
 \code{\link{Transferable}}
 }
-\concept{scenarios}
+\concept{scenario-related}

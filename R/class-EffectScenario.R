@@ -140,7 +140,7 @@
 #'
 #' @name Scenarios
 #' @aliases scenario scenarios EffectScenario-class
-#' @family scenarios
+#' @family scenario-related
 NULL
 
 
@@ -167,6 +167,7 @@ setClass("EffectScenario",
    ),
    prototype = list(
      name="undefined",
+     param.bounds=list(),
      control.req=TRUE,
      window.length=-1,
      window.interval=-1,

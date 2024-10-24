@@ -80,14 +80,12 @@ Other GUTS-RED models:
 \code{\link{GUTS_RED_IT}()},
 \code{\link{GUTS_RED_SD}()}
 
-Other scenarios: 
+Other models: 
 \code{\link{Algae-models}},
 \code{\link{DEB-models}},
 \code{\link{Lemna-models}},
 \code{\link{Macrophyte-models}},
-\code{\link{Myriophyllum-models}},
-\code{\link{Scenarios}},
-\code{\link{Transferable}}
+\code{\link{Myriophyllum-models}}
 }
 \concept{GUTS-RED models}
-\concept{scenarios}
+\concept{models}

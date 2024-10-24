@@ -1,3 +1,7 @@
+########################
+## Organizing man pages
+########################
+
 #' Myriophyllum models
 #'
 #' Supported models:
@@ -7,21 +11,37 @@
 #' @name Myriophyllum-models
 #' @seealso [Lemna-models], [Transferable]
 #' @family Myriophyllum models
-#' @family scenarios
+#' @family models
 #' @aliases Myriophyllum-class
 NULL
+
+
+########################
+## Class definitions
+########################
 
 #' @include class-Transferable.R
 #' @export
 setClass("Myriophyllum", contains=c("Transferable","EffectScenario"))
 
-# Myriophyllum model class
+# Myriophyllum model with exp. growth
 #' @export
-setClass("MyrioExpScenario", contains="Myriophyllum")
+setClass("MyrioExp", contains="Myriophyllum")
+# for backwards compatibility
+#' @export
+setClass("MyrioExpScenario", contains="MyrioExp")
 
-# Myriophyllum model class
+# Myriophyllum model with log. growth
 #' @export
-setClass("MyrioLogScenario", contains="Myriophyllum")
+setClass("MyrioLog", contains="Myriophyllum")
+# for backwards compatibility
+#' @export
+setClass("MyrioLogScenario", contains="MyrioLog")
+
+
+########################
+## Constructors
+########################
 
 #' Myriophyllum model with exponential growth
 #'
@@ -103,7 +123,7 @@ setClass("MyrioLogScenario", contains="Myriophyllum")
 #' @seealso [Macrophyte-models], [Transferable], [Scenarios]
 #' @family Myriophyllum models
 #' @family macrophyte models
-#' @aliases MyrioExpScenario-class
+#' @aliases MyrioExp-class MyrioExpScenario-class
 #' @export
 Myrio <- function() {
   new("MyrioExpScenario",
@@ -164,7 +184,7 @@ Myrio <- function() {
 #' @seealso [Transferable], [Scenarios]
 #' @family Myriophyllum models
 #' @family macrophyte models
-#' @aliases MyrioLogScenario-class
+#' @aliases MyrioLog-class MyrioLogScenario-class
 #' @export
 Myrio_log <- function() {
   new("MyrioLogScenario",
@@ -185,3 +205,79 @@ Myrio_log <- function() {
   )
 }
 
+
+########################
+## Simulation
+########################
+
+# Solver for MyrioExp scenarios
+solver_myrioexp <- function(scenario, ...) {
+  # Constant identifying exponential growth model
+  scenario@param$growthno <- 1
+  # Dummy value, only used for logistic growth
+  scenario@param$BM_L <- NA_real_
+
+  solver_myrio(scenario, ...)
+}
+#' @include solver.R
+#' @describeIn solver Numerically integrates `MyrioExp` models
+setMethod("solver", "MyrioExp", function(scenario, times, ...) solver_myrioexp(scenario, times, ...))
+
+# Solver for MyrioLog scenarios
+solver_myriolog <- function(scenario, ...) {
+  # Constant identifying logistic growth model
+  scenario@param$growthno <- 2
+  solver_myrio(scenario, ...)
+}
+#' @describeIn solver Numerically integrates `MyrioLog` models
+setMethod("solver", "MyrioLog", function(scenario, times, ...) solver_myriolog(scenario, times, ...))
+
+# Numerically solve Myriophyllum scenarios
+#
+# @param scenario
+# @param times
+# @param ... additional parameters passed on to [deSolve::ode()]
+# @return data.frame
+solver_myrio <- function(scenario, times, approx=c("linear","constant"),
+                         f=0, nout=2, method="lsoda", hmax=0.1, ...) {
+  approx <- match.arg(approx)
+  if(missing(times))
+    times <- scenario@times
+  if(length(times) < 2)
+    stop("output times vector is not an interval")
+
+  params <- scenario@param
+  # make sure that parameters are present and in required order
+  params_order <- c("k_photo_max", "growthno", "BM_L", "E_max", "EC50_int", "b",
+                    "P", "r_A_DW", "r_FW_DW", "r_FW_V", "r_DW_TSL", "K_pw",
+                    "k_met")
+  if(is.list(params))
+    params <- unlist(params)
+
+  # check for missing parameters
+  params_missing <- setdiff(scenario@param.req, names(params))
+  if(length(params_missing)>0)
+    stop(paste("missing parameters:", paste(params_missing, collapse=",")))
+
+  # reorder parameters for deSolve
+  params <- params[params_order]
+  forcings <- list(scenario@exposure@series)
+  fcontrol <- list(method=approx, rule=2, f=f, ties="ordered")
+
+  # set names of additional output variables
+  outnames <- c("C_int", "TSL", "f_photo", "C_int_unb", "C_ext", "dBM", "dM_int")
+
+  as.data.frame(ode(y=scenario@init, times=times, parms=params, dllname="cvasi",
+                    initfunc="myrio_init", func="myrio_func", initforc="myrio_forc",
+                    forcings=forcings, fcontrol=fcontrol, nout=nout, method=method,
+                    hmax=hmax, outnames=outnames, ...))
+}
+
+
+########################
+## Effects
+########################
+
+#' @include fx.R model-lemna_setac.R
+#' @describeIn fx Effect at end of simulation of [Myriophyllum-models]
+setMethod("fx", "Myriophyllum", function(scenario, ...) fx_lemna(scenario, ...))

@@ -170,21 +170,6 @@ window_candidates <- function(scenario, skipZeroExposure=FALSE) {
   windows
 }
 
-# return the last row of a data.frame or matrix as a vector and assures that
-# column names are retained
-#' @importFrom utils head tail
-tail_nm <- function(data) {
-  if(is.data.frame(data))
-    row <- unlist(tail(data,1))
-  else if(is.matrix(data)) {
-    row <- as.vector(tail(data,1))
-    names(row) <- colnames(data)
-  } else {
-    stop("unknown type")
-  }
-  row
-}
-
 clip_scenario <- function(scenario, window) {
   if(missing(window))
     stop("nothing to clip")

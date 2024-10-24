@@ -51,13 +51,7 @@ intervals, the simulation must start at time point zero.
 \seealso{
 \code{\link[=set_transfer]{set_transfer()}}
 
-Other scenarios: 
-\code{\link{Algae-models}},
-\code{\link{DEB-models}},
-\code{\link{GUTS-RED-models}},
-\code{\link{Lemna-models}},
-\code{\link{Macrophyte-models}},
-\code{\link{Myriophyllum-models}},
+Other scenario-related: 
 \code{\link{Scenarios}}
 }
-\concept{scenarios}
+\concept{scenario-related}

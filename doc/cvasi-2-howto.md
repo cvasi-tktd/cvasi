@@ -57,7 +57,7 @@ myscenario
 #> 'Lemna_Schmitt' scenario
 #> tag  : Lab experiment #1
 #> param: Emax=1, AperBM=1000, Kbm=1, P_Temp=0, MolWeight=390.4, k_phot_fix=1, k_phot_max=0.47, k_resp=0.05, k_loss=0, Tmin=8, Tmax=40.5, Topt=26.7, t_ref=25, Q10=2, k_0=3, a_k=5e-05, C_P=0.3, CP50=0.0043, a_P=1, KiP=101, C_N=0.6, CN50=0.034, a_N=1, KiN=604, BM50=176, mass_per_frond=1e-04, BMw2BMd=16.7
-#> init : BM=0, E=1, M_int=0
+#> init : BM=0.0012, E=1, M_int=0
 #> endpt: BM, r
 #> times: none
 #> forcs: none
@@ -776,22 +776,22 @@ use:
     |    
     |   Transferable
     |___|__ Lemna
-    |   |   |__ LemnaSchmittScenario
-    |   |   |__ LemnaSetacScenario
+    |   |   |__ LemnaSchmitt
+    |   |   |__ LemnaSetac
     |   |
     |   |__ Myriophyllum
-    |   |   |__ MyrioExpScenario
-    |   |   |__ MyrioLogScenario
+    |   |   |__ MyrioExp
+    |   |   |__ MyrioLog
     |   |
     |   |__ Algae
-    |       |__ AlgaeWeberScenario
-    |       |__ AlgaeTKTDScenario
-    |       |__ AlgaeSimpleScenario    
+    |       |__ AlgaeWeber
+    |       |__ AlgaeTKTD
+    |       |__ AlgaeSimple 
     |
     |__ GutsRedSd
     |__ GutsRedIt
     |
-    |__ DebScenario
+    |__ Deb
         |__ DebAbj
         |__ DebTox
 

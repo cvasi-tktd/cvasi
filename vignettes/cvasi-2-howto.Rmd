@@ -1,7 +1,7 @@
 ---
 title: "Modeling Howto"
-author: "Nils Kehrein"
-date: "03 May, 2024"
+author: "N. Kehrein and contributors"
+date: "24 Octobre, 2024"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -608,18 +608,18 @@ class tree gives an overview of the scenario classes in use:
     |   |   |__ LemnaSetac
     |   |
     |   |__ Myriophyllum
-    |   |   |__ MyrioExpScenario
-    |   |   |__ MyrioLogScenario
+    |   |   |__ MyrioExp
+    |   |   |__ MyrioLog
     |   |
     |   |__ Algae
-    |       |__ AlgaeWeberScenario
-    |       |__ AlgaeTKTDScenario
-    |       |__ AlgaeSimpleScenario    
+    |       |__ AlgaeWeber
+    |       |__ AlgaeTKTD
+    |       |__ AlgaeSimple 
     |
     |__ GutsRedSd
     |__ GutsRedIt
     |
-    |__ DebScenario
+    |__ Deb
         |__ DebAbj
         |__ DebTox
 

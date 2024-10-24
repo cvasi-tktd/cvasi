@@ -33,7 +33,7 @@
 #' @slot transfer.comp.scaled `character` vector of state variable which will
 #'   be scaled 1:1 when biomass is modified, e.g. internal toxicant mass
 #' @name Transferable
-#' @family scenarios
+#' @family scenario-related
 #' @aliases Biomass-transfer Transferable-class
 NULL
 

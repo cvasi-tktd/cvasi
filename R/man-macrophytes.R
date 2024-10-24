@@ -10,6 +10,6 @@
 #'
 #' @name Macrophyte-models
 #' @family macrophyte models
-#' @family scenarios
+#' @family models
 #' @seealso [Scenarios]
 NULL

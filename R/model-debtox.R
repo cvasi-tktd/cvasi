@@ -5,13 +5,15 @@
 # See Jager (2020, DOI: 10.1016/j.ecolmodel.2019.108904 ) for details.
 #
 
+
 ########################
 ## Class definition
 ########################
 
-#' @include class-Deb.R solver.R fx.R
+#' @include man-deb.R
 #' @export
-setClass("DebTox", contains="DebScenario")
+setClass("DebTox", contains="Deb")
+
 
 ########################
 ## Constructor
@@ -181,6 +183,7 @@ DEBtox <- function() {
       exposure=no_exposure()
   )
 }
+
 
 ########################
 ## Simulation

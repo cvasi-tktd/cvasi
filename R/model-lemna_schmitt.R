@@ -228,7 +228,7 @@ Lemna_SchmittThold <- function(param, init) {
 # @param hmax numeric, maximum step length in time, see [deSolve::ode()]
 # @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
-solver_Lemna_Schmitt <- function(scenario, times, approx=c("linear","constant"),
+solver_lemna_schmitt <- function(scenario, times, approx=c("linear","constant"),
                                  f=1, nout=2, method="ode45", hmax=0.1, ...) {
   # use time points from scenario if nothing else is provided
   if(missing(times))
@@ -287,7 +287,7 @@ solver_Lemna_Schmitt <- function(scenario, times, approx=c("linear","constant"),
 }
 #' @include solver.R
 #' @describeIn solver Numerically integrates Lemna_Schmitt models
-setMethod("solver", "LemnaSchmitt", function(scenario, times, ...) solver_Lemna_Schmitt(scenario, times, ...) )
+setMethod("solver", "LemnaSchmitt", function(scenario, times, ...) solver_lemna_schmitt(scenario, times, ...) )
 
 
 ########################

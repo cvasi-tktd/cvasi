@@ -1,7 +1,7 @@
 User Manual
 ================
-Nils Kehrein
-03 May, 2024
+N. Kehrein
+24 Octobre, 2024
 
 - [Required skills](#required-skills)
 - [How to install](#how-to-install)
@@ -155,12 +155,12 @@ an example, simulating the sample scenario `minnow_it` will run a
 # of the fathead minnow and Chlorpyrifos (Geiger et al. 1988)
 minnow_it %>%
   simulate()
-#>   time         D H
-#> 1    0 0.0000000 0
-#> 2    1 0.7075891 0
-#> 3    2 0.9144958 0
-#> 4    3 0.9749972 0
-#> 5    4 0.9926889 0
+#>   time         D H         S
+#> 1    0 0.0000000 0 1.0000000
+#> 2    1 0.7075891 0 0.9999854
+#> 3    2 0.9144958 0 0.9999558
+#> 4    3 0.9749972 0 0.9999417
+#> 5    4 0.9926889 0 0.9999370
 ```
 
 The table returned by `simulate()` contains the value of each state
@@ -190,8 +190,16 @@ TKTD models, for instance:
   - `Lemna_SETAC()`, published by Klein *et al.* (2021)
   - `Myrio()`, an adaption of Klein *et al.* (2021) to *Myriophyllum* at
     Tier 2C
+- Algae models
+  - `Algae_Weber()`, published by Weber *et al.* (2012)
+  - `Algae_TKTD()`, based on Weber *et al.* (2012), but with scaled
+    damage
+  - `Algae_Simple()`, simplified growth model without external forcing
+    variables
 - Dynamic Energy Budget (*DEB*) models
   - `DEB_abj()`, the *abj* model with type M acceleration
+  - `DEBtox()`, as implemented in the *DEBtox2019* module of
+    [*BYOM*](https://www.debtox.info/byom.html)
 
 The listed functions create objects that will carry all data and
 settings to fully describe a scenario. In case of a *GUTS-RED-IT*
@@ -559,7 +567,7 @@ modes:
 
 Parameter fitting builds upon the *R* function `stats::optim()` and it
 exposes full control over the fitting process. In this context, a
-dataset is represented by a `CalibrationSet` object which consists of a
+dataset is represented by a *calibration set* object which consists of a
 scenario, observed data, and an optional weighting term. Please refer to
 the [Modeling Howto](cvasi-2-howto.html) for a description of the
 fitting process using `calibrate()`.

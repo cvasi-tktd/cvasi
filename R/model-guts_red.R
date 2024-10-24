@@ -62,7 +62,7 @@
 #'
 #' @name GUTS-RED-models
 #' @family GUTS-RED models
-#' @family scenarios
+#' @family models
 NULL
 
 
@@ -176,7 +176,7 @@ GUTS_RED_SD <- function(param, init) {
 # @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
 # @param method string, numerical solver used by [deSolve::ode()]
 #' @importFrom deSolve ode
-solver_GUTS_RED_SD <- function(scenario, times, approx=c("linear","constant"),
+solver_gutsredsd <- function(scenario, times, approx=c("linear","constant"),
                                f=1, method="lsoda", hmax=1, ...) {
   # use time points from scenario if nothing else is provided
   if(missing(times))
@@ -203,7 +203,7 @@ solver_GUTS_RED_SD <- function(scenario, times, approx=c("linear","constant"),
 }
 #' @include solver.R
 #' @describeIn solver Numerically integrates GUTS-RED-SD models
-setMethod("solver", "GutsRedSd", function(scenario, times, ...) solver_GUTS_RED_SD(scenario, times, ...))
+setMethod("solver", "GutsRedSd", function(scenario, times, ...) solver_gutsredsd(scenario, times, ...))
 
 # @param scenario Scenario object
 # @param times numeric vector, time points for result set
@@ -213,7 +213,7 @@ setMethod("solver", "GutsRedSd", function(scenario, times, ...) solver_GUTS_RED_
 # @param hmax numeric, maximum step length in time, see [deSolve::ode()]
 # @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
-solver_GUTS_RED_IT <- function(scenario, times, approx=c("linear","constant"),
+solver_gutsredit <- function(scenario, times, approx=c("linear","constant"),
                                f=1, method="lsoda", hmax=1, ...) {
   # use time points from scenario if nothing else is provided
   if(missing(times))
@@ -240,26 +240,15 @@ solver_GUTS_RED_IT <- function(scenario, times, approx=c("linear","constant"),
   df
 }
 #' @describeIn solver Numerically integrates GUTS-RED-IT models
-setMethod("solver", "GutsRedIt", function(scenario, times, ...) solver_GUTS_RED_IT(scenario, times, ...) )
+setMethod("solver", "GutsRedIt", function(scenario, times, ...) solver_gutsredit(scenario, times, ...) )
 
 
 ########################
 ## Effects
 ########################
 
-# Calculate effect of GUTS-RED-IT scenario
-fx_GUTS_RED_IT <- function(scenario, ...) {
-  # we avoid the control run if we just set the background mortality to zero
-  # as it would cancel out anyways
-  if(scenario@param$hb > 0)
-    scenario@param$hb <- 0
-
-  res <- simulate(scenario, ...)
-  c("L"=1 - tail(res$S, n=1))
-}
-
 # Calculate effect of GUTS-RED-SD scenario
-fx_GUTS_RED_SD <- function(scenario, ...) {
+fx_gutsredsd <- function(scenario, ...) {
   # we save the control run if we just set the background mortality to zero
   # as it would cancel out, anyways
   if(scenario@param$hb > 0)
@@ -269,8 +258,19 @@ fx_GUTS_RED_SD <- function(scenario, ...) {
   c("L"=1 - tail(res$S, n=1))
 }
 
+# Calculate effect of GUTS-RED-IT scenario
+fx_gutsredit <- function(scenario, ...) {
+  # we avoid the control run if we just set the background mortality to zero
+  # as it would cancel out anyways
+  if(scenario@param$hb > 0)
+    scenario@param$hb <- 0
+
+  res <- simulate(scenario, ...)
+  c("L"=1 - tail(res$S, n=1))
+}
+
 #' @include fx.R
 #' @describeIn fx Survival and lethality in [GUTS-RED-models]
-setMethod("fx", "GutsRedSd", function(scenario, ...) fx_GUTS_RED_SD(scenario, ...))
+setMethod("fx", "GutsRedSd", function(scenario, ...) fx_gutsredsd(scenario, ...))
 #' @describeIn fx Survival and lethality in [GUTS-RED-models]
-setMethod("fx", "GutsRedIt", function(scenario, ...) fx_GUTS_RED_IT(scenario, ...))
+setMethod("fx", "GutsRedIt", function(scenario, ...) fx_gutsredit(scenario, ...))

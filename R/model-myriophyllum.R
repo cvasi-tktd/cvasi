@@ -126,7 +126,7 @@ setClass("MyrioLogScenario", contains="MyrioLog")
 #' @aliases MyrioExp-class MyrioExpScenario-class
 #' @export
 Myrio <- function() {
-  new("MyrioExpScenario",
+  new("MyrioExp",
       name="Myriophyllum",
       param.req=c("k_photo_max", "E_max", "EC50_int", "b", "P", "r_A_DW",
                   "r_FW_DW", "r_FW_V", "r_DW_TSL", "K_pw", "k_met"),
@@ -187,7 +187,7 @@ Myrio <- function() {
 #' @aliases MyrioLog-class MyrioLogScenario-class
 #' @export
 Myrio_log <- function() {
-  new("MyrioLogScenario",
+  new("MyrioLog",
       name="Myriophyllum",
       param.req=c("k_photo_max", "BM_L", "E_max", "EC50_int", "b", "P",
                   "r_A_DW", "r_FW_DW", "r_FW_V", "r_DW_TSL", "K_pw", "k_met"),

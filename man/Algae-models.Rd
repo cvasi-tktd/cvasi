@@ -11,7 +11,7 @@ Overview of supported \emph{Algae} models
 \itemize{
 \item \code{\link[=Algae_Weber]{Algae_Weber()}} by Weber \emph{et al.} (2012)
 \item \code{\link[=Algae_TKTD]{Algae_TKTD()}} based on Weber \emph{et al.} (2012), but with scaled damage
-\item \code{\link[=Algae_Simple]{Algae_Simple()}} Simple growth model without additional forcing variables
+\item \code{\link[=Algae_Simple]{Algae_Simple()}} simplified growth model without additional forcing variables
 }
 }
 \section{Biomass transfer}{

@@ -5,7 +5,7 @@
 \alias{Rsubcapitata}
 \title{An algae scenario}
 \format{
-An object of class \code{AlgaeTKTDScenario} of length 1.
+An object of class \code{AlgaeTKTD} of length 1.
 }
 \usage{
 Rsubcapitata

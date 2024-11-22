@@ -52,6 +52,8 @@ a ggplot2 plot object
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+}
+\details{
 All parameter combinations and exposure patterns are simulated and the mean
 of predictions is derived for a single study. The uncertainty is
 passed to the function due to computation time. Results are displayed by

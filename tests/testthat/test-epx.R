@@ -5,6 +5,9 @@ effect4tolerance <- function(tolerance) {
 }
 
 test_that("effect levels", {
+  # avoid some common bogus messages on package load
+  suppressMessages(suppressWarnings(require(purrr, quietly=TRUE)))
+
   ## requested effect levels
   expect_named(epx(minnow_it,level=23),c("scenario","L.EP23"))
   expect_named(epx(minnow_it,level=c(10,20)),c("scenario","L.EP10","L.EP20"))
@@ -12,7 +15,7 @@ test_that("effect levels", {
 
 test_that("effect_tolerance", {
   ## effect.tolerance
-  ## result are geting more precise if we decrease the tolerance
+  ## result are getting more precise if we decrease the tolerance
   exact <- effect4tolerance(1e-10)
   expect_gt(abs(exact-effect4tolerance(1e-1)), abs(exact-effect4tolerance(1e-2)))
   expect_gt(abs(exact - effect4tolerance(1e-1)), 0.01)

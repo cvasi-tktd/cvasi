@@ -84,6 +84,7 @@ Collate:
     'model-myriophyllum.R'
     'package.R'
     'pll.R'
+    'plot.R'
     'plotting.r'
     'pull.R'
     'sequence.R'

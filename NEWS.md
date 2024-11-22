@@ -3,14 +3,16 @@
 * Improved `import_toxswa()`: now supports scaling of imported time series,
   importing selected *TOXSWA* output variables, as well as importing selected
   substance concentrations
-* function `import_exposure_text()` moved to the *cvasi.ui* package
+* Function `import_exposure_text()` moved to the *cvasi.ui* package
 * Small bugfix in `plot_ppc()`
 * `morse()` renamed to `import_morse()`, the function now supports loading
   parameter sets from *morse* objects directly, as well as from *.RData* and
   *.RDS* files
-* parameters to `import_morse()` renamed to a more canonical standard, i.e.
+* Parameters to `import_morse()` renamed to a more canonical standard, i.e.
   `find.IT` to `find_it`, `find.SD` to `find_sd` and so forth. Using the old
   parameter names still works but will raise a warning.
+* New overloads for the generic `plot()` to depict return values of functions
+  such as `simulate()` and `dose_response()`
 * Model equations of the `Lemna_SETAC()` model by Klein et al. was integrated
   into the package. This removes package `lemna` as a dependency.
 * Scenario defaults of `Lemna_SETAC()` were modified to ease scenario creation

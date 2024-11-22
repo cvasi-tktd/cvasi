@@ -14,22 +14,22 @@ dose_response(
 )
 }
 \arguments{
-\item{scenario}{\code{EffectScenario} used for calculation}
+\item{scenario}{used for calculation}
 
-\item{range}{numeric vector specifying the required range of effect levels in percent (\%), defaults to \code{c(1,99)}}
+\item{range}{numeric vector specifying the required range of effect levels in
+percent (\%), defaults to \code{c(1,99)}}
 
 \item{n}{minimum number of points on the dose response curve}
 
 \item{strategy}{controls how multiplication factors are chosen, \code{vanilla} uses a fixed
-set of multiplication factors, \code{decadic} and \code{exponential} have varying step lengths
-if this is feasible depends on the environment setup as defined by the \code{future} package}
+set of multiplication factors, \code{decadic} and \code{exponential} have varying step lengths.}
 
 \item{verbose}{logical, set to \code{TRUE} for additional status messages}
 
 \item{...}{additional arguments passed on to \code{\link[=effect]{effect()}}}
 }
 \value{
-\code{data.frame} with two columns, i.e. \code{factor} and \code{effect}
+\code{data.frame} with two columns, i.e. \code{mf} and \code{effect}
 }
 \description{
 Returns a \code{data.frame} with points on the dose response curve for the given

@@ -121,7 +121,7 @@ setGeneric("simulate", function(x, ...) standardGeneric("simulate"), signature="
 #' default for all models using sliding exposure windows
 #' @rdname simulate
 #' @include class-EffectScenario.R
-setMethod("simulate", "EffectScenario", function(x, ...) solver(scenario=x, ...))
+setMethod("simulate", "EffectScenario", function(x, ...) simulate_scenario(x, ...))
 
 #' @rdname simulate
 #' @include class-Transferable.R
@@ -130,6 +130,15 @@ setMethod("simulate", "Transferable", function(x, ...) simulate_transfer(scenari
 #' @rdname simulate
 #' @include class-ScenarioSequence.R
 setMethod("simulate", "ScenarioSequence", function(x, ...) simulate_seq(seq=x, ...))
+
+
+# Wrapper for solver function to enforce setting of a S3 class for all simulation
+# results.
+simulate_scenario <- function(x, ...) {
+  rs <- solver(scenario=x, ...)
+  class(rs) <- c("cvasi.simulate", class(rs))
+  rs
+}
 
 # Simulate a scenario where (biomass) quantities are transferred and reset
 # at certain time points
@@ -148,7 +157,7 @@ setMethod("simulate", "ScenarioSequence", function(x, ...) simulate_seq(seq=x, .
 # @return data.frame
 simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
   if(!has_transfer(scenario)) # shortcut if no transfers were defined
-    return(solver(scenario, times=times, ...))
+    return(simulate_scenario(scenario, times=times, ...))
 
   if(missing(times))
     times <- scenario@times
@@ -187,7 +196,7 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
 
   # if no transfers occur -> early exit
   if(length(tr_points) == 0 & !ends_on_transfer)
-    return(solver(scenario, times=times, ...))
+    return(simulate_scenario(scenario, times=times, ...))
 
   # transfer time points must be contained in output time points
   if(length(setdiff(tr_points, times)) > 0)
@@ -242,6 +251,7 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
       attr(df, "next_init") <- tail(df, 1)[names(scenario@init)]
   }
   rownames(df) <- NULL
+  class(df) <- c("cvasi.simulate", class(df))
   df
 }
 
@@ -295,6 +305,7 @@ simulate_seq <- function(seq, times, ...) {
   }
   attr(df, "next_init") <- NULL
   rownames(df) <- NULL
+  class(df) <- c("cvasi.simulate", class(df))
   df
 }
 
@@ -367,5 +378,6 @@ simulate_batch <- function(model_base, treatments, param_sample=deprecated()) {
     ~ dplyr::mutate(.x, trial = .y)
   )
   df <- dplyr::bind_rows(simulated_results)
+  class(df) <- c("cvasi.simulate", class(df))
   return(df)
 }

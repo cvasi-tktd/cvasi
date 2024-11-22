@@ -16,6 +16,8 @@ a ggplot2 plot object
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+}
+\details{
 The function expects a data.frame with five mandatory and one optional
 column. The mandatory columns are as follows:
 \itemize{

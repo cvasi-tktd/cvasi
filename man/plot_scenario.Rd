@@ -17,7 +17,11 @@ plot_scenario(model_base, plot_col = 2, trial_number = NULL)
 plot of the results for one \verb{effect scenario}
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+}
+\details{
+This function has been deprecated and replaced by the generic \code{\link[=plot]{plot()}}.
+
 Sometimes it is helpful if the user can plot results of one effect
 scenario. This is for instance the case for test simulations or predictions
 for one profile. This function runs the simulation for one effect scenario
@@ -25,5 +29,8 @@ and plots the results. Function plots the time (column 1) and the predictions
 (column 2, can be changed by the user plot_col)
 }
 \examples{
-plot_scenario(metsulfuron)
+# Please use `plot()` instead
+metsulfuron \%>\%
+  simulate() \%>\%
+  plot()
 }

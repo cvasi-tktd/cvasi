@@ -1,6 +1,7 @@
 #' Creates plot of model results (uncertainties optional)
 #'
 #' `r lifecycle::badge("experimental")`
+#'
 #' All parameter combinations and exposure patterns are simulated and the mean
 #' of predictions is derived for a single study. The uncertainty is
 #' passed to the function due to computation time. Results are displayed by
@@ -252,6 +253,7 @@ plot_sd <- function(model_base,
 #' Creates a PPC plot for a single dataset
 #'
 #' `r lifecycle::badge("experimental")`
+#'
 #' A sample of parameters representing the uncertainty within the dataset
 #' is passed to the function. All parameter combinations and exposure patterns
 #' are simulated and the range of predicted frond numbers is derived for a
@@ -358,6 +360,7 @@ plot_ppc <- function(rs_mean,
 #' Create PPC plot for one or more datasets
 #'
 #' `r lifecycle::badge("experimental")`
+#'
 #' The function expects a data.frame with five mandatory and one optional
 #' column. The mandatory columns are as follows:
 #' - `pred`: mean of predictions e.g. frond number for lemna
@@ -463,6 +466,7 @@ plot_ppc_combi <- function(table, xy_lim = NULL) {
 #' Plot EPx values
 #'
 #' `r lifecycle::badge("experimental")`
+#'
 #' @param EPx_ts the result of `epx_mtw`, ie. a tibble with window.start,
 #' window.end, endpoint, level and EPx
 #' @param exposure_ts an exposure time series with columns for time 't' and
@@ -554,7 +558,10 @@ plot_epx <- function(EPx_ts, exposure_ts, draw = TRUE, time_col = "time", conc_c
 
 #' Creates a prediction plot for one effect scenario
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("deprecated")`
+#'
+#' This function has been deprecated and replaced by the generic [plot()].
+#'
 #' Sometimes it is helpful if the user can plot results of one effect
 #' scenario. This is for instance the case for test simulations or predictions
 #' for one profile. This function runs the simulation for one effect scenario
@@ -568,8 +575,12 @@ plot_epx <- function(EPx_ts, exposure_ts, draw = TRUE, time_col = "time", conc_c
 #' @export
 #'
 #' @examples
-#' plot_scenario(metsulfuron)
+#' # Please use `plot()` instead
+#' metsulfuron %>%
+#'   simulate() %>%
+#'   plot()
 plot_scenario <- function(model_base, plot_col = 2, trial_number = NULL) {
+  lifecycle::deprecate_warn("1.3.1", "plot_scenario()", "plot()")
 
   # set name of run
   if (is.null(trial_number)) {
@@ -595,5 +606,4 @@ plot_scenario <- function(model_base, plot_col = 2, trial_number = NULL) {
     obs_mean = NULL,
     plot_col = plot_col
   )
-
 }

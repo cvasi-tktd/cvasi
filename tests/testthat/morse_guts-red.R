@@ -12,7 +12,7 @@ morse_sd <- function(scenario) {
   param <- scenario@param
   exp <- scenario@exposure@series
 
-  SurvSD_ode(
+  rs <- SurvSD_ode(
     Cw=exp[, 2],
     time=exp[, 1],
     kk=param[["kk"]],
@@ -21,13 +21,15 @@ morse_sd <- function(scenario) {
     hb=param[["hb"]]
   ) %>%
     dplyr::select(time, D, H, S=dtheo)
+  class(rs) <- c("cvasi.simulate", class(rs))
+  rs
 }
 
 morse_it <- function(scenario) {
   param <- scenario@param
   exp <- scenario@exposure@series
 
-  SurvIT_ode(
+  rs <- SurvIT_ode(
     Cw=exp[, 2],
     time=exp[, 1],
     kd=param[["kd"]],
@@ -37,6 +39,8 @@ morse_it <- function(scenario) {
   ) %>%
     dplyr::mutate(H=0) %>%
     dplyr::select(time, D, H, S=dtheo)
+  class(rs) <- c("cvasi.simulate", class(rs))
+  rs
 }
 
 # Code below taken from morse package, version 3.2.7 (2020-11-11)

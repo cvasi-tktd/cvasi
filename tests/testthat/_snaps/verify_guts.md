@@ -16,7 +16,7 @@
         "class": {
           "type": "character",
           "attributes": {},
-          "value": ["data.frame"]
+          "value": ["cvasi.simulate", "data.frame"]
         }
       },
       "value": [
@@ -61,7 +61,7 @@
         "class": {
           "type": "character",
           "attributes": {},
-          "value": ["data.frame"]
+          "value": ["cvasi.simulate", "data.frame"]
         }
       },
       "value": [
@@ -106,7 +106,7 @@
         "class": {
           "type": "character",
           "attributes": {},
-          "value": ["data.frame"]
+          "value": ["cvasi.simulate", "data.frame"]
         }
       },
       "value": [
@@ -151,7 +151,7 @@
         "class": {
           "type": "character",
           "attributes": {},
-          "value": ["data.frame"]
+          "value": ["cvasi.simulate", "data.frame"]
         }
       },
       "value": [
@@ -196,7 +196,7 @@
         "class": {
           "type": "character",
           "attributes": {},
-          "value": ["data.frame"]
+          "value": ["cvasi.simulate", "data.frame"]
         }
       },
       "value": [
@@ -241,7 +241,7 @@
         "class": {
           "type": "character",
           "attributes": {},
-          "value": ["data.frame"]
+          "value": ["cvasi.simulate", "data.frame"]
         }
       },
       "value": [

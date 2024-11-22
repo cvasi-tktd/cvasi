@@ -2,6 +2,7 @@
 test_that("GUTS-RED sequence", {
   # continuous sim
   simulate(minnow_it, 0:4, hmax=.1, method="ode45") -> out.orig
+  class(out.orig) <- c("cvasi.simulate", class(out.orig))
 
   # sequential sim
   list(minnow_it %>% set_times(c(0,1,1.5)),
@@ -25,6 +26,7 @@ test_that("Lemna sequence", {
     set_exposure(data.frame(t=0:14,c=0)) %>%
     set_transfer(interval=7, biomass=50) -> lemna
   simulate(lemna, method="lsoda") -> out.orig
+  class(out.orig) <- c("cvasi.simulate", class(out.orig))
 
   simulate(sequence(list(lemna)), method="lsoda") -> out.ss
   expect_equal(out.ss, out.orig)

@@ -34,6 +34,8 @@ a ggplot2 plot object
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+}
+\details{
 A sample of parameters representing the uncertainty within the dataset
 is passed to the function. All parameter combinations and exposure patterns
 are simulated and the range of predicted frond numbers is derived for a

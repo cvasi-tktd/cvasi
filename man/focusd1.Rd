@@ -5,7 +5,7 @@
 \alias{focusd1}
 \title{A Lemna_SETAC scenario with variable environment}
 \format{
-An object of class \code{LemnaSetacScenario} of length 1.
+An object of class \code{LemnaSetac} of length 1.
 }
 \usage{
 focusd1

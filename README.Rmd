@@ -9,6 +9,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "doc/figures/readme-",
+  fig.height=4,
+  fig.align='center',
   out.width = "100%"
 )
 
@@ -18,8 +20,8 @@ library(cvasi)
 # cvasi: Calibration, Validation, and Simulation of TKTD models in R
 
 <!-- badges: start -->
-<!--[![CRAN status](https://www.r-pkg.org/badges/version/cvasi)](https://cran.r-project.org/package=cvasi)-->
-<!--[![R-CMD-check](https://github.com/cvasi-tktd/cvasi/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/cvasi-tktd/cvasi/actions/workflows/R-CMD-check.yaml)-->
+[![CRAN status](https://www.r-pkg.org/badges/version/cvasi)](https://cran.r-project.org/package=cvasi)
+[![R-CMD-check](https://github.com/cvasi-tktd/cvasi/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/cvasi-tktd/cvasi/actions/workflows/R-CMD-check.yaml)
 <!--[![Codecov test coverage](https://codecov.io/gh/xy/cvasi/branch/main/graph/badge.svg)](https://app.codecov.io/gh/xy/cvasi?branch=main)-->
 <!-- badges: end -->
 
@@ -38,7 +40,7 @@ The package provides facilities to
 * import fitted parameters from *morse*
 * and more
 
-A graphical user interface implemented in [Shiny](https://www.rstudio.com/products/shiny/)
+A graphical user interface implemented in [Shiny](https://posit.co/products/open-source/rstudio/)
 is also available, see the *[cvasi.ui](https://github.com/cvasi-tktd/cvasi.ui/)*
 package. Please have a look at the [Changelog](NEWS.md)
 for an overview of user-facing updates and changes.
@@ -68,8 +70,8 @@ on your machine. *Rtools* are required to compile the package's C code.
 
 The package contains the following vignettes
 
-* [User Manual](doc/cvasi-1-manual.md)
-* [Modeling Howto](doc/cvasi-2-howto.md)
+* [User Manual](https://github.com/cvasi-tktd/cvasi/blob/main/doc/cvasi-1-manual.md)
+* [Modeling Howto](https://github.com/cvasi-tktd/cvasi/blob/main/doc/cvasi-2-howto.md)
 
 They can also be accessed locally by executing an *R* statement such as:
 ```{r, eval=FALSE}
@@ -80,23 +82,26 @@ vignette("cvasi-1-manual", package="cvasi")
 ## Usage
 
 Basic usage:
-```{r,message=FALSE}
+```{r,message=FALSE,out.width="70%"}
 library(cvasi)
 
 # create and parameterize a GUTS-RED-IT scenario
 GUTS_RED_IT() %>%
   set_param(c(kd=0.0005, hb=0, alpha=0.4, beta=1.5)) %>%
   set_exposure(data.frame(time=c(0, 100, 101, 200, 201, 400),
-                          conc=c(0, 0, 0.1, 0.1, 0, 0))) -> scenario
+                          conc=c(0, 0, 0.1, 0.1, 0, 0))) %>%
+  set_times(1:400) -> scenario
 
 # simulate scenario
-scenario %>%
-  simulate(times=1:400) %>%
-  tail()
+results <- scenario %>% simulate()
+tail(results)
+
+# ... and plot simulation results
+plot(results)
 ```
 
 Calculation of effects:
-```{r out.width="50%",warning=FALSE}
+```{r out.width="60%",warning=FALSE}
 # calculate effect level
 scenario %>% effect()
 
@@ -105,8 +110,8 @@ scenario %>% dose_response() -> drc
 head(drc)
 
 # plot the dose-response curve
-library(ggplot2)
-ggplot(drc) + geom_point(aes(mf,effect)) + scale_x_log10()
+plot(drc)
+
 # derive EPx values
 scenario %>% epx()
 ```

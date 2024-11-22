@@ -20,6 +20,9 @@ a log10-scaled axis, \code{none} for no scaling, and \code{auto} for automatic s
 
 \item{...}{unused parameters}
 }
+\value{
+\emph{ggplot2} plot object
+}
 \description{
 These functions overload \code{\link[base:plot]{base::plot()}} to provide simple plotting
 routines to display various time-series and scenario objects.

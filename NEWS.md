@@ -1,5 +1,7 @@
 # cvasi Development version
 
+# cvasi 1.3.1
+
 * Improved `import_toxswa()`: now supports scaling of imported time series,
   importing selected *TOXSWA* output variables, as well as importing selected
   substance concentrations

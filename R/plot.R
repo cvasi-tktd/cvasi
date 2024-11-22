@@ -7,6 +7,7 @@
 #' @param x object to plot
 #' @param y unused parameter
 #' @param ... unused parameters
+#' @return *ggplot2* plot object
 NULL
 
 # S3 overload to plot dose response curves

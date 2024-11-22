@@ -1,7 +1,7 @@
 ---
 title: "Modeling Howto"
 author: "N. Kehrein and contributors"
-date: "24 Octobre, 2024"
+date: "24 October, 2024"
 output:
   rmarkdown::html_vignette:
     toc: true

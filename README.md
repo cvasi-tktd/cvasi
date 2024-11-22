@@ -4,8 +4,10 @@
 # cvasi: Calibration, Validation, and Simulation of TKTD models in R
 
 <!-- badges: start -->
-<!--[![CRAN status](https://www.r-pkg.org/badges/version/cvasi)](https://cran.r-project.org/package=cvasi)-->
-<!--[![R-CMD-check](https://github.com/cvasi-tktd/cvasi/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/cvasi-tktd/cvasi/actions/workflows/R-CMD-check.yaml)-->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/cvasi)](https://cran.r-project.org/package=cvasi)
+[![R-CMD-check](https://github.com/cvasi-tktd/cvasi/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/cvasi-tktd/cvasi/actions/workflows/R-CMD-check.yaml)
 <!--[![Codecov test coverage](https://codecov.io/gh/xy/cvasi/branch/main/graph/badge.svg)](https://app.codecov.io/gh/xy/cvasi?branch=main)-->
 <!-- badges: end -->
 
@@ -26,10 +28,10 @@ The package provides facilities to
 - and more
 
 A graphical user interface implemented in
-[Shiny](https://www.rstudio.com/products/shiny/) is also available, see
-the *[cvasi.ui](https://github.com/cvasi-tktd/cvasi.ui/)* package.
-Please have a look at the [Changelog](NEWS.md) for an overview of
-user-facing updates and changes.
+[Shiny](https://posit.co/products/open-source/rstudio/) is also
+available, see the *[cvasi.ui](https://github.com/cvasi-tktd/cvasi.ui/)*
+package. Please have a look at the [Changelog](NEWS.md) for an overview
+of user-facing updates and changes.
 
 ## Installation
 
@@ -55,8 +57,10 @@ your machine. *Rtools* are required to compile the package’s C code.
 
 The package contains the following vignettes
 
-- [User Manual](doc/cvasi-1-manual.md)
-- [Modeling Howto](doc/cvasi-2-howto.md)
+- [User
+  Manual](https://github.com/cvasi-tktd/cvasi/blob/main/doc/cvasi-1-manual.md)
+- [Modeling
+  Howto](https://github.com/cvasi-tktd/cvasi/blob/main/doc/cvasi-2-howto.md)
 
 They can also be accessed locally by executing an *R* statement such as:
 
@@ -75,12 +79,12 @@ library(cvasi)
 GUTS_RED_IT() %>%
   set_param(c(kd=0.0005, hb=0, alpha=0.4, beta=1.5)) %>%
   set_exposure(data.frame(time=c(0, 100, 101, 200, 201, 400),
-                          conc=c(0, 0, 0.1, 0.1, 0, 0))) -> scenario
+                          conc=c(0, 0, 0.1, 0.1, 0, 0))) %>%
+  set_times(1:400) -> scenario
 
 # simulate scenario
-scenario %>%
-  simulate(times=1:400) %>%
-  tail()
+results <- scenario %>% simulate()
+tail(results)
 #>     time           D H        S
 #> 395  395 0.004429420 0 0.998655
 #> 396  396 0.004427206 0 0.998655
@@ -88,40 +92,45 @@ scenario %>%
 #> 398  398 0.004422781 0 0.998655
 #> 399  399 0.004420570 0 0.998655
 #> 400  400 0.004418360 0 0.998655
+
+# ... and plot simulation results
+plot(results)
 ```
+
+<img src="doc/figures/readme-unnamed-chunk-5-1.png" width="70%" style="display: block; margin: auto;" />
 
 Calculation of effects:
 
 ``` r
 # calculate effect level
 scenario %>% effect()
-#> # A tibble: 1 × 4
+#> # A tibble: 1 x 4
 #>   scenario         L L.dat.start L.dat.end
 #>   <list>       <dbl>       <dbl>     <dbl>
-#> 1 <GutsRdIt> 0.00135           0       400
+#> 1 <GutsRdIt> 0.00135           1       400
 
 # create a dose-response curve
 scenario %>% dose_response() -> drc
 head(drc)
 #>   endpoint        mf      effect
-#> 1        L  3.812500 0.009920108
-#> 2        L  4.799653 0.013948570
-#> 3        L  6.042405 0.019601514
-#> 4        L  7.606938 0.027459506
-#> 5        L  9.576567 0.038355140
-#> 6        L 12.056184 0.053336114
+#> 1        L  3.812500 0.009915394
+#> 2        L  4.799653 0.013954569
+#> 3        L  6.042405 0.019597765
+#> 4        L  7.606938 0.027459877
+#> 5        L  9.576567 0.038357524
+#> 6        L 12.056184 0.053336214
 
 # plot the dose-response curve
-library(ggplot2)
-ggplot(drc) + geom_point(aes(mf,effect)) + scale_x_log10()
+plot(drc)
 ```
 
-<img src="doc/figures/readme-unnamed-chunk-6-1.png" width="50%" />
+<img src="doc/figures/readme-unnamed-chunk-6-1.png" width="60%" style="display: block; margin: auto;" />
 
 ``` r
+
 # derive EPx values
 scenario %>% epx()
-#> # A tibble: 1 × 3
+#> # A tibble: 1 x 3
 #>   scenario   L.EP10 L.EP50
 #>   <list>      <dbl>  <dbl>
 #> 1 <GutsRdIt>   19.0   82.1

@@ -171,37 +171,28 @@ additional outputs, and \code{nout=0} will disable additional outputs.
 
 The available output levels are as follows:
 \itemize{
-\item \code{nout=1}
+\item \code{nout >= 1}: \code{C_int}, internal concentration (ug/L)
+\item \code{nout >= 2}: \code{FrondNo}, number of fronds (-)
+\item \code{nout >= 3}: \code{C_int_u}, unbound internal concentration (ug/l)
+\item Growth and TK/TD
 \itemize{
-\item \code{C_int}, internal concentration (ug/L)
+\item \code{nout >= 4}: \code{BM_fresh}, fresh weight biomass (g_fw/m2)
+\item \code{nout >= 5}: \code{k_photo_eff}, current photosynthesis rate (1/d)
+\item \code{nout >= 6}: \code{k_resp_eff}, current respiration rate (1/d)
+\item \code{nout >= 7}: \code{f_Eff}, toxic effect factor (-)
+\item \code{nout >= 8}: \code{P_up_eff}, current permeability for uptake (cm/d)
 }
-\item \code{nout=2}
+\item Environmental variables
 \itemize{
-\item \code{FrondNo}, number of fronds (-)
+\item \code{nout >= 9}: \code{actConc}, current toxicant concentration in surrounding medium (ug/L)
+\item \code{nout >= 10}: \code{actTemp}, current environmental temperature (deg C)
+\item \code{nout >= 11}: \code{actRad}, current environmental radiation (kJ/m2.d)
 }
-\item \code{nout=3}
+\item Derivatives
 \itemize{
-\item \code{C_int_u}, unbound internal concentration (ug/l)
-}
-\item \code{nout=8}, growth and TK/TD
-\itemize{
-\item \code{BM_fresh}, fresh weight biomass (g_fw/m2)
-\item \code{k_photo_eff}, current photosynthesis rate (1/d)
-\item \code{k_resp_eff}, current respiration rate (1/d)
-\item \code{f_Eff}, toxic effect factor (-)
-\item \code{P_up_eff}, current permeability for uptake (cm/d)
-}
-\item \code{nout=11}, environmental factors
-\itemize{
-\item \code{actConc}, current toxicant concentration in surrounding medium (ug/L)
-\item \code{actTemp}, current environmental temperature (deg C)
-\item \code{actRad}, current environmental radiation (kJ/m2.d)
-}
-\item \code{nout=14}, derivatives
-\itemize{
-\item \verb{d BM/dt}, current change in state variable BM
-\item \verb{d E/dt}, current change in effect
-\item \verb{d M_int/dt}, current change in internal toxicant mass
+\item \code{nout >= 12}: \verb{d BM/dt}, current change in state variable BM
+\item \code{nout >= 13}: \verb{d E/dt}, current change in effect
+\item \code{nout >= 14}: \verb{d M_int/dt}, current change in internal toxicant mass
 }
 }
 }

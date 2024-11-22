@@ -229,10 +229,10 @@ void lemna_setac_func(int *neq, double *t, double *y, double *ydot, double *yout
   {
     if(*ip > 0) yout[0] = C_int; // internal concentration
     if(*ip > 1) yout[1] = BM/ r_DW_FN; // Frond number
-	// lumped response functions
+	  // lumped response functions
     if(*ip > 2) yout[2] = f_loss;
     if(*ip > 3) yout[3] = f_photo;
-	// individual response functions
+	  // individual response functions
     if(*ip > 4) yout[4] = fT_photo();
     if(*ip > 5) yout[5] = fI_photo();
     if(*ip > 6) yout[6] = fP_photo();

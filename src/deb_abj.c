@@ -170,15 +170,15 @@ void deb_abj_func(int *neq, double *t, double *y, double *ydot, double *yout, in
 
   dcV = ke*(Lm/L)*(c-cV) - cV*(3/L)*dL; // change in scaled internal conc.
 
-  // add fluxes to output
-  if(*ip>=3) {
-    yout[0] = pC;
-    yout[1] = pA;
-    yout[2] = pJ;
-  }
-  // add acceleration factor to output
-  if(*ip>=4) {
-    yout[3] = MV;
+  // Additional output
+  if(*ip > 0)
+  {
+    // add acceleration factor to output
+    yout[0] = MV;
+    // fluxes
+    if(*ip > 1) yout[1] = pC;
+    if(*ip > 2) yout[2] = pA;
+    if(*ip > 3) yout[3] = pJ;
   }
 }
 

@@ -102,30 +102,27 @@ setClass("LemnaSetacScenario", contains="LemnaSetac")
 #' the argument `nout = 0`.
 #'
 #' The available output levels are as follows:
-#' - `nout >= 1`
-#'    - `C_int`, internal concentration (mass per volume)
-#' - `nout >= 2`
-#'    - `FrondNo`, frond number (-)
-#' - `nout >= 4`
-#'   - `f_loss`, respiration dependency function (-)
-#'   - `f_photo`, photosynthesis dependency function (-)
-#' - `nout >= 10`
-#'   - `fT_photo`, temperature response of photosynthesis (-)
-#'   - `fI_photo`, irradiance response of photosynthesis (-)
-#'   - `fP_photo`, phosphorus response of photosynthesis (-)
-#'   - `fN_photo`, nitrogen response of photosynthesis (-)
-#'   - `fBM_photo`, density response of photosynthesis (-)
-#'   - `fCint_photo`, concentration response of photosynthesis (-)
-#' - `nout >= 16`
-#'   - `C_int_unb`, unbound internal concentration (mass per volume)
-#'   - `C_ext`, external concentration (mass per volume)
-#'   - `Tmp`, temperature (deg C)
-#'   - `Irr`, irradiance (kJ m-2 d-1)
-#'   - `Phs`, Phosphorus concentration (mg P L-1)
-#'   - `Ntr`, Nitrogen concentration (mg N L-1)
-#' - `nout >= 18`
-#'   - `dBM`, biomass derivative (g dw m-2 d-1)
-#'   - `dM_int`, mass of toxicant in plants derivative (mass per m2 d-1)
+#' - `nout >= 1`: `C_int`, internal concentration (mass per volume)
+#' - `nout >= 2`: `FrondNo`, frond number (-)
+#' - Response functions
+#'   - `nout >= 3`: `f_loss`, respiration dependency function (-)
+#'   - `nout >= 4`: `f_photo`, photosynthesis dependency function (-)
+#'   - `nout >= 5`: `fT_photo`, temperature response of photosynthesis (-)
+#'   - `nout >= 6`: `fI_photo`, irradiance response of photosynthesis (-)
+#'   - `nout >= 7`: `fP_photo`, phosphorus response of photosynthesis (-)
+#'   - `nout >= 8`: `fN_photo`, nitrogen response of photosynthesis (-)
+#'   - `nout >= 9`: `fBM_photo`, density response of photosynthesis (-)
+#'   - `nout >= 10`: `fCint_photo`, concentration response of photosynthesis (-)
+#' - Environmental variables
+#'   - `nout >= 11`: `C_int_unb`, unbound internal concentration (mass per volume)
+#'   - `nout >= 12`: `C_ext`, external concentration (mass per volume)
+#'   - `nout >= 13`: `Tmp`, temperature (deg C)
+#'   - `nout >= 14`: `Irr`, irradiance (kJ m-2 d-1)
+#'   - `nout >= 15`: `Phs`, Phosphorus concentration (mg P L-1)
+#'   - `nout >= 16`: `Ntr`, Nitrogen concentration (mg N L-1)
+#' - Derivatives
+#'   - `nout >= 17`: `dBM`, biomass derivative (g dw m-2 d-1)
+#'   - `nout >= 18`: `dM_int`, mass of toxicant in plants derivative (mass per m2 d-1)
 #'
 #' @inheritSection Transferable Biomass transfer
 #'

@@ -252,30 +252,24 @@ void lemna_schmitt_func(int *neq, double *t, double *y, double *ydot, double *yo
   }
 
   // Additional outputs, if requested
-  if(*ip >= 1) {
-    yout[0] = C_int;
-  }
-  if(*ip >= 2) {
-    yout[1] = BM / mass_per_frond;
-  }
-  if(*ip >= 3) {
-    yout[2] = C_int_u;
-  }
-  if(*ip >= 8) {
-    yout[3] = BM_fresh;
-    yout[4] = k_phot_eff;
-    yout[5] = k_resp_eff;
-    yout[6] = f_Eff;
-    yout[7] = P_up_eff;
-  }
-  if(*ip >= 11) {
-    yout[8] = actConc;
-    yout[9] = actTemp;
-    yout[10] = actRad;
-  }
-  if(*ip >= 14) {
-    yout[11] = ydot[0];
-    yout[12] = ydot[1];
-    yout[13] = ydot[2];
+  if(*ip > 0)
+  {
+    if(*ip > 0) yout[0] = C_int; // internal concentration
+    if(*ip > 1) yout[1] = BM / mass_per_frond; // frond number
+    if(*ip > 2) yout[2] = C_int_u; // unbound internal concentration
+    if(*ip > 3) yout[3] = BM_fresh;
+    // response functions
+    if(*ip > 4) yout[4] = k_phot_eff;
+    if(*ip > 5) yout[5] = k_resp_eff;
+    if(*ip > 6) yout[6] = f_Eff;
+    if(*ip > 7) yout[7] = P_up_eff;
+    // environmental variables
+    if(*ip > 8) yout[8] = actConc;
+    if(*ip > 9) yout[9] = actTemp;
+    if(*ip > 10) yout[10] = actRad;
+    // derivatives
+    if(*ip > 11) yout[11] = ydot[0];
+    if(*ip > 12) yout[12] = ydot[1];
+    if(*ip > 13) yout[13] = ydot[2];
   }
 }

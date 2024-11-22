@@ -79,14 +79,23 @@ list of the data frames.
 
 Simulation results will contain the state variables Biomass (\code{A}), mass of
 internal phosphorous (\code{Q}), mass of external phosphorous (\code{P}) and the external
-concentration (\code{C}). The derivatives are also available as additional output.
+concentration (\code{C}).
+
+It is possible to amend the output of \code{\link[=simulate]{simulate()}} with additional model
+quantities that are not state variables, for e.g. debugging purposes or to
+analyze model behavior. To enable or disable additional outputs, use the
+optional argument \code{nout} of \code{\link[=simulate]{simulate()}}. As an example, set \code{nout=2} to
+enable reporting of model derivatives \code{dA} and \code{dQ}. Set \code{nout=0} to disable
+additional outputs (default).
+
+The available output levels are as follows:
 \itemize{
-\item \code{nout >= 4}
+\item Derivatives
 \itemize{
-\item \code{dA}, biomass derivative (µg)
-\item \code{dQ}, internal phosphorous derivative (mg P/ug fresh wt)
-\item \code{dP}, external phosphorous derivative (mg P L-1)
-\item \code{dC}, external concentration derivative (ug L-1)
+\item \code{nout >= 1}: \code{dA}, biomass derivative (µg)
+\item \code{nout >= 2}: \code{dQ}, internal phosphorous derivative (mg P/ug fresh wt)
+\item \code{nout >= 3}: \code{dP}, external phosphorous derivative (mg P L-1)
+\item \code{nout >= 4}: \code{dC}, external concentration derivative (ug L-1)
 }
 }
 }

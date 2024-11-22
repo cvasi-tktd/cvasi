@@ -126,26 +126,23 @@ setClass("LemnaSchmittScenario", contains="LemnaSchmitt")
 #' additional outputs, and `nout=0` will disable additional outputs.
 #'
 #' The available output levels are as follows:
-#' * `nout=1`
-#'   * `C_int`, internal concentration (ug/L)
-#' * `nout=2`
-#'   * `FrondNo`, number of fronds (-)
-#' * `nout=3`
-#'   * `C_int_u`, unbound internal concentration (ug/l)
-#' * `nout=8`, growth and TK/TD
-#'   * `BM_fresh`, fresh weight biomass (g_fw/m2)
-#'   * `k_photo_eff`, current photosynthesis rate (1/d)
-#'   * `k_resp_eff`, current respiration rate (1/d)
-#'   * `f_Eff`, toxic effect factor (-)
-#'   * `P_up_eff`, current permeability for uptake (cm/d)
-#' * `nout=11`, environmental factors
-#'   * `actConc`, current toxicant concentration in surrounding medium (ug/L)
-#'   * `actTemp`, current environmental temperature (deg C)
-#'   * `actRad`, current environmental radiation (kJ/m2.d)
-#' * `nout=14`, derivatives
-#'   * `d BM/dt`, current change in state variable BM
-#'   * `d E/dt`, current change in effect
-#'   * `d M_int/dt`, current change in internal toxicant mass
+#' * `nout >= 1`: `C_int`, internal concentration (ug/L)
+#' * `nout >= 2`: `FrondNo`, number of fronds (-)
+#' * `nout >= 3`: `C_int_u`, unbound internal concentration (ug/l)
+#' * Growth and TK/TD
+#'   * `nout >= 4`: `BM_fresh`, fresh weight biomass (g_fw/m2)
+#'   * `nout >= 5`: `k_photo_eff`, current photosynthesis rate (1/d)
+#'   * `nout >= 6`: `k_resp_eff`, current respiration rate (1/d)
+#'   * `nout >= 7`: `f_Eff`, toxic effect factor (-)
+#'   * `nout >= 8`: `P_up_eff`, current permeability for uptake (cm/d)
+#' * Environmental variables
+#'   * `nout >= 9`: `actConc`, current toxicant concentration in surrounding medium (ug/L)
+#'   * `nout >= 10`: `actTemp`, current environmental temperature (deg C)
+#'   * `nout >= 11`: `actRad`, current environmental radiation (kJ/m2.d)
+#' * Derivatives
+#'   * `nout >= 12`: `d BM/dt`, current change in state variable BM
+#'   * `nout >= 13`: `d E/dt`, current change in effect
+#'   * `nout >= 14`: `d M_int/dt`, current change in internal toxicant mass
 #'
 #' @inheritSection Transferable Biomass transfer
 #'

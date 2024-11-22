@@ -79,6 +79,21 @@ setClass("DebAbj", contains="Deb")
 #' which considers exposure to a toxicant and one simulation without exposure, i.e.
 #' a control. See also [effect()].
 #'
+#' @section Simulation output:
+#' Simulation results will contain the state variables.
+#' It is possible to amend the output of [simulate()] with additional model
+#' quantities that are not state variables, for e.g. debugging purposes or to
+#' analyze model behavior. To enable or disable additional outputs, use the
+#' optional argument `nout` of [simulate()]. As an example, set `nout=2` to
+#' enable reporting of the acceleration factor (`MV`) and the mobilization flux
+#' (`pC`). Set `nout=0` to disable additional outputs (default).
+#'
+#' The available output levels are as follows:
+#' - `nout` >= 1: `MV` acceleration factor (-)
+#' - `nout` >= 2: `pC` mobilization flux (J/d)
+#' - `nout` >= 3: `pA` assimilation flux (J/d)
+#' - `nout` >= 4: `pJ` energy invested in maturity flux (J/d)
+#'
 #' @return an S4 object of type [DebAbj-class]
 #' @export
 #' @family DEB models
@@ -130,7 +145,7 @@ solver_deb_abj <- function(scenario, times, approx=c("linear","constant"), f=1,
   params.req <- c("p_M","v","k_J","p_Am","kap","E_G","f","E_Hj","E_Hp","kap_R","ke","c0",
                   "cT","L_b","L_j","MoA")
   # additional output variables
-  outnames <- c("pC","pA","pJ","MV")
+  outnames <- c("MV","pC","pA","pJ")
 
   params <- scenario@param
   if(is.list(params))

@@ -71,15 +71,22 @@ to avoid extreme values during calibration (particularly likelihood profiling)
 
 \section{Simulation output}{
 
-Simulation results will contain the state variables biomass (\code{A}) and in case
-of scaled damage the damage concentration (\code{Dw}). The derivatives are also
-available as additional output.
+Simulation results will contain the state variables biomass (\code{A}) and
+scaled damage concentration (\code{Dw}).
+
+It is possible to amend the output of \code{\link[=simulate]{simulate()}} with additional model
+quantities that are not state variables, for e.g. debugging purposes or to
+analyze model behavior. To enable or disable additional outputs, use the
+optional argument \code{nout} of \code{\link[=simulate]{simulate()}}. As an example, set \code{nout=2} to
+enable reporting of external concentration (\code{Cw}) and growth scaling factor
+(\code{f_growth}). Set \code{nout=0} to disable additional outputs (default).
+
+The available output levels are as follows:
 \itemize{
-\item \code{nout >= 2}
-\itemize{
-\item \code{dA}, biomass derivative (µg)
-\item \code{dDw}, damage concentration derivative (ug L-1)
-}
+\item \code{nout >= 1}: \code{Cw} external concentration (ug L-1)
+\item \code{nout >= 2}: \code{f_growth} growth scaling factor (-)
+\item \code{nout >= 3}: \code{dA}, biomass derivative (µg)
+\item \code{nout >= 4}: \code{dDw}, damage concentration derivative (ug L-1)
 }
 }
 

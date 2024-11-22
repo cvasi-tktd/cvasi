@@ -122,13 +122,22 @@ setClass("AlgaeSimpleScenario", contains = "AlgaeSimple")
 #' @section Simulation output:
 #' Simulation results will contain the state variables Biomass (`A`), mass of
 #' internal phosphorous (`Q`), mass of external phosphorous (`P`) and the external
-#' concentration (`C`). The derivatives are also available as additional output.
+#' concentration (`C`).
 #'
-#' - `nout >= 4`
-#'    - `dA`, biomass derivative (µg)
-#'    - `dQ`, internal phosphorous derivative (mg P/ug fresh wt)
-#'    - `dP`, external phosphorous derivative (mg P L-1)
-#'    - `dC`, external concentration derivative (ug L-1)
+#' It is possible to amend the output of [simulate()] with additional model
+#' quantities that are not state variables, for e.g. debugging purposes or to
+#' analyze model behavior. To enable or disable additional outputs, use the
+#' optional argument `nout` of [simulate()]. As an example, set `nout=2` to
+#' enable reporting of model derivatives `dA` and `dQ`. Set `nout=0` to disable
+#' additional outputs (default).
+#'
+#' The available output levels are as follows:
+#'
+#' - Derivatives
+#'    - `nout >= 1`: `dA`, biomass derivative (µg)
+#'    - `nout >= 2`: `dQ`, internal phosphorous derivative (mg P/ug fresh wt)
+#'    - `nout >= 3`: `dP`, external phosphorous derivative (mg P L-1)
+#'    - `nout >= 4`: `dC`, external concentration derivative (ug L-1)
 #'
 #' @section Parameter boundaries:
 #' Default values for parameter boundaries are set for all parameters by expert
@@ -234,13 +243,21 @@ Algae_Weber <- function() {
 #' @section Simulation output:
 #' Simulation results will contain the state variables Biomass (`A`), mass of
 #' internal phosphorous (`Q`), mass of external phosphorous (`P`) and the damage
-#' concentration (`Dw`). The derivatives are also available as additional output.
+#' concentration (`Dw`).
 #'
-#' - `nout >= 4`
-#'    - `dA`, biomass derivative (µg)
-#'    - `dQ`, internal phosphorous derivative (mg P/ug fresh wt)
-#'    - `dP`, external phosphorous derivative (mg P L-1)
-#'    - `dDw`, damage concentration derivative (ug L-1)
+#' It is possible to amend the output of [simulate()] with additional model
+#' quantities that are not state variables, for e.g. debugging purposes or to
+#' analyze model behavior. To enable or disable additional outputs, use the
+#' optional argument `nout` of [simulate()]. As an example, set `nout=2` to
+#' enable reporting of model derivatives `dA` and `dQ`. Set `nout=0` to disable
+#' additional outputs (default).
+#'
+#' The available output levels are as follows:
+#' - Derivatives
+#'    - `nout >= 1`: `dA`, biomass derivative (µg)
+#'    - `nout >= 2`: `dQ`, internal phosphorous derivative (mg P/ug fresh wt)
+#'    - `nout >= 3`: `dP`, external phosphorous derivative (mg P L-1)
+#'    - `nout >= 4`: `dDw`, damage concentration derivative (ug L-1)
 #'
 #' @references
 #' Weber D, Schaeffer D, Dorgerloh M, Bruns E, Goerlitz G, Hammel K, Preuss TG
@@ -327,13 +344,21 @@ Algae_TKTD <- function() {
 #' to avoid extreme values during calibration (particularly likelihood profiling)
 #'
 #' @section Simulation output:
-#' Simulation results will contain the state variables biomass (`A`) and in case
-#' of scaled damage the damage concentration (`Dw`). The derivatives are also
-#' available as additional output.
+#' Simulation results will contain the state variables biomass (`A`) and
+#' scaled damage concentration (`Dw`).
 #'
-#' - `nout >= 2`
-#'    - `dA`, biomass derivative (µg)
-#'    - `dDw`, damage concentration derivative (ug L-1)
+#' It is possible to amend the output of [simulate()] with additional model
+#' quantities that are not state variables, for e.g. debugging purposes or to
+#' analyze model behavior. To enable or disable additional outputs, use the
+#' optional argument `nout` of [simulate()]. As an example, set `nout=2` to
+#' enable reporting of external concentration (`Cw`) and growth scaling factor
+#' (`f_growth`). Set `nout=0` to disable additional outputs (default).
+#'
+#' The available output levels are as follows:
+#' - `nout >= 1`: `Cw` external concentration (ug L-1)
+#' - `nout >= 2`: `f_growth` growth scaling factor (-)
+#' - `nout >= 3`: `dA`, biomass derivative (µg)
+#' - `nout >= 4`: `dDw`, damage concentration derivative (ug L-1)
 #'
 #'
 #' @references
@@ -393,10 +418,8 @@ solver_algae_weber <- function(scenario, times, approx = c("linear","constant"),
   if(length(times)<2)
     stop("times vector is not an interval")
 
-  params.req = c("mu_max", "m_max", "v_max", "k_s",
-                 "Q_min", "Q_max", "R_0", "D",
-                 "T_opt", "T_min", "T_max", "I_opt",
-                 "EC_50", "b", "k"
+  params.req = c("mu_max", "m_max", "v_max", "k_s", "Q_min", "Q_max", "R_0", "D",
+                 "T_opt", "T_min", "T_max", "I_opt", "EC_50", "b", "k"
   )
 
   params <- scenario@param
@@ -417,7 +440,7 @@ solver_algae_weber <- function(scenario, times, approx = c("linear","constant"),
   )
 
   # set names of additional output variables
-  outnames <- c("Cin", "I", "Tact", "dA", "dQ", "dP", "dC")
+  outnames <- c("dA", "dQ", "dP", "dC")
 
   # run solver
   as.data.frame(ode(y = scenario@init, times=times, initfunc = "algae_init",
@@ -474,7 +497,7 @@ solver_algae_tktd <- function(scenario, times, approx = c("linear","constant"),
   approx <- match.arg(approx)
 
   # set names of additional output variables
-  outnames <- c("Cw", "I", "Tact", "dA", "dQ", "dP", "dDw")
+  outnames <- c("dA", "dQ", "dP", "dDw")
 
   # run solver
   as.data.frame(ode(y = scenario@init, times=times, initfunc = "algae_TKTD_init",
@@ -526,7 +549,7 @@ solver_algae_simple <- function(scenario, times, approx = c("linear","constant")
   approx <- match.arg(approx)
 
   # set names of additional output variables
-  outnames <- c("dA", "dDw", "dose_response", "scaled", "f_growth")
+  outnames <- c("Cw", "f_growth", "dA", "dDw")
 
   # run solver
   as.data.frame(ode(y = scenario@init, times=times, initfunc = "algae_simple_init",

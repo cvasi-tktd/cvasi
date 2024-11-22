@@ -90,24 +90,24 @@ setClass("MyrioLogScenario", contains="MyrioLog")
 #' judgement, for calibration purposes. Values can be modified using [set_bounds()].
 #'
 #' @section Simulation output:
-#'
-#' Simulation results will contain two additional columns besides state variables:
-#' * `C_int`, internal concentration of toxicant (mass per volume)
-#' * `TSL`, total shoot length (?)
+#' Simulation results will contain the state variables
+#' It is possible to amend the output of [simulate()] with additional model
+#' quantities that are not state variables, for e.g. debugging purposes or to
+#' analyze model behavior. To enable or disable additional outputs, use the
+#' optional argument `nout` of [simulate()]. As an example, set `nout=2` to
+#' enable reporting of the acceleration factor (`MV`) and the mobilization flux
+#' (`pC`). Set `nout=0` to disable additional outputs (default).
 #'
 #' The available output levels are as follows:
-#' - `nout >= 1`
-#'   - `C_int`, internal concentration (mass per volume)
-#' - `nout >= 2`
-#'   - `TSL`, total shoot length (?)
-#' - `nout >= 3`
-#'   - `f_photo`, photosynthesis dependency function (-)
-#' - `nout >= 5`, growth and TK/TD
-#'   - `C_int_unb`, unbound internal concentration (mass per volume)
-#'   - `C_ext`, external concentration (mass per volume)
-#' - `nout >= 7`, environmental factors
-#'   - `dBM`, biomass derivative (g dw m-2 d-1)
-#'   - `dM_int`, mass of toxicant in plants derivative (mass per m2 d-1)
+#' - `nout` >= 1: `C_int`, internal concentration (mass per volume)
+#' - `nout` >= 2: `TSL`, total shoot length (?)
+#' - `nout` >= 3: `f_photo`, photosynthesis dependency function (-)
+#' - Growth and TK/TD
+#'   - `nout` >= 4: `C_int_unb`, unbound internal concentration (mass per volume)
+#'   - `nout` >= 5: `C_ext`, external concentration (mass per volume)
+#' - Derivatives
+#'   - `nout` >= 6: `dBM`, biomass derivative (g dw m-2 d-1)
+#'   - `nout` >= 7: `dM_int`, mass of toxicant in plants derivative (mass per m2 d-1)
 #'
 #' @inheritSection Lemna_SETAC Effects
 #' @inheritSection Transferable Biomass transfer

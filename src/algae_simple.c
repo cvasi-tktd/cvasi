@@ -124,9 +124,14 @@ void algae_simple_func(int *neq, double *t, double *y, double *ydot, double *you
   }
 
   // derivatives as additional output
-  if(*ip >= 2) {
-    yout[0] = dA;
-    yout[1] = dDw;
+  if(*ip > 0)
+  {
+    // environmental variables
+    if(*ip > 0) yout[0] = Cw; // external concentration
+    if(*ip > 1) yout[1] = f_growth; // time-dependent growth scaling factor
+    // derivatives
+    if(*ip > 2) yout[2] = dA;
+    if(*ip > 3) yout[3] = dDw;
   }
 
 }

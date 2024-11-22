@@ -62,36 +62,28 @@ None.
 
 \section{Simulation output}{
 
-
-Simulation results will contain two additional columns besides state variables:
-\itemize{
-\item \code{C_int}, internal concentration of toxicant (mass per volume)
-\item \code{TSL}, total shoot length (?)
-}
+Simulation results will contain the state variables
+It is possible to amend the output of \code{\link[=simulate]{simulate()}} with additional model
+quantities that are not state variables, for e.g. debugging purposes or to
+analyze model behavior. To enable or disable additional outputs, use the
+optional argument \code{nout} of \code{\link[=simulate]{simulate()}}. As an example, set \code{nout=2} to
+enable reporting of the acceleration factor (\code{MV}) and the mobilization flux
+(\code{pC}). Set \code{nout=0} to disable additional outputs (default).
 
 The available output levels are as follows:
 \itemize{
-\item \code{nout >= 1}
+\item \code{nout} >= 1: \code{C_int}, internal concentration (mass per volume)
+\item \code{nout} >= 2: \code{TSL}, total shoot length (?)
+\item \code{nout} >= 3: \code{f_photo}, photosynthesis dependency function (-)
+\item Growth and TK/TD
 \itemize{
-\item \code{C_int}, internal concentration (mass per volume)
+\item \code{nout} >= 4: \code{C_int_unb}, unbound internal concentration (mass per volume)
+\item \code{nout} >= 5: \code{C_ext}, external concentration (mass per volume)
 }
-\item \code{nout >= 2}
+\item Derivatives
 \itemize{
-\item \code{TSL}, total shoot length (?)
-}
-\item \code{nout >= 3}
-\itemize{
-\item \code{f_photo}, photosynthesis dependency function (-)
-}
-\item \code{nout >= 5}, growth and TK/TD
-\itemize{
-\item \code{C_int_unb}, unbound internal concentration (mass per volume)
-\item \code{C_ext}, external concentration (mass per volume)
-}
-\item \code{nout >= 7}, environmental factors
-\itemize{
-\item \code{dBM}, biomass derivative (g dw m-2 d-1)
-\item \code{dM_int}, mass of toxicant in plants derivative (mass per m2 d-1)
+\item \code{nout} >= 6: \code{dBM}, biomass derivative (g dw m-2 d-1)
+\item \code{nout} >= 7: \code{dM_int}, mass of toxicant in plants derivative (mass per m2 d-1)
 }
 }
 }

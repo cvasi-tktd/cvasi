@@ -134,11 +134,12 @@ void algae_func(int *neq, double *t, double *y, double *ydot, double *yout, int 
   // Actual concentration
   dC = C_in * D - k * C - D * C;
 
-  // derivatives as additional output
-  if(*ip >= 4) {
-    yout[0] = dA;
-    yout[1] = dQ;
-    yout[2] = dP;
-    yout[3] = C;
+  // Additional output
+  if(*ip > 0)
+  {
+    if(*ip >= 0) yout[0] = dA;
+    if(*ip >= 1) yout[1] = dQ;
+    if(*ip >= 2) yout[2] = dP;
+    if(*ip >= 3) yout[3] = C;
   }
 }

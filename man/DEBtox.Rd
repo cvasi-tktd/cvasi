@@ -141,26 +141,26 @@ which considers exposure to a toxicant and one simulation without exposure, i.e.
 a control. See also \code{\link[=effect]{effect()}}.
 }
 
-\subsection{Output variables}{
+\subsection{Simulation output}{
 
 The following intermediary model variables can be added to the model
 output on demand. Simply set the optional parameter \code{nout} to the
 required output level and pass it to \code{\link[=simulate]{simulate()}}.
 \itemize{
-\item \code{nout >= 1}: \code{f}, actual scaled response
-\item \code{nout >= 2}: \code{fR}, actual f considering starvation
-\item \code{nout >= 3}: \code{kd}, actual kd
-\item \code{nout >= 4}: \code{s}, stress level
-\item \code{nout >= 5}: \code{h}, hazard rate
-\item \code{nout >= 6}: \code{sA}, stress factor on assimilation/feeding
-\item \code{nout >= 7}: \code{sM}, stress factor on maintenance
-\item \code{nout >= 8}: \code{sG}, stress factor on growth costs
-\item \code{nout >= 9}: \code{sR}, stress factor on reproduction costs
-\item \code{nout >= 10}: \code{sH}, stress factor on hazard to reproduction
-\item \code{nout >= 11}: \code{xu}, damage feedback factor for surf:vol scaling uptake rate
-\item \code{nout >= 12}: \code{xe}, damage feedback factor for surf:vol scaling elimination rate
-\item \code{nout >= 13}: \code{xG}, damage feedback factor for growth dilution
-\item \code{nout >= 14}: \code{xR}, damage feedback factor for losses with repro
+\item \code{nout} >= 1: \code{f}, actual scaled response
+\item \code{nout} >= 2: \code{fR}, actual f considering starvation
+\item \code{nout} >= 3: \code{kd}, actual kd
+\item \code{nout} >= 4: \code{s}, stress level
+\item \code{nout} >= 5: \code{h}, hazard rate
+\item \code{nout} >= 6: \code{sA}, stress factor on assimilation/feeding
+\item \code{nout} >= 7: \code{sM}, stress factor on maintenance
+\item \code{nout} >= 8: \code{sG}, stress factor on growth costs
+\item \code{nout} >= 9: \code{sR}, stress factor on reproduction costs
+\item \code{nout} >= 10: \code{sH}, stress factor on hazard to reproduction
+\item \code{nout} >= 11: \code{xu}, damage feedback factor for surf:vol scaling uptake rate
+\item \code{nout} >= 12: \code{xe}, damage feedback factor for surf:vol scaling elimination rate
+\item \code{nout} >= 13: \code{xG}, damage feedback factor for growth dilution
+\item \code{nout} >= 14: \code{xR}, damage feedback factor for losses with repro
 }
 }
 

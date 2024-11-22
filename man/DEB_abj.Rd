@@ -88,6 +88,25 @@ which considers exposure to a toxicant and one simulation without exposure, i.e.
 a control. See also \code{\link[=effect]{effect()}}.
 }
 }
+\section{Simulation output}{
+
+Simulation results will contain the state variables.
+It is possible to amend the output of \code{\link[=simulate]{simulate()}} with additional model
+quantities that are not state variables, for e.g. debugging purposes or to
+analyze model behavior. To enable or disable additional outputs, use the
+optional argument \code{nout} of \code{\link[=simulate]{simulate()}}. As an example, set \code{nout=2} to
+enable reporting of the acceleration factor (\code{MV}) and the mobilization flux
+(\code{pC}). Set \code{nout=0} to disable additional outputs (default).
+
+The available output levels are as follows:
+\itemize{
+\item \code{nout} >= 1: \code{MV} acceleration factor (-)
+\item \code{nout} >= 2: \code{pC} mobilization flux (J/d)
+\item \code{nout} >= 3: \code{pA} assimilation flux (J/d)
+\item \code{nout} >= 4: \code{pJ} energy invested in maturity flux (J/d)
+}
+}
+
 \examples{
 # Create an abj scenario from scratch and simulate it
 DEB_abj() \%>\%

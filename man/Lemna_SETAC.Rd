@@ -123,41 +123,32 @@ the argument \code{nout = 0}.
 
 The available output levels are as follows:
 \itemize{
-\item \code{nout >= 1}
+\item \code{nout >= 1}: \code{C_int}, internal concentration (mass per volume)
+\item \code{nout >= 2}: \code{FrondNo}, frond number (-)
+\item Response functions
 \itemize{
-\item \code{C_int}, internal concentration (mass per volume)
+\item \code{nout >= 3}: \code{f_loss}, respiration dependency function (-)
+\item \code{nout >= 4}: \code{f_photo}, photosynthesis dependency function (-)
+\item \code{nout >= 5}: \code{fT_photo}, temperature response of photosynthesis (-)
+\item \code{nout >= 6}: \code{fI_photo}, irradiance response of photosynthesis (-)
+\item \code{nout >= 7}: \code{fP_photo}, phosphorus response of photosynthesis (-)
+\item \code{nout >= 8}: \code{fN_photo}, nitrogen response of photosynthesis (-)
+\item \code{nout >= 9}: \code{fBM_photo}, density response of photosynthesis (-)
+\item \code{nout >= 10}: \code{fCint_photo}, concentration response of photosynthesis (-)
 }
-\item \code{nout >= 2}
+\item Environmental variables
 \itemize{
-\item \code{FrondNo}, frond number (-)
+\item \code{nout >= 11}: \code{C_int_unb}, unbound internal concentration (mass per volume)
+\item \code{nout >= 12}: \code{C_ext}, external concentration (mass per volume)
+\item \code{nout >= 13}: \code{Tmp}, temperature (deg C)
+\item \code{nout >= 14}: \code{Irr}, irradiance (kJ m-2 d-1)
+\item \code{nout >= 15}: \code{Phs}, Phosphorus concentration (mg P L-1)
+\item \code{nout >= 16}: \code{Ntr}, Nitrogen concentration (mg N L-1)
 }
-\item \code{nout >= 4}
+\item Derivatives
 \itemize{
-\item \code{f_loss}, respiration dependency function (-)
-\item \code{f_photo}, photosynthesis dependency function (-)
-}
-\item \code{nout >= 10}
-\itemize{
-\item \code{fT_photo}, temperature response of photosynthesis (-)
-\item \code{fI_photo}, irradiance response of photosynthesis (-)
-\item \code{fP_photo}, phosphorus response of photosynthesis (-)
-\item \code{fN_photo}, nitrogen response of photosynthesis (-)
-\item \code{fBM_photo}, density response of photosynthesis (-)
-\item \code{fCint_photo}, concentration response of photosynthesis (-)
-}
-\item \code{nout >= 16}
-\itemize{
-\item \code{C_int_unb}, unbound internal concentration (mass per volume)
-\item \code{C_ext}, external concentration (mass per volume)
-\item \code{Tmp}, temperature (deg C)
-\item \code{Irr}, irradiance (kJ m-2 d-1)
-\item \code{Phs}, Phosphorus concentration (mg P L-1)
-\item \code{Ntr}, Nitrogen concentration (mg N L-1)
-}
-\item \code{nout >= 18}
-\itemize{
-\item \code{dBM}, biomass derivative (g dw m-2 d-1)
-\item \code{dM_int}, mass of toxicant in plants derivative (mass per m2 d-1)
+\item \code{nout >= 17}: \code{dBM}, biomass derivative (g dw m-2 d-1)
+\item \code{nout >= 18}: \code{dM_int}, mass of toxicant in plants derivative (mass per m2 d-1)
 }
 }
 }

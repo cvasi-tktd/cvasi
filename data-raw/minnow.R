@@ -34,8 +34,8 @@ fit.sd <- readRDS("data-raw/minnow_fit.sd.rds")
 GUTS_RED_IT() %>%
   set_tag("fathead minnow") %>%
   set_param(c(kd=round(fit.it$estim.par$median[1], 4),
-              #hb=round(fit.it$estim.par$median[2], 4),
-              hb=0,
+              hb=round(fit.it$estim.par$median[2], 4),
+              #hb=0,
               alpha=round(fit.it$estim.par$median[3], 4),
               beta=round(fit.it$estim.par$median[4], 4))) %>%
   set_exposure(data.frame(t=seq(0,4),c=c(1))) -> minnow_it
@@ -45,8 +45,8 @@ usethis::use_data(minnow_it, overwrite=TRUE)
 GUTS_RED_SD() %>%
   set_tag("fathead minnow") %>%
   set_param(c(kd=round(fit.sd$estim.par$median[1], 4),
-              #hb=round(fit.sd$estim.par$median[2], 4),
-              hb=0,
+              hb=round(fit.sd$estim.par$median[2], 4),
+              #hb=0,
               z=round(fit.sd$estim.par$median[3], 4),
               kk=round(fit.sd$estim.par$median[4], 4))) %>%
   set_exposure(data.frame(t=seq(0,4),c=c(1))) -> minnow_sd

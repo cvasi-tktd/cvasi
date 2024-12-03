@@ -3,7 +3,7 @@
 \docType{data}
 \name{minnow_sd}
 \alias{minnow_sd}
-\title{A GUTS-RED-SD scenario of the fathead minnow}
+\title{A fitted GUTS-RED-SD scenario of the fathead minnow}
 \format{
 An object of class \code{GutsRedSd} of length 1.
 }
@@ -14,14 +14,27 @@ https://mosaic.univ-lyon1.fr/guts
 minnow_sd
 }
 \description{
-The scenario consists of a parameterized GUTS-RED-SD model and a constant
-exposure series. Model parameters were derived from an acute fish toxicity
-study of the fathead minnow and chlorpyrifos by Geiger \emph{et al.} (1988).
-The dataset is also referred to as \emph{GUTS Ring-test dataset C} by
-EFSA (2018). Fitted parameters were estimated using the \emph{morse} package.
+The example scenario consists of a fitted \link[=GUTS_RED_SD]{GUTS-RED-SD}
+model and a constant exposure series. Model parameters were derived from a
+typical four-day acute fish toxicity study of the \emph{fathead minnow} by
+Geiger \emph{et al.} (1988).
+The study evaluated the effect of \emph{chlorpyrifos} concentrations in water on
+survival of \emph{fathead minnows}.
 }
 \details{
-The background mortality rate (\code{hb}) was set to zero.
+The toxicity dataset used for parameter calibration is also referred to as
+\emph{GUTS Ring-test dataset C} by EFSA (2018). Fitted parameters were estimated
+using the \emph{morse} package.
+
+The exposure series of the example scenario is a constant concentration of 1.0 µmol/L
+over a period of four days with a daily time step.
+}
+\examples{
+# Print scenario parameters
+minnow_sd
+
+# Run the example scenario
+minnow_sd \%>\% simulate()
 }
 \references{
 Geiger D.L., Call D.J., and Brooke L.T., 1988: \emph{Acute toxicities of organic

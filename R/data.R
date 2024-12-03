@@ -1,12 +1,18 @@
-#' A GUTS-RED-SD scenario of the fathead minnow
+#' A fitted GUTS-RED-SD scenario of the fathead minnow
 #'
-#' The scenario consists of a parameterized GUTS-RED-SD model and a constant
-#' exposure series. Model parameters were derived from an acute fish toxicity
-#' study of the fathead minnow and chlorpyrifos by Geiger *et al.* (1988).
-#' The dataset is also referred to as *GUTS Ring-test dataset C* by
-#' EFSA (2018). Fitted parameters were estimated using the *morse* package.
+#' The example scenario consists of a fitted [GUTS-RED-SD][GUTS_RED_SD]
+#' model and a constant exposure series. Model parameters were derived from a
+#' typical four-day acute fish toxicity study of the *fathead minnow* by
+#' Geiger *et al.* (1988).
+#' The study evaluated the effect of *chlorpyrifos* concentrations in water on
+#' survival of *fathead minnows*.
 #'
-#' The background mortality rate (`hb`) was set to zero.
+#' The toxicity dataset used for parameter calibration is also referred to as
+#' *GUTS Ring-test dataset C* by EFSA (2018). Fitted parameters were estimated
+#' using the *morse* package.
+#'
+#' The exposure series of the example scenario is a constant concentration of 1.0 µmol/L
+#' over a period of four days with a daily time step.
 #'
 #' @seealso [GUTS-RED-models]
 #' @references
@@ -22,17 +28,29 @@
 #' 16(8):5377, 188 pp. \doi{10.2903/j.efsa.2018.5377}
 #'
 #' @source https://mosaic.univ-lyon1.fr/guts
+#' @examples
+#' # Print scenario parameters
+#' minnow_sd
+#'
+#' # Run the example scenario
+#' minnow_sd %>% simulate()
 "minnow_sd"
 
-#' A GUTS-RED-IT scenario of the fathead minnow
+#' A fitted GUTS-RED-IT scenario of the fathead minnow
 #'
-#' The scenario consists of a parameterized GUTS-RED-IT model and a constant
-#' exposure series. Model parameters were derived from an acute fish toxicity
-#' study of the fathead minnow and chlorpyrifos by Geiger *et al.* (1988).
-#' The dataset is also referred to as *GUTS Ring-test dataset C* by
-#' EFSA (2018). Fitted parameters were estimated using the *morse* package.
+#' The example scenario consists of a fitted [GUTS-RED-IT][GUTS_RED_IT]
+#' model and a constant exposure series. Model parameters were derived from a
+#' typical four-day acute fish toxicity study of the *fathead minnow* by
+#' Geiger *et al.* (1988).
+#' The study evaluated the effect of *chlorpyrifos* concentrations in water on
+#' survival of *fathead minnows*.
 #'
-#' The background mortality rate (`hb`) was set to zero.
+#' The toxicity dataset used for parameter calibration is also referred to as
+#' *GUTS Ring-test dataset C* by EFSA (2018). Fitted parameters were estimated
+#' using the *morse* package.
+#'
+#' The exposure series of the example scenario is a constant concentration of 1.0 µmol/L
+#' over a period of four days with a daily time step.
 #'
 #' @seealso [GUTS-RED-models]
 #' @references
@@ -48,6 +66,13 @@
 #' 16(8):5377, 188 pp. \doi{10.2903/j.efsa.2018.5377}
 #'
 #' @source https://mosaic.univ-lyon1.fr/guts
+#' @examples
+#' # Print scenario parameters
+#' minnow_it
+#'
+#' # Run the example scenario
+#' minnow_it %>% simulate()
+#'
 "minnow_it"
 
 #' Lemna data published by Schmitt (2013)

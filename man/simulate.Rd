@@ -5,6 +5,7 @@
 \alias{simulate,EffectScenario-method}
 \alias{simulate,Transferable-method}
 \alias{simulate,ScenarioSequence-method}
+\alias{simulate,SimulationBatch-method}
 \title{Simulate an effect scenario}
 \usage{
 simulate(x, ...)
@@ -14,6 +15,8 @@ simulate(x, ...)
 \S4method{simulate}{Transferable}(x, ...)
 
 \S4method{simulate}{ScenarioSequence}(x, ...)
+
+\S4method{simulate}{SimulationBatch}(x, ...)
 }
 \arguments{
 \item{x}{\link{scenario} to simulate}

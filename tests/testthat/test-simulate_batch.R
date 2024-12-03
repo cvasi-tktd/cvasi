@@ -5,12 +5,18 @@ test_that("simulate_batch", {
 
   rs1 <- metsulfuron %>% set_exposure(t1[,c(1,2)]) %>% simulate()
   rs2 <- metsulfuron %>% set_exposure(t2[,c(1,2)]) %>% simulate()
-  rsb <- metsulfuron %>% simulate_batch(treatments)
+  #lifecycle::expect_deprecated({
+    rsb <- metsulfuron %>% simulate_batch(treatments)
+  #})
 
   expect_equal(dplyr::select(rsb, !trial), rbind(rs1, rs2), ignore_attr=T, tolerance=1e-5)
   expect_equal(rsb$trial, rep(c("control","T1"), each=nrow(rs1)))
 })
 
 test_that("deprecated parameter", {
-  expect_error(simulate_batch(metsulfuron, data.frame(), param_sample=23))
+  expect_error({
+    lifecycle::expect_deprecated({
+      simulate_batch(metsulfuron, data.frame(), param_sample=23)
+    })
+  })
 })

@@ -131,6 +131,10 @@ setMethod("simulate", "Transferable", function(x, ...) simulate_transfer(scenari
 #' @include class-ScenarioSequence.R
 setMethod("simulate", "ScenarioSequence", function(x, ...) simulate_seq(seq=x, ...))
 
+#' @rdname simulate
+#' @include batch.R
+setMethod("simulate", "SimulationBatch", function(x, ...) simulate_batch2(batch=x, ...))
+
 
 # Wrapper for solver function to enforce setting of a S3 class for all simulation
 # results.
@@ -309,9 +313,54 @@ simulate_seq <- function(seq, times, ...) {
   df
 }
 
+# Simulate a batch of scenarios
+#
+# A batch consist of a base scenario and number of exposure series that are
+# simulated with said base scenario. This is intended to replicate the setup
+# of ecotox effect studies.
+#
+# This function is not intended to be invoked by the user, but the user is
+# expected to make a call such as `simulate(batch(myscenario, list(1, 2, 3)))`.
+# Parameters that influence the format of the return value are documented
+# by [batch()].
+simulate_batch2 <- function(batch, ...) {
+  # some basic checks
+  if(!is.character(batch@id_col))
+    stop("id column is missing")
+  if(batch@format != "long" & batch@format != "wide")
+    stop("invalid format selected")
+
+  # TODO parallelization strategy should be controllable by user
+  df <- furrr::future_map2_dfr(
+    batch@scenarios,
+    names(batch@scenarios),
+    function(sc, nm, id_col) {
+      rs <- simulate(sc, ...)
+      rs[[id_col]] <- nm
+      rs
+    },
+    id_col=batch@id_col
+  )
+
+  # if the user specified one or more columns to select, then we will select
+  # a subset from the simulation results, but always time (1st colum), and
+  # the (trial) ids as well
+  if(!is.null(batch@select)) {
+    # magic value 1: we assume that the first column contains time
+    df <- dplyr::select(df, 1, !c(1, batch@id_col) & batch@select, batch@id_col)
+  }
+  # pivot to wide format?
+  if(batch@format == "wide") {
+    df <- tidyr::pivot_wider(df, id_cols=1, names_from=batch@id_col, values_from=!c(1, batch@id_col))
+  }
+
+  df
+}
+
 #' Batch simulation using multiple exposure series
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("deprecated")`
+#'
 #' A convenience function to simulate a single base scenario with one or more
 #' exposure series. This aims at reproducing the setup and results of common
 #' effect studies.
@@ -342,6 +391,7 @@ simulate_seq <- function(seq, times, ...) {
 #' metsulfuron %>%
 #'   simulate_batch(treatments)
 simulate_batch <- function(model_base, treatments, param_sample=deprecated()) {
+  #lifecycle::deprecate_soft("1.4.0", "simulate_batch()", details="Please use `simulate(batch())` instead")
   if(is_present(param_sample)) {
     if(!is.null(param_sample)) {
       lifecycle::deprecate_stop("1.3.0", "simulate_batch(param_sample)")

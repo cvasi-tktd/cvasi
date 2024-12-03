@@ -1,5 +1,8 @@
 # cvasi Development version
 
+* New `batch()` function to ease the creation of batch simulations based on a
+  single scenario and multiple exposure series
+
 # cvasi 1.3.1
 
 * Improved `import_toxswa()`: now supports scaling of imported time series,

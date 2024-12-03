@@ -17,12 +17,13 @@ simulate_batch(model_base, treatments, param_sample = deprecated())
 a \code{data.frame} with simulation results
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+}
+\details{
 A convenience function to simulate a single base scenario with one or more
 exposure series. This aims at reproducing the setup and results of common
 effect studies.
-}
-\details{
+
 A scenario contains only one exposure series. However, laboratory experiments
 commonly examine the effects of multiple exposure levels on a biological system.
 A batch simulation approach would involve running multiple simulations with

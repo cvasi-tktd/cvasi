@@ -107,7 +107,7 @@ plot_sd <- function(model_base,
 
   # try to find the max number of data for setting y-axis
   obs_max <- rs_mean %>%
-    dplyr::select({{ plot_col }}) %>%
+    dplyr::select(dplyr::all_of(plot_col)) %>%
     max()
 
   if (!is.null(obs_full)) {

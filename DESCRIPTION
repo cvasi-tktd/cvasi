@@ -65,7 +65,6 @@ Collate:
     'get.R'
     'globals.R'
     'has.R'
-    'helper_functions.r'
     'import_morse.R'
     'import_toxswa.R'
     'is.R'

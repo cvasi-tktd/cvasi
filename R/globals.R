@@ -17,11 +17,6 @@ utils::globalVariables(c(
   "LLR_accept", # <explore_space>
   "LLR_quality", # <explore_space>
   "LL", # <plot_param_space>
-  "time", # <derive_range>
-  "trial", # <derive_range>
-  "FrondNo", # <derive_range>
-  "data", # <derive_range>
-  "gridExtra", # <derive_range>
   "V1", # <import_toxswa>
   "V3", # <import_toxswa>
   "value", # <import_toxswa>

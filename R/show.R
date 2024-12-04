@@ -1,34 +1,32 @@
-#' @importFrom cli cat_line
 show_scenario <- function(object, inline=FALSE, ...) {
   if(!inline)
-    cli::cat_line(paste0("'", object@name, "' scenario"))
-  color <- "blue"
+    cli::cli_text("'{object@name}' scenario")
 
   if(object@tag != "" & !is.na(object@tag))
-    cli::cat_line(paste("tag  :", object@tag), col=color)
+    cli::cli_text("tag: {object@tag}")
 
   if(length(object@param) > 0)
-    cli::cat_line(paste("param:", paste(names(object@param), unlist(object@param), sep="=", collapse=", ")), col=color)
+    cli::cli_text(cli::col_blue(paste0("param: ", paste(names(object@param), unlist(object@param), sep="=", collapse=", "))))
   else
-    cli::cat_line("param: none", col=color)
+    cli::cli_text(cli::col_blue("param: none"))
 
   if(length(object@init) > 0)
-    cli::cat_line(paste("init :", paste(names(object@init), unlist(object@init), sep="=", collapse=", ")), col=color)
+    cli::cli_text(cli::col_blue(paste("init :", paste(names(object@init), unlist(object@init), sep="=", collapse=", "))))
   else
-    cli::cat_line("init : none", col=color)
+    cli::cli_text(cli::col_blue("init : none"))
 
   if(length(object@endpoints) > 0)
-    cli::cat_line(paste0("endpt: ", paste(object@endpoints, sep=",", collapse=", ")), col=color)
+    cli::cli_text(cli::col_blue(paste0("endpt: ", paste(object@endpoints, sep=",", collapse=", "))))
   else
-    cli::cat_line("endpt: none", col=color)
+    cli::cli_text(cli::col_blue("endpt: none"))
 
   if(length(object@times) > 0)
-    cli::cat_line(paste0("times: [", min(object@times), ",", max(object@times), "] n=",
-                         length(object@times), ", ", ifelse(is_regular_series(object@times), "regular", "irregular")), col=color)
+    cli::cli_text(cli::col_blue(paste0("times: [", min(object@times), ",", max(object@times), "] n=",
+                         length(object@times), ", ", ifelse(is_regular_series(object@times), "regular", "irregular"))))
   else
-    cli::cat_line("times: none", col=color)
+    cli::cli_text(cli::col_blue("times: none"))
 
-  cli::cat_line(paste("forcs:",ifelse(length(object@forcings) == 0, "none", paste0(names(object@forcings), collapse=", "))), col=color)
+  cli::cli_text(cli::col_blue(paste("forcs:",ifelse(length(object@forcings) == 0, "none", paste0(names(object@forcings), collapse=", ")))))
   show_exposure(object@exposure, inline=TRUE, ...)
 }
 
@@ -39,17 +37,18 @@ show_exposure <- function(x, inline=FALSE, show_exposure_series=TRUE) {
     nofile <- x@file %in% c("unknown","")
 
   if(!inline) {
-    cli::cat_line("ExposureSeries object")
-    cli::cat_line(paste("file:",ifelse(nofile,"none",x@file)),col=color)
+    cli::cli_text("ExposureSeries object")
+    cli::cli_text(cli::col_green("file: {ifelse(nofile, 'none', x@file)}"))
   } else {
-    cli::cat_line(paste("expsr:",ifelse(nofile,"none",x@file)),col=color)
+    cli::cli_text(cli::col_green("expsr: {ifelse(nofile, '', x@file)}"))
   }
 
-  if(nrow(x@series)>0) {
-    if(show_exposure_series)
-      print(x@series,max=20)
+  if(nrow(x@series) > 0) {
+    if(show_exposure_series) {
+      print(x@series, max=20)
+    }
   } else {
-    cli::cat_line(">> exposure series is empty",col=color)
+    cli::cli_text(cli::col_green(">> exposure series is empty"))
   }
 }
 

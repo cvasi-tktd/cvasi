@@ -33,22 +33,25 @@ setClass("SimulationBatch",
 #' `batch()` function can be used for ease of use.
 #'
 #' ### Exposure series
-#' An exposure level can be represented by one of the following types:
+#' The set of exposure levels can be represented by one of the following types:
 #'
-#' - A single constant value
-#' - A `data.frame` with two columns, the first column representing time, the
-#'   second representing the exposure level, e.g. a concentration
-#' - An [ExposureSeries] object
+#' - A (named) list: Each element represents an exposure level or exposure
+#'   series. An exposure level can be represented by a constant numeric, a
+#'   `data.frame` with two columns, or an ExposureSeries object. The names of
+#'   the list elements specify the study ID.
+#' - Or alternatively, a `data.frame` with three columns: One column for time,
+#'   one for the exposure level, and one character column to specify the
+#'   study IDs.
 #'
 #' Each exposure level will be simulated using the base scenario. If the exposure
 #' levels are provided as a named list, the names will also appear in the return
 #' value of `simulate()`. This behavior can be used, for example, to define unique
 #' study IDs for particular exposure levels.
 #'
-#' ### Study / exposure IDs
+#' ### Exposure IDs
 #' The list of exposure levels can be supplied as a named list. The names
 #' will be used as unique (study) IDs, so that the simulation results belonging
-#' to any exposure levels can be identified in the output.
+#' to any exposure level can be identified in the output.
 #' If no IDs are defined by the user, generic IDs of the form `'trial{n}'` will
 #' be assigned, with `{n}` being replaced by consecutive integers starting at one.
 #'
@@ -86,9 +89,7 @@ setClass("SimulationBatch",
 #' ```
 #'
 #' @param scenario a [scenario] object
-#' @param exposure a named `list()` with one or more exposure levels, a level
-#'    can be a constant `numeric`, a `data.frame` time series with two columns,
-#'    or an [ExposureSeries] object
+#' @param exposure a named `list()` or a `data.frame` with three columns
 #' @param id_col `character`, name of column in resulting ´data.frame` which
 #'    contains a trial's name or ID
 #' @param format `character`, set to `'long'` for long tabular format, or
@@ -105,23 +106,33 @@ setClass("SimulationBatch",
 #' simulate(batch(minnow_it, list(0, 2, 5)))
 #'
 #' # Alternatively, in tidyr style syntax
+#' trials_list1 <- list(0, 2, 5)
 #' minnow_it %>%
-#'   batch(exposure=list(0, 2, 5)) %>%
+#'   batch(trials_list1) %>%
 #'   simulate()
 #'
 #' # Assign unique IDs to each exposure level
+#' trials_list2 <- list(Control=0, TrialA=2, TrialB=5)
 #' minnow_it %>%
-#'   batch(exposure=list(Control=0, TrialA=2, TrialB=5)) %>%
+#'   batch(trials_list2) %>%
+#'   simulate()
+#'
+#' # Alternatively, define multiple exposure levels in a single data.frame
+#' trials_table <- data.frame(time=c(0, 0, 0),
+#'                            conc=c(0, 2, 5),
+#'                            trial=c("Control", "TrialA", "TrialB"))
+#' minnow_it %>%
+#'   batch(trials_table) %>%
 #'   simulate()
 #'
 #' # Limit simulation output to column 'S' (survival probability)
 #' minnow_it %>%
-#'   batch(exposure=list(Control=0, TrialA=2, TrialB=5), select="S") %>%
+#'   batch(trials_list2, select="S") %>%
 #'   simulate()
 #'
 #' # Return data in wide-format, unique IDs will be used as column names
 #' minnow_it %>%
-#'   batch(exposure=list(Control=0, TrialA=2, TrialB=5), select="S", format="wide") %>%
+#'   batch(trials_list2, select="S", format="wide") %>%
 #'   simulate()
 batch <- function(scenario, exposure, id_col="trial", format=c("long", "wide"),
                   times_from=c("scenario", "exposure"), select=NULL) {
@@ -130,6 +141,32 @@ batch <- function(scenario, exposure, id_col="trial", format=c("long", "wide"),
     stop("argument 'scenario' must contain a scenario object")
   if(length(scenario) != 1)
     stop("argument 'scenario' must contain only a single element")
+  if(missing(exposure))
+    stop("argument 'exposure' is missing")
+
+  # convert data.frame with three columns to a named list of data.frames
+  # which have two columns
+  if(is.data.frame(exposure)) {
+    if(length(exposure) != 3)
+      stop("argument 'exposure' is a data.frame; it must have exactly three columns")
+    if(!(id_col %in% names(exposure)))
+      stop("argument 'id_col' is not a column in exposure data.frame")
+    if(any(is.null(exposure[, id_col]) | is.na(exposure[, id_col])))
+      stop("the study ID column contains missing values (NA or NULL)")
+
+    ids <- exposure[, id_col]
+    exposure <- dplyr::select(exposure, !dplyr::any_of(id_col))
+    exposure <- split(exposure, ids)
+    # make sure we have the original ordering, and not something lexicographically
+    # sorted by `split()`
+    exposure <- exposure[unique(ids)]
+  }
+
+  # verify format of exposure argument
+  if(!is.list(exposure))
+    stop("argument 'exposure' must be a list")
+  if(length(exposure) == 0)
+    stop("argument 'exposure' must not be empty")
 
   # verify types of exposure series, convert where necessary
   for(i in seq_along(exposure)) {
@@ -142,14 +179,6 @@ batch <- function(scenario, exposure, id_col="trial", format=c("long", "wide"),
       exposure[[i]] <- ExposureSeries(data.frame(time=0, conc=val))
     }
   }
-
-  # assign ids for exposure series where necessary
-  if(missing(exposure))
-    stop("argument 'exposure' is missing")
-  if(!is.list(exposure))
-    stop("argument 'exposure' must be a list")
-  if(length(exposure) == 0)
-    stop("argument 'exposure' must not be empty")
 
   ids <- names(exposure)
   # some or all ids missing

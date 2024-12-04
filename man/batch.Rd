@@ -16,9 +16,7 @@ batch(
 \arguments{
 \item{scenario}{a \link{scenario} object}
 
-\item{exposure}{a named \code{list()} with one or more exposure levels, a level
-can be a constant \code{numeric}, a \code{data.frame} time series with two columns,
-or an \link{ExposureSeries} object}
+\item{exposure}{a named \code{list()} or a \code{data.frame} with three columns}
 
 \item{id_col}{\code{character}, name of column in resulting ´data.frame` which
 contains a trial's name or ID}
@@ -59,12 +57,15 @@ exposure levels can either be created and simulated individually, or the
 \code{batch()} function can be used for ease of use.
 \subsection{Exposure series}{
 
-An exposure level can be represented by one of the following types:
+The set of exposure levels can be represented by one of the following types:
 \itemize{
-\item A single constant value
-\item A \code{data.frame} with two columns, the first column representing time, the
-second representing the exposure level, e.g. a concentration
-\item An \link{ExposureSeries} object
+\item A (named) list: Each element represents an exposure level or exposure
+series. An exposure level can be represented by a constant numeric, a
+\code{data.frame} with two columns, or an ExposureSeries object. The names of
+the list elements specify the study ID.
+\item Or alternatively, a \code{data.frame} with three columns: One column for time,
+one for the exposure level, and one character column to specify the
+study IDs.
 }
 
 Each exposure level will be simulated using the base scenario. If the exposure
@@ -73,11 +74,11 @@ value of \code{simulate()}. This behavior can be used, for example, to define un
 study IDs for particular exposure levels.
 }
 
-\subsection{Study / exposure IDs}{
+\subsection{Exposure IDs}{
 
 The list of exposure levels can be supplied as a named list. The names
 will be used as unique (study) IDs, so that the simulation results belonging
-to any exposure levels can be identified in the output.
+to any exposure level can be identified in the output.
 If no IDs are defined by the user, generic IDs of the form \code{'trial{n}'} will
 be assigned, with \code{{n}} being replaced by consecutive integers starting at one.
 
@@ -124,22 +125,32 @@ GUTS-RED-IT example scenario \code{minnow_it}:
 simulate(batch(minnow_it, list(0, 2, 5)))
 
 # Alternatively, in tidyr style syntax
+trials_list1 <- list(0, 2, 5)
 minnow_it \%>\%
-  batch(exposure=list(0, 2, 5)) \%>\%
+  batch(trials_list1) \%>\%
   simulate()
 
 # Assign unique IDs to each exposure level
+trials_list2 <- list(Control=0, TrialA=2, TrialB=5)
 minnow_it \%>\%
-  batch(exposure=list(Control=0, TrialA=2, TrialB=5)) \%>\%
+  batch(trials_list2) \%>\%
+  simulate()
+
+# Alternatively, define multiple exposure levels in a single data.frame
+trials_table <- data.frame(time=c(0, 0, 0),
+                           conc=c(0, 2, 5),
+                           trial=c("Control", "TrialA", "TrialB"))
+minnow_it \%>\%
+  batch(trials_table) \%>\%
   simulate()
 
 # Limit simulation output to column 'S' (survival probability)
 minnow_it \%>\%
-  batch(exposure=list(Control=0, TrialA=2, TrialB=5), select="S") \%>\%
+  batch(trials_list2, select="S") \%>\%
   simulate()
 
 # Return data in wide-format, unique IDs will be used as column names
 minnow_it \%>\%
-  batch(exposure=list(Control=0, TrialA=2, TrialB=5), select="S", format="wide") \%>\%
+  batch(trials_list2, select="S", format="wide") \%>\%
   simulate()
 }

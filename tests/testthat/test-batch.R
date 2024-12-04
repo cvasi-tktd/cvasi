@@ -15,7 +15,7 @@ test_that("exposure levels", {
   expect_equal(b@scenarios[[4]]@exposure@series[,2], 3)
 })
 
-test_that("exposure types", {
+test_that("list of exposure types", {
   base <- new("EffectScenario")
 
   # constant values
@@ -43,6 +43,37 @@ test_that("exposure types", {
   expect_equal(length(b@scenarios), 2)
   expect_equal(b@scenarios[[1]]@exposure@series[,2], 5)
   expect_equal(b@scenarios[[2]]@exposure@series[,2], 6)
+})
+
+test_that("data.frame of exposure series", {
+  base <- new("EffectScenario")
+
+  # single trial
+  df1 <- data.frame(t=0:4, c=1, trial="foo")
+  suppressMessages(b <- batch(base, df1))
+  expect_equal(length(b@scenarios), 1)
+  expect_equal(names(b@scenarios), "foo")
+  expect_equal(b@scenarios[[1]]@exposure@series[,1], 0:4)
+  expect_equal(b@scenarios[[1]]@exposure@series[,2], rep(1, 5))
+
+  # multiple trials, custom id column name
+  df2 <- rbind(data.frame(t=0, c=1, baz="foo"),
+               data.frame(t=0, c=2, baz="bar"))
+  suppressMessages(b <- batch(base, df2, id_col="baz"))
+  expect_equal(length(b@scenarios), 2)
+  expect_equal(names(b@scenarios), c("foo","bar"))
+  expect_equal(b@scenarios[[1]]@exposure@series[,2], 1)
+  expect_equal(b@scenarios[[2]]@exposure@series[,2], 2)
+
+  ## error modes
+  # too few columns
+  expect_error(batch(base, data.frame(t=0:1, trial="foo")))
+  # too many columns
+  expect_error(batch(base, data.frame(t=0:1, conc=0, trial="foo", bar="baz")))
+  # id column not present
+  expect_error(batch(base, data.frame(t=0:1, conc=0, bar="baz")))
+  # missing trial ids
+  expect_error(batch(base, data.frame(t=0:1, conc=0, trial=c("foo", NA_character_))))
 })
 
 test_that("id column", {
@@ -101,4 +132,15 @@ test_that("select argument", {
   expect_null(b@select)
   suppressMessages(b <- batch(base, list(0), select="foo"))
   expect_equal(b@select, "foo")
+})
+
+test_that("invalid arguments", {
+  expect_error(batch())
+  expect_error(batch(NULL, list(0)))
+  expect_error(batch(list(), list(0)))
+  expect_error(batch(list(1), list(0)))
+
+  expect_error(batch(minnow_it))
+  expect_error(batch(minnow_it, 1))
+  expect_error(batch(minnow_it, list()))
 })

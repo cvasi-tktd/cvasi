@@ -29,8 +29,8 @@ test_that("caching of control simulations", {
 
   # constant exposure
   scc <- metsulfuron %>%
-    set_window(length=7,interval=1) %>%
-    set_exposure(data.frame(t=0, c=1)) %>%
+    set_window(length=7, interval=1) %>%
+    set_exposure(data.frame(t=0, c=1), reset_times=FALSE) %>%
     set_times(0:14) %>%
     cache_controls()
 

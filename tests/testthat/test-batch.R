@@ -110,8 +110,7 @@ test_that("unique exposure ids", {
   expect_equal(b@scenarios[[1]]@times, 0:10)
 
   # times from exposure
-  suppressMessages(b <- batch(base, list(0), times_from="exposure"))
-  expect_equal(b@scenarios[[1]]@times, 0)
+  expect_error(suppressMessage(batch(base, list(0), times_from="exposure")))
   suppressMessages(b <- batch(base, list(data.frame(t=1:4, c=0)), times_from="exposure"))
   expect_equal(b@scenarios[[1]]@times, 1:4)
 })

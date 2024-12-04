@@ -210,7 +210,6 @@ Lemna_SETAC <- function() {
 # Numerically integrate Lemna_SETAC scenarios
 #
 # @param scenario an EffectScenario object
-# @param times optional output times, will override scenario's properties
 # @param approx how to interpolate between data points in forcing series, see [deSolve::ode()]
 # @param rule how to handle data points outside of time-series, see [deSolve::forcings]
 # @param f how to approximate data points for `constant` interpolation, see [deSolve::forcings]
@@ -221,13 +220,8 @@ Lemna_SETAC <- function() {
 #
 # @return data.frame
 #' @importFrom deSolve ode
-solver_lemna_setac <- function(scenario, times, approx = c("linear","constant"),
+solver_lemna_setac <- function(scenario, approx = c("linear","constant"),
                                f=0, nout=2, method="lsoda", hmax=0.1, ...) {
-  if(missing(times))
-    times <- scenario@times
-  if(length(times) < 2)
-    stop("output times vector is not an interval")
-
   params <- scenario@param
   if(is.list(params)) params <- unlist(params)
   approx <- match.arg(approx)
@@ -263,14 +257,14 @@ solver_lemna_setac <- function(scenario, times, approx = c("linear","constant"),
                 "fP_photo", "fN_photo", "fBM_photo", "fCint_photo", "C_int_unb",
                 "C_ext", "Tmp", "Irr", "Phs", "Ntr", "dBM", "dM_int")
   # run deSolve
-  as.data.frame(ode(y=scenario@init, times=times, parms=params, dllname="cvasi",
+  as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
                     initfunc="lemna_setac_init", func="lemna_setac_func", initforc="lemna_setac_forc",
                     forcings=forcings, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
                     nout=nout, outnames=outnames, method=method, hmax=hmax, ...))
 }
 #' @include solver.R
 #' @describeIn solver Numerically integrates Lemna_SETAC models
-setMethod("solver", "LemnaSetac", function(scenario, times, ...) solver_lemna_setac(scenario, times, ...) )
+setMethod("solver", "LemnaSetac", function(scenario, ...) solver_lemna_setac(scenario, ...) )
 
 
 ########################

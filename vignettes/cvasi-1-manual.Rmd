@@ -81,12 +81,12 @@ especially if several operations are performed on the same object.
 
 # How to install
 
-<!--The simplest way to install the *cvasi* package is by downloading it from *CRAN*:
+The simplest way to install the *cvasi* package is by downloading it from *CRAN*:
 
 ```{r eval=FALSE,include=FALSE}
 install.packages("cvasi", dependencies=TRUE)
 ```
--->
+
 
 The latest development version can be installed from GitHub:
 
@@ -243,7 +243,7 @@ myexposure <- data.frame(time=0, conc=1.72)
 DEB_abj() %>%
   set_param(myparam) %>%
   set_init(myinit) %>%
-  set_exposure(myexposure) %>%
+  set_exposure(myexposure, reset_times=FALSE) %>%
   set_times(0:10) %>%             # Output times 0,1,2,...,10
   set_mode_of_action(4) %>%       # Method of Action #4 to be activated
   set_window(length=3)            # Using moving exposure windows of length 3 days

@@ -19,13 +19,12 @@
 \alias{solver,MyrioLog-method}
 \title{Calls ODE solver for a particular model}
 \usage{
-solver(scenario, times, ...)
+solver(scenario, ...)
 
-\S4method{solver}{ANY}(scenario, times, ...)
+\S4method{solver}{ANY}(scenario, ...)
 
 \S4method{solver}{AlgaeWeber}(
   scenario,
-  times,
   approx = c("linear", "constant"),
   f = 1,
   method = "lsoda",
@@ -35,7 +34,6 @@ solver(scenario, times, ...)
 
 \S4method{solver}{AlgaeTKTD}(
   scenario,
-  times,
   approx = c("linear", "constant"),
   f = 1,
   method = "lsoda",
@@ -45,7 +43,6 @@ solver(scenario, times, ...)
 
 \S4method{solver}{AlgaeSimple}(
   scenario,
-  times,
   approx = c("linear", "constant"),
   f = 1,
   method = "ode45",
@@ -53,11 +50,10 @@ solver(scenario, times, ...)
   ...
 )
 
-\S4method{solver}{DebAbj}(scenario, times, ...)
+\S4method{solver}{DebAbj}(scenario, ...)
 
 \S4method{solver}{DebTox}(
   scenario,
-  times,
   approx = c("linear", "constant"),
   f = 1,
   rule = 2,
@@ -65,24 +61,22 @@ solver(scenario, times, ...)
   ...
 )
 
-\S4method{solver}{DebDaphnia}(scenario, times, ...)
+\S4method{solver}{DebDaphnia}(scenario, ...)
 
-\S4method{solver}{GutsRedSd}(scenario, times, ...)
+\S4method{solver}{GutsRedSd}(scenario, ...)
 
-\S4method{solver}{GutsRedIt}(scenario, times, ...)
+\S4method{solver}{GutsRedIt}(scenario, ...)
 
-\S4method{solver}{LemnaSetac}(scenario, times, ...)
+\S4method{solver}{LemnaSetac}(scenario, ...)
 
-\S4method{solver}{LemnaSchmitt}(scenario, times, ...)
+\S4method{solver}{LemnaSchmitt}(scenario, ...)
 
-\S4method{solver}{MyrioExp}(scenario, times, ...)
+\S4method{solver}{MyrioExp}(scenario, ...)
 
-\S4method{solver}{MyrioLog}(scenario, times, ...)
+\S4method{solver}{MyrioLog}(scenario, ...)
 }
 \arguments{
 \item{scenario}{\link{scenario} object}
-
-\item{times}{numeric vector of output times, overrides any scenario setting}
 
 \item{...}{additional parameters passed on to \code{\link[deSolve:ode]{deSolve::ode()}}}
 

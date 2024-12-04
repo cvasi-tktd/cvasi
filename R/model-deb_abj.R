@@ -132,14 +132,8 @@ DEB_abj <- function() {
 ########################
 
 #' @importFrom deSolve ode
-solver_deb_abj <- function(scenario, times, approx=c("linear","constant"), f=1,
+solver_deb_abj <- function(scenario, approx=c("linear","constant"), f=1,
                            method="lsoda", ...) {
-  # use time points from scenario if nothing else is provided
-  if(missing(times))
-    times <- scenario@times
-  # check if at least two time points are present
-  if(length(times)<2) stop("times vector is not an interval")
-
   approx <- match.arg(approx)
   # make sure that parameters are present and in required order
   params.req <- c("p_M","v","k_J","p_Am","kap","E_G","f","E_Hj","E_Hp","kap_R","ke","c0",
@@ -163,14 +157,14 @@ solver_deb_abj <- function(scenario, times, approx=c("linear","constant"), f=1,
   forcings <- list(scenario@exposure@series)
 
   # run solver
-  as.data.frame(ode(y=scenario@init, times=times, parms=params, method=method,
+  as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, method=method,
                     dllname="cvasi", initfunc="deb_abj_init", func="deb_abj_func", initforc="deb_abj_forc",
                     forcings=forcings, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
                     outnames=outnames, ...))
 }
 #' @include solver.R
 #' @describeIn solver Numerically integrates DEB_abj models
-setMethod("solver", "DebAbj", function(scenario, times, ...) solver_deb_abj(scenario, times, ...))
+setMethod("solver", "DebAbj", function(scenario, ...) solver_deb_abj(scenario, ...))
 
 
 ########################

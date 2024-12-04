@@ -216,7 +216,6 @@ Lemna_SchmittThold <- function(param, init) {
 ########################
 
 # @param scenario Scenario object
-# @param times numeric vector, time points for result set
 # @param approx string, interpolation method of exposure series, see [stats::approxfun()]
 # @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
 # @param nout `numeric`, number of additional output variables, `nout=1` appends
@@ -225,15 +224,8 @@ Lemna_SchmittThold <- function(param, init) {
 # @param hmax numeric, maximum step length in time, see [deSolve::ode()]
 # @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
-solver_lemna_schmitt <- function(scenario, times, approx=c("linear","constant"),
+solver_lemna_schmitt <- function(scenario, approx=c("linear","constant"),
                                  f=1, nout=2, method="ode45", hmax=0.1, ...) {
-  # use time points from scenario if nothing else is provided
-  if(missing(times))
-    times <- scenario@times
-  # check if at least two time points are present
-  if(length(times)<2)
-    stop("times vector is not an interval")
-
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
@@ -277,14 +269,14 @@ solver_lemna_schmitt <- function(scenario, times, approx=c("linear","constant"),
   #  forcings <- list(exposure, data.frame(t=0,temp=-1), data.frame(t=0,rad=-1))
 
   # run solver
-  as.data.frame(ode(y=scenario@init, times=times, parms=params, dllname="cvasi",
+  as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
                     initfunc="lemna_schmitt_init", func="lemna_schmitt_func", initforc="lemna_schmitt_forc",
                     forcings=forcings, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
                     nout=nout, outnames=outnames, method=method, hmax=hmax, ...))
 }
 #' @include solver.R
 #' @describeIn solver Numerically integrates Lemna_Schmitt models
-setMethod("solver", "LemnaSchmitt", function(scenario, times, ...) solver_lemna_schmitt(scenario, times, ...) )
+setMethod("solver", "LemnaSchmitt", function(scenario, ...) solver_lemna_schmitt(scenario, ...) )
 
 
 ########################

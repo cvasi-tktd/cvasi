@@ -190,15 +190,8 @@ DEBtox <- function() {
 ########################
 
 #' @importFrom deSolve ode
-solver_debtox <- function(scenario, times, approx=c("linear", "constant"),
+solver_debtox <- function(scenario, approx=c("linear", "constant"),
                           f=1, rule=2, method="ode45", ...) {
-  # use time points from scenario if nothing else is provided
-  if(missing(times))
-    times <- scenario@times
-  # check if at least two time points are present
-  if(length(times) < 2)
-    stop("times vector must have at least two elements")
-
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
@@ -238,6 +231,7 @@ solver_debtox <- function(scenario, times, approx=c("linear", "constant"),
   # function below. This way, the time vector in the data does not need to be
   # manipulated, and the model plots show the neonate production as expected.
   has_bp <- min(params[["Tbp"]], na.rm=TRUE) > 0 # consider brood-pouch delay?
+  times <- scenario@times
   if(has_bp) {
     # Extra times needed to calculate brood-pouch delay
     tbp <- times[times > params[["Tbp"]]] - params[["Tbp"]]

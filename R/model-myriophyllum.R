@@ -221,7 +221,7 @@ solver_myrioexp <- function(scenario, ...) {
 }
 #' @include solver.R
 #' @describeIn solver Numerically integrates `MyrioExp` models
-setMethod("solver", "MyrioExp", function(scenario, times, ...) solver_myrioexp(scenario, times, ...))
+setMethod("solver", "MyrioExp", function(scenario, ...) solver_myrioexp(scenario, ...))
 
 # Solver for MyrioLog scenarios
 solver_myriolog <- function(scenario, ...) {
@@ -230,22 +230,16 @@ solver_myriolog <- function(scenario, ...) {
   solver_myrio(scenario, ...)
 }
 #' @describeIn solver Numerically integrates `MyrioLog` models
-setMethod("solver", "MyrioLog", function(scenario, times, ...) solver_myriolog(scenario, times, ...))
+setMethod("solver", "MyrioLog", function(scenario, ...) solver_myriolog(scenario, ...))
 
 # Numerically solve Myriophyllum scenarios
 #
 # @param scenario
-# @param times
 # @param ... additional parameters passed on to [deSolve::ode()]
 # @return data.frame
-solver_myrio <- function(scenario, times, approx=c("linear","constant"),
+solver_myrio <- function(scenario, approx=c("linear","constant"),
                          f=0, nout=2, method="lsoda", hmax=0.1, ...) {
   approx <- match.arg(approx)
-  if(missing(times))
-    times <- scenario@times
-  if(length(times) < 2)
-    stop("output times vector is not an interval")
-
   params <- scenario@param
   # make sure that parameters are present and in required order
   params_order <- c("k_photo_max", "growthno", "BM_L", "E_max", "EC50_int", "b",
@@ -267,7 +261,7 @@ solver_myrio <- function(scenario, times, approx=c("linear","constant"),
   # set names of additional output variables
   outnames <- c("C_int", "TSL", "f_photo", "C_int_unb", "C_ext", "dBM", "dM_int")
 
-  as.data.frame(ode(y=scenario@init, times=times, parms=params, dllname="cvasi",
+  as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
                     initfunc="myrio_init", func="myrio_func", initforc="myrio_forc",
                     forcings=forcings, fcontrol=fcontrol, nout=nout, method=method,
                     hmax=hmax, outnames=outnames, ...))

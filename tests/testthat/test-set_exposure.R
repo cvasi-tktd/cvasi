@@ -1,16 +1,16 @@
 test_that("basic arguments", {
   # single scenario, basic data.frame
   sc <- new("EffectScenario", name="a") %>% set_times(1:3)
-  rs <- set_exposure(sc, data.frame(t=1,c=2))
+  rs <- set_exposure(sc, data.frame(t=1, c=2), FALSE)
   expect_true(is_scenario(rs))
   expect_equal(rs@exposure@series$c, c(2))
 
   # single scenario, exposure series object
-  es <- ExposureSeries(data.frame(t=1, c=2))
+  es <- ExposureSeries(data.frame(t=1:2, c=2))
   rs <- set_exposure(sc, es, reset_times=TRUE)
   expect_true(is_scenario(rs))
   expect_equal(rs@exposure@series, es@series)
-  expect_equal(rs@times, c(1))
+  expect_equal(rs@times, c(1:2))
 
   # single scenario, exposure series object, do not reset times
   rs <- set_exposure(sc, es, reset_times=FALSE)
@@ -77,7 +77,7 @@ test_that("vectorized arguments", {
 
 test_that("set_noexposure", {
   sc <- new("EffectScenario", name="a") %>%
-    set_exposure(data.frame(time=1, conc=2)) %>%
+    set_exposure(data.frame(time=1, conc=2), FALSE) %>%
     set_times(1:3)
 
   rs <- set_noexposure(sc)
@@ -104,6 +104,13 @@ test_that("non-standard argument types", {
 })
 
 test_that("invalid arguments", {
+  sc <- minnow_it
+  es <- sc@exposure
+  # exposure series too short
+  expect_warning(set_exposure(sc, data.frame(t=0, c=0)))
+  suppressWarnings(sc2 <- set_exposure(sc, data.frame(t=0, c=0)))
+  expect_equal(sc2@times, sc@times)
+
   # nonsense
   expect_error(set_exposure(sc, 1))
   expect_error(set_exposure(1, es))

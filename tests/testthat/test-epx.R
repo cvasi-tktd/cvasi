@@ -67,7 +67,8 @@ test_that("ep_only", {
 test_that("long_format", {
   source(test_path("class-DummyScenario.R"), local=TRUE)
 
-  sc <- DummyScenario() %>% set_exposure(data.frame(t=0, c=1))
+  sc <- DummyScenario() %>%
+    set_exposure(data.frame(t=0, c=1), reset_times=FALSE)
 
   # single scenario, single EPx level
   rs <- epx(sc, level=10, long_format=TRUE)

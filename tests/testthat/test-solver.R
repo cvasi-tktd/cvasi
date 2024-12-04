@@ -4,7 +4,7 @@ test_that("no solver defined", {
 
 test_that("custom solver", {
   setClass("test_model", contains="EffectScenario")
-  setMethod("solver", "test_model", function(scenario, times, ...) return("foobar"))
+  setMethod("solver", "test_model", function(scenario, ...) return("foobar"))
   on.exit(removeMethod("solver", "test_model"))
   on.exit(removeClass("test_model"))
 

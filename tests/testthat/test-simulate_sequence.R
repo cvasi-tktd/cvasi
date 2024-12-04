@@ -40,7 +40,10 @@ test_that("Lemna sequence", {
 
   ##
   ## deactivate the effect of any residues in the 2nd scenario
-  set_exposure(lemna, no_exposure()) %>% simulate(times=0:7, method="lsoda") -> out.noex
+  lemna %>%
+    set_noexposure() %>%
+    set_times(0:7) %>%
+    simulate(method="lsoda") -> out.noex
 
   list(lemna %>% set_times(0:7),
        lemna %>% set_param(c(Emax=0)) %>% set_times(7:14)) -> seq

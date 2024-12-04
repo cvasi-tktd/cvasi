@@ -356,9 +356,19 @@ optim_set <- function(par, sets, par_names, output, err_fun, verbose=verbose,
 
     # run simulation
     if(missing(ode_method)) {
-      out <- try(simulate(scenario, times=data[, 1], ...), silent=TRUE)
+      out <- try(
+        scenario %>%
+          set_times(data[, 1]) %>%
+          simulate(...),
+        silent=TRUE
+      )
     } else {
-      out <- try(simulate(scenario, times=data[, 1], method=ode_method, ...), silent=TRUE)
+      out <- try(
+        scenario %>%
+          set_times(data[, 1]) %>%
+          simulate(method=ode_method, ...),
+        silent=TRUE
+      )
     }
 
     # check if simulation result contains errors

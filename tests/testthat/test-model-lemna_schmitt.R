@@ -8,8 +8,9 @@ test_that("Lemna_Schmitt simulation", {
   tol <- 1e-5
   # no exposure
   metsulfuron %>%
-    set_exposure(no_exposure()) %>%
-    simulate(times=0:14, method="lsoda", hmax=0.1) -> out
+    set_exposure(no_exposure(), FALSE) %>%
+    set_times(0:14) %>%
+    simulate(method="lsoda", hmax=0.1) -> out
 
   expect_equal(out[,"time"], 0:14)
 
@@ -27,8 +28,9 @@ test_that("Lemna_Schmitt simulation", {
 
   # constant exposure
   metsulfuron %>%
-    set_exposure(data.frame(t=0,c=1)) %>%
-    simulate(times=0:14, method="lsoda", hmax=0.1) -> out
+    set_exposure(data.frame(t=0, c=1), FALSE) %>%
+    set_times(0:14) %>%
+    simulate(method="lsoda", hmax=0.1) -> out
 
   expect_equal(out[,"time"], 0:14)
 
@@ -115,9 +117,10 @@ test_that("Lemna simulation, regular transfers", {
   ## no exposure, no transfer
   metsulfuron %>%
     set_init(c(BM=0.0012,E=1,M_int=0)) %>%
-    set_exposure(no_exposure()) %>%
+    set_exposure(no_exposure(), FALSE) %>%
     set_transfer(interval=7) %>%
-    simulate(times=0:7, method="lsoda", hmax=0.1) -> out
+    set_times(0:7) %>%
+    simulate(method="lsoda", hmax=0.1) -> out
 
   expect_equal(out[,"time"], 0:7)
 
@@ -134,9 +137,10 @@ test_that("Lemna simulation, regular transfers", {
   ## no exposure, one transfer
   metsulfuron %>%
     set_init(c(BM=0.0012,E=1,M_int=0)) %>%
-    set_exposure(no_exposure()) %>%
+    set_exposure(no_exposure(), FALSE) %>%
     set_transfer(interval=7) %>%
-    simulate(times=0:14, method="lsoda", hmax=0.1) -> out
+    set_times(0:14) %>%
+    simulate(method="lsoda", hmax=0.1) -> out
 
   expect_equal(out[,"time"], 0:14)
 
@@ -155,9 +159,10 @@ test_that("Lemna simulation, regular transfers", {
   ## no exposure, multiple transfers
   metsulfuron %>%
     set_init(c(BM=0.0012,E=1,M_int=0)) %>%
-    set_exposure(no_exposure()) %>%
+    set_noexposure() %>%
     set_transfer(interval=7) %>%
-    simulate(times=0:28, method="lsoda", hmax=0.1) -> out
+    set_times(0:28) %>%
+    simulate(method="lsoda", hmax=0.1) -> out
 
   expect_equal(out[,"time"], 0:28)
 
@@ -182,9 +187,10 @@ test_that("Lemna simulation, regular transfers", {
   # sim stops before transfer
   metsulfuron %>%
     set_init(c(BM=0.0012,E=1,M_int=0)) %>%
-    set_exposure(no_exposure()) %>%
+    set_noexposure() %>%
     set_transfer(interval=7) %>%
-    simulate(times=0:6, method="lsoda", hmax=0.1) -> out
+    set_times(0:6) %>%
+    simulate(method="lsoda", hmax=0.1) -> out
 
   expect_equal(out[,"time"], 0:6)
   expect_equal(out[1,"FrondNo"], 12)
@@ -194,9 +200,10 @@ test_that("Lemna simulation, regular transfers", {
   # sim entails 1st transfer
   metsulfuron %>%
     set_init(c(BM=0.001836730,E=1,M_int=0)) %>%
-    set_exposure(no_exposure()) %>%
+    set_noexposure() %>%
     set_transfer(interval=7) %>%
-    simulate(times=5:10, method="lsoda", hmax=0.1) -> out
+    set_times(5:10) %>%
+    simulate(method="lsoda", hmax=0.1) -> out
 
   expect_equal(out[,"time"], 5:10)
   expect_equal(out[1,"FrondNo"], 18.36730, tolerance=tol) # t=5
@@ -209,9 +216,10 @@ test_that("Lemna simulation, regular transfers", {
   # sim starts and ends in 2nd interval, no transfer occurring
   metsulfuron %>%
     set_init(c(BM=0.0012,E=1,M_int=0)) %>%
-    set_exposure(no_exposure()) %>%
+    set_noexposure() %>%
     set_transfer(interval=7) %>%
-    simulate(times=7:10, method="lsoda", hmax=0.1) -> out
+    set_times(7:10) %>%
+    simulate(method="lsoda", hmax=0.1) -> out
 
   expect_equal(out[,"time"], 7:10)
   expect_equal(out[1,"FrondNo"], 12)
@@ -220,10 +228,11 @@ test_that("Lemna simulation, regular transfers", {
 
   ## constant exposure, no transfer
   metsulfuron %>%
-    set_init(c(BM=0.0012,E=1,M_int=0)) %>%
-    set_exposure(data.frame(t=0,c=1)) %>%
+    set_init(c(BM=0.0012, E=1, M_int=0)) %>%
+    set_exposure(data.frame(t=0, c=1), FALSE) %>%
     set_transfer(interval=7) %>%
-    simulate(times=0:7, method="lsoda", hmax=0.1) -> out
+    set_times(0:7) %>%
+    simulate(method="lsoda", hmax=0.1) -> out
 
   expect_equal(out[,"time"], 0:7)
   expect_equal(out[1,"BM"], 0.0012)
@@ -237,10 +246,11 @@ test_that("Lemna simulation, regular transfers", {
 
   ## constant exposure, one transfer
   metsulfuron %>%
-    set_init(c(BM=0.0012,E=1,M_int=0)) %>%
-    set_exposure(data.frame(t=0,c=1)) %>%
+    set_init(c(BM=0.0012, E=1, M_int=0)) %>%
+    set_exposure(data.frame(t=0, c=1), FALSE) %>%
     set_transfer(interval=7,biomass=0.0012) %>%
-    simulate(times=0:14, method="lsoda", hmax=0.1) -> out
+    set_times(0:14) %>%
+    simulate(method="lsoda", hmax=0.1) -> out
 
   expect_equal(out[,"time"], 0:14)
   expect_equal(out[1,"BM"], 0.0012)
@@ -265,17 +275,24 @@ test_that("Lemna simulation irregular transfers", {
 
   # vanilla use case, one transfer in the middle of the simulated period
   metsulfuron %>%
-    set_init(c(BM=0.001,E=1,M_int=0)) %>%
-    set_exposure(data.frame(t=0,c=0)) %>%
-    set_transfer(interval=7,biomass=0.001) -> sc.reg
+    set_init(c(BM=0.001, E=1, M_int=0)) %>%
+    set_exposure(data.frame(t=0, c=0), FALSE) %>%
+    set_transfer(interval=7, biomass=0.001) %>%
+    set_times(0:14) -> sc.reg
   sc.reg %>% set_transfer(times=c(7)) -> sc.irg
 
-  expect_equal(simulate(sc.irg, times=0:14, method="lsoda", hmax=0.1),
-               simulate(sc.reg, times=0:14, method="lsoda", hmax=0.1))
+  expect_equal(simulate(sc.irg, method="lsoda", hmax=0.1),
+               simulate(sc.reg, method="lsoda", hmax=0.1))
 
 
-  sc.reg %>% set_transfer(interval=5) %>% simulate(times=0:12, method="lsoda", hmax=0.01) -> out.reg
-  sc.reg %>% set_transfer(times=c(5,10,12,14,16)) %>% simulate(times=0:20, method="lsoda", hmax=0.01) -> out.irg
+  sc.reg %>%
+    set_transfer(interval=5) %>%
+    set_times(0:12) %>%
+    simulate(method="lsoda", hmax=0.01) -> out.reg
+  sc.reg %>%
+    set_transfer(times=c(5,10,12,14,16)) %>%
+    set_times(0:20) %>%
+    simulate(method="lsoda", hmax=0.01) -> out.irg
   # same results until first transfer?
   expect_equal(out.irg[1:6,-1], out.reg[1:6,-1], tolerance=tol)
   # same results in 2nd interval?
@@ -290,8 +307,8 @@ test_that("Lemna simulation irregular transfers", {
 
   # one transfer at end of period
   metsulfuron %>%
-    set_init(c(BM=0.001,E=1,M_int=0)) %>%
-    set_exposure(data.frame(t=0,c=0)) %>%
+    set_init(c(BM=0.001, E=1, M_int=0)) %>%
+    set_exposure(data.frame(t=0, c=0), FALSE) %>%
     set_times(0:14) %>%
     set_transfer(interval=-1) -> sc.reg
   sc.reg %>% set_transfer(times=c(14)) -> sc.irg
@@ -309,7 +326,6 @@ test_that("Lemna simulation irregular transfers", {
 test_that("Lemna solver", {
   # Schmitt model
   expect_equal(solver(metsulfuron)$time, metsulfuron@times)
-  expect_equal(solver(metsulfuron, times=0:2)$time, 0:2)
 
   # Schmitt Threshold model
   Lemna_SchmittThold() %>%
@@ -319,10 +335,8 @@ test_that("Lemna solver", {
     set_forcings(metsulfuron@forcings) %>%
     set_exposure(metsulfuron@exposure@series) -> sc
   expect_equal(solver(sc)$time, sc@times)
-  expect_equal(solver(sc, times=0:2)$time, 0:2)
 
   # SETAC model
   focusd1 %>% set_times(0:10) -> sc
   expect_equal(solver(sc)$time, sc@times)
-  expect_equal(solver(sc, times=0:2)$time, 0:2)
 })

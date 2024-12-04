@@ -43,12 +43,11 @@ Additional arguments to \code{simulate()} will be passed on to \code{\link[deSol
 which enables control of the numerical integration parameters.
 \subsection{Output times and windows}{
 
-The minimum and maximum of given time points generally define the simulated
-period. Function argument \code{times} overrides settings of the scenario, i.e.
-time points set in \code{scenario@times}. However, the simulation can be limited to
+The minimum and maximum of given time points define the simulated
+period. However, the simulation can also be limited to
 a subset of time points by enabling a moving exposure window, see \code{\link[=set_window]{set_window()}}.
 
-Results will be returned for each time point. Precision of the numeric solver
+Results will be returned for each output time point. Precision of the numeric solver
 may be affected by chosen output times in certain cases. Hence, small deviations
 in results should be expected if different output times are set. This effect
 can be mitigated by either defining are sufficiently small time step for the solver
@@ -103,42 +102,53 @@ for details on available ODE solvers.
 }
 }
 \examples{
-minnow_sd \%>\% simulate() # tidy syntax
-simulate(minnow_sd) # base R syntax
+# base R syntax
+simulate(minnow_sd)
+# tidy syntax with the same result
+minnow_sd \%>\% simulate()
 
-# Set new output times
-minnow_sd \%>\% simulate(times=c(0,4))
+# Extend the simulated time frame to the interval [0, 10]
+minnow_sd \%>\%
+  set_times(seq(0, 10)) \%>\%
+  simulate()
 
-# Modify simulated time frame
-minnow_sd \%>\% simulate(times=c(0,10))
-
-# Use an alternative exposure profile than defined in the scenario
-minnow_sd \%>\% set_exposure(data.frame(t=0,c=10), reset_times=FALSE) \%>\% simulate()
+# Use an alternative exposure profile, but keep the original output times
+minnow_sd \%>\%
+  set_exposure(data.frame(t=0, c=10), reset_times=FALSE) \%>\%
+  simulate()
 
 ##
 ## Precision of results
 
 # A large number of output times forces smaller solver time steps
-minnow_it \%>\% simulate(times=seq(0,1,0.001)) \%>\% tail()
+minnow_it \%>\%
+  set_times(seq(0, 10, 0.001)) \%>\%
+  simulate() \%>\%
+  tail()
 
-# Defining only two output times allows for larger solver time steps
-minnow_it \%>\% simulate(times=c(0,1))
+# Defining only two output times allows the ODE solver to make larger steps
+# in time during numerical integration. However, results can become
+# imprecise.
+minnow_long <- minnow_it \%>\% set_times(c(0, 10))
+minnow_long \%>\% simulate()
 
-# The difference between results can be reduced by limiting the solver's
-# maximum step length
-minnow_it \%>\% simulate(times=c(0,1), hmax=0.001)
+# Numerical precision of results can be increased by limiting the solver's
+# maximum step length in time using argument `hmax`.
+minnow_long \%>\% simulate(hmax=0.005)
 
-# The same numerical precision can be achieved by switching to
-# the Radau scheme
-minnow_it \%>\% simulate(times=c(0,1), method="radau")
+# A similar numerical precision can be achieved by switching to an alternative
+# numerical integration scheme, such as the Radau scheme, without limiting
+# the step length.
+minnow_long \%>\% simulate(method="radau")
 
-# A very small step length may reduce the difference even further but may
-# also exceed the allowed number of steps per output interval. The following
-# simulation will be aborted with a solver error:
+# Reducing the step length even further may increase numerical precision, but
+# may exceed the solver's allowed number of integration steps per output interval.
+# The following simulation will be aborted with a solver error:
 try(
-  minnow_it \%>\% simulate(times=c(0,1), hmax=0.0001)
+  minnow_long \%>\% simulate(hmax=0.001)
 )
 
-# However, the solver's max number of allowed steps can be increased:
-minnow_it \%>\% simulate(times=c(0,1), hmax=0.0001, maxsteps=10^5)
+# However, the solver's maximum number of allowed steps can be increased,
+# if needed, using the argument `maxsteps`:
+minnow_long \%>\% simulate(hmax=0.001, maxsteps=10^5)
 }

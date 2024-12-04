@@ -64,6 +64,8 @@ set_times <- function(x, times) {
     times <- units::drop_units(times)
   if(!is.vector(times) | !is.numeric(times))
     stop("invalid type")
+  if(length(times) < 2)
+    stop("too few output times")
 
   x@times <- times
   x

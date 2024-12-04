@@ -1,7 +1,7 @@
 User Manual
 ================
 N. Kehrein
-24 Octobre, 2024
+24 October, 2024
 
 - [Required skills](#required-skills)
 - [How to install](#how-to-install)
@@ -59,7 +59,7 @@ my_it
 #> endpt: L
 #> times: none
 #> forcs: none
-#> expsr: none
+#> expsr:
 #> >> exposure series is empty
 ```
 
@@ -79,7 +79,7 @@ GUTS_RED_IT() %>%
 #> endpt: L
 #> times: none
 #> forcs: none
-#> expsr: none
+#> expsr:
 #> >> exposure series is empty
 ```
 
@@ -90,9 +90,8 @@ package.
 
 # How to install
 
-<!--The simplest way to install the *cvasi* package is by downloading it from *CRAN*:
-&#10;
--->
+The simplest way to install the *cvasi* package is by downloading it
+from *CRAN*:
 
 The latest development version can be installed from GitHub:
 
@@ -139,7 +138,7 @@ GUTS_RED_IT() %>%
 #> endpt: L
 #> times: none
 #> forcs: none
-#> expsr: none
+#> expsr:
 #> >> exposure series is empty
 ```
 
@@ -155,12 +154,12 @@ an example, simulating the sample scenario `minnow_it` will run a
 # of the fathead minnow and Chlorpyrifos (Geiger et al. 1988)
 minnow_it %>%
   simulate()
-#>   time         D H         S
-#> 1    0 0.0000000 0 1.0000000
-#> 2    1 0.7075891 0 0.9999854
-#> 3    2 0.9144958 0 0.9999558
-#> 4    3 0.9749972 0 0.9999417
-#> 5    4 0.9926889 0 0.9999370
+#>   time         D      H         S
+#> 1    0 0.0000000 0.0000 1.0000000
+#> 2    1 0.7075891 0.0017 0.9982869
+#> 3    2 0.9144958 0.0034 0.9965618
+#> 4    3 0.9749972 0.0051 0.9948550
+#> 5    4 0.9926889 0.0068 0.9931605
 ```
 
 The table returned by `simulate()` contains the value of each state
@@ -234,7 +233,7 @@ myscenario
 #> endpt: L
 #> times: [0,5] n=4, regular
 #> forcs: none
-#> expsr: none
+#> expsr:
 #>   time conc
 #> 1 0.00   10
 #> 2 1.00   10
@@ -294,7 +293,7 @@ myexposure <- data.frame(time=0, conc=1.72)
 DEB_abj() %>%
   set_param(myparam) %>%
   set_init(myinit) %>%
-  set_exposure(myexposure) %>%
+  set_exposure(myexposure, reset_times=FALSE) %>%
   set_times(0:10) %>%             # Output times 0,1,2,...,10
   set_mode_of_action(4) %>%       # Method of Action #4 to be activated
   set_window(length=3)            # Using moving exposure windows of length 3 days
@@ -304,7 +303,7 @@ DEB_abj() %>%
 #> endpt: L, R
 #> times: [0,10] n=11, regular
 #> forcs: none
-#> expsr: none
+#> expsr:
 #>   time conc
 #> 1    0 1.72
 ```
@@ -405,7 +404,7 @@ example, the following statement derives effect levels for a sample
 ``` r
 # GUTS-RED-IT scenario of the fathead minnow and chlorpyrifos
 minnow_it %>% effect()
-#> # A tibble: 1 × 4
+#> # A tibble: 1 x 4
 #>   scenario           L L.dat.start L.dat.end
 #>   <list>         <dbl>       <dbl>     <dbl>
 #> 1 <GutsRdIt> 0.0000630           0         4
@@ -431,7 +430,7 @@ americamysis %>%
 
 # Derive maximum effect level of all exposure windows
 mydeb %>% effect()
-#> # A tibble: 1 × 7
+#> # A tibble: 1 x 7
 #>   scenario      L L.dat.start L.dat.end     R R.dat.start R.dat.end
 #>   <list>    <dbl>       <dbl>     <dbl> <dbl>       <dbl>     <dbl>
 #> 1 <DebAbj> 0.0521           2         9     0           0         7
@@ -459,7 +458,7 @@ efficiently with arbitrary precision:
 mydeb %>% 
   set_endpoints("L") %>%
   epx()
-#> # A tibble: 1 × 3
+#> # A tibble: 1 x 3
 #>   scenario L.EP10 L.EP50
 #>   <list>    <dbl>  <dbl>
 #> 1 <DebAbj>   1.16   1.71
@@ -486,7 +485,7 @@ minnow_it %>% epx(level=20, verbose=TRUE)
 #>   L.EP20: 6.765625
 #>   L.EP20: 6.8359375
 #>   L.EP20: 6.80078125
-#> # A tibble: 1 × 2
+#> # A tibble: 1 x 2
 #>   scenario   L.EP20
 #>   <list>      <dbl>
 #> 1 <GutsRdIt>   6.80
@@ -671,10 +670,10 @@ observed:
 metsulfuron %>%
   set_times(0:7) %>%  # restrict scenario to the period [0,7]
   effect()
-#> # A tibble: 1 × 7
+#> # A tibble: 1 x 7
 #>   scenario      BM BM.dat.start BM.dat.end     r r.dat.start r.dat.end
 #>   <list>     <dbl>        <dbl>      <dbl> <dbl>       <dbl>     <dbl>
-#> 1 <LmnSchmS> 0.268            0          7 0.906           0         7
+#> 1 <LmnSchmt> 0.268            0          7 0.906           0         7
 ```
 
 Effect levels are reported as a fraction relative to a control scenario.
@@ -692,17 +691,17 @@ assessed exposure windows by setting the argument `max_only=FALSE`:
 metsulfuron %>%
   set_window(length=7, interval=1) %>%   # enable moving exposure windows
   effect(max_only=FALSE)                 # return effects of all windows
-#> # A tibble: 8 × 5
+#> # A tibble: 8 x 5
 #>   scenario          BM         r dat.start dat.end
 #>   <list>         <dbl>     <dbl>     <dbl>   <dbl>
-#> 1 <LmnSchmS>  2.68e- 1  9.06e- 1         0       7
-#> 2 <LmnSchmS>  2.65e- 1  8.95e- 1         1       8
-#> 3 <LmnSchmS>  2.48e- 1  8.29e- 1         2       9
-#> 4 <LmnSchmS>  2.05e- 1  6.69e- 1         3      10
-#> 5 <LmnSchmS>  1.47e- 1  4.63e- 1         4      11
-#> 6 <LmnSchmS>  7.39e- 2  2.23e- 1         5      12
-#> 7 <LmnSchmS>  3.15e- 3  9.18e- 3         6      13
-#> 8 <LmnSchmS> -6.66e-16 -1.78e-15         7      14
+#> 1 <LmnSchmt>  2.68e- 1  9.06e- 1         0       7
+#> 2 <LmnSchmt>  2.65e- 1  8.95e- 1         1       8
+#> 3 <LmnSchmt>  2.48e- 1  8.29e- 1         2       9
+#> 4 <LmnSchmt>  2.05e- 1  6.69e- 1         3      10
+#> 5 <LmnSchmt>  1.47e- 1  4.63e- 1         4      11
+#> 6 <LmnSchmt>  7.39e- 2  2.23e- 1         5      12
+#> 7 <LmnSchmt>  3.15e- 3  9.18e- 3         6      13
+#> 8 <LmnSchmt> -6.66e-16 -1.78e-15         7      14
 ```
 
 In few cases, `effect()` may report spurious non-zero effect levels that
@@ -718,17 +717,17 @@ exposure window but leaving the remaining results unchanged:
 metsulfuron %>%
   set_window(length=7, interval=1) %>%         # enable moving exposure windows
   effect(max_only=FALSE, marginal_effect=0.01) # return effects of all windows
-#> # A tibble: 8 × 5
+#> # A tibble: 8 x 5
 #>   scenario       BM     r dat.start dat.end
 #>   <list>      <dbl> <dbl>     <dbl>   <dbl>
-#> 1 <LmnSchmS> 0.268  0.906         0       7
-#> 2 <LmnSchmS> 0.265  0.895         1       8
-#> 3 <LmnSchmS> 0.248  0.829         2       9
-#> 4 <LmnSchmS> 0.205  0.669         3      10
-#> 5 <LmnSchmS> 0.147  0.463         4      11
-#> 6 <LmnSchmS> 0.0739 0.223         5      12
-#> 7 <LmnSchmS> 0      0             6      13
-#> 8 <LmnSchmS> 0      0             7      14
+#> 1 <LmnSchmt> 0.268  0.906         0       7
+#> 2 <LmnSchmt> 0.265  0.895         1       8
+#> 3 <LmnSchmt> 0.248  0.829         2       9
+#> 4 <LmnSchmt> 0.205  0.669         3      10
+#> 5 <LmnSchmt> 0.147  0.463         4      11
+#> 6 <LmnSchmt> 0.0739 0.223         5      12
+#> 7 <LmnSchmt> 0      0             6      13
+#> 8 <LmnSchmt> 0      0             7      14
 ```
 
 ## Effect profiles
@@ -743,10 +742,10 @@ multiplication factors to achieve x% effect:
 metsulfuron %>% epx()
 #> Warning in epx(.): Some scenarios have failed (n=1), result will include NAs
 #>   **  multiplication factor out of range: BM.EP50 > 1e+30
-#> # A tibble: 1 × 6
+#> # A tibble: 1 x 6
 #>   scenario   BM.EP10 r.EP10 BM.EP50 r.EP50 error                                                 
 #>   <list>       <dbl>  <dbl>   <dbl>  <dbl> <chr>                                                 
-#> 1 <LmnSchmS>   0.395  0.325      NA  0.880 " multiplication factor out of range: BM.EP50 > 1e+30"
+#> 1 <LmnSchmt>   0.395  0.325      NA  0.880 " multiplication factor out of range: BM.EP50 > 1e+30"
 ```
 
 For the sample `metsulfuron` scenario, a factor of `0.395` would need to
@@ -823,10 +822,10 @@ metsulfuron %>%
 #>   BM.EP50: 1e+31 >>>
 #> Warning in epx(., verbose = TRUE): Some scenarios have failed (n=1), result will include NAs
 #>   **  multiplication factor out of range: BM.EP50 > 1e+30
-#> # A tibble: 1 × 4
+#> # A tibble: 1 x 4
 #>   scenario   BM.EP10 BM.EP50 error                                                 
 #>   <list>       <dbl>   <dbl> <chr>                                                 
-#> 1 <LmnSchmS>   0.395      NA " multiplication factor out of range: BM.EP50 > 1e+30"
+#> 1 <LmnSchmt>   0.395      NA " multiplication factor out of range: BM.EP50 > 1e+30"
 ```
 
 In this example, the binary search finds a `BM.EP10` with acceptable

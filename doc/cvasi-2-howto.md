@@ -1,7 +1,7 @@
 Modeling Howto
 ================
-Nils Kehrein
-03 May, 2024
+N. Kehrein and contributors
+24 October, 2024
 
 - [How to access scenario
   properties](#how-to-access-scenario-properties)
@@ -55,13 +55,14 @@ get_tag(myscenario)
 # The tag is also displayed when printing scenario properties
 myscenario
 #> 'Lemna_Schmitt' scenario
-#> tag  : Lab experiment #1
-#> param: Emax=1, AperBM=1000, Kbm=1, P_Temp=0, MolWeight=390.4, k_phot_fix=1, k_phot_max=0.47, k_resp=0.05, k_loss=0, Tmin=8, Tmax=40.5, Topt=26.7, t_ref=25, Q10=2, k_0=3, a_k=5e-05, C_P=0.3, CP50=0.0043, a_P=1, KiP=101, C_N=0.6, CN50=0.034, a_N=1, KiN=604, BM50=176, mass_per_frond=1e-04, BMw2BMd=16.7
+#> tag: Lab experiment #1
+#> param: Emax=1, AperBM=1000, Kbm=1, P_Temp=0, MolWeight=390.4, k_phot_fix=1, k_phot_max=0.47, k_resp=0.05, k_loss=0, Tmin=8, Tmax=40.5, Topt=26.7, t_ref=25, Q10=2, k_0=3, a_k=5e-05, C_P=0.3,
+#> CP50=0.0043, a_P=1, KiP=101, C_N=0.6, CN50=0.034, a_N=1, KiN=604, BM50=176, mass_per_frond=1e-04, BMw2BMd=16.7
 #> init : BM=0.0012, E=1, M_int=0
 #> endpt: BM, r
 #> times: none
 #> forcs: none
-#> expsr: none
+#> expsr:
 #> >> exposure series is empty
 
 # Accessing scenario slots and their default values
@@ -174,7 +175,7 @@ exposure_profile <- data.frame(time=0:14, conc=random_conc)
 minnow_it %>%
   set_exposure(exposure_profile) %>%  # set a specific exposure scenario
   epx()  # run EPx calculations
-#> # A tibble: 1 × 3
+#> # A tibble: 1 x 3
 #>   scenario   L.EP10 L.EP50
 #>   <list>      <dbl>  <dbl>
 #> 1 <GutsRdIt>   67.0   111.
@@ -197,7 +198,7 @@ on demand:
 metsulfuron %>% 
   set_window(length=7, interval=1) %>%
   effect(max_only=FALSE)
-#> # A tibble: 8 × 5
+#> # A tibble: 8 x 5
 #>   scenario          BM         r dat.start dat.end
 #>   <list>         <dbl>     <dbl>     <dbl>   <dbl>
 #> 1 <LmnSchmS>  2.68e- 1  9.06e- 1         0       7
@@ -222,7 +223,7 @@ example:
 metsulfuron %>% 
   set_window(length=7, interval=1) %>%
   effect(max_only=FALSE, marginal_effect=1e-5)
-#> # A tibble: 8 × 5
+#> # A tibble: 8 x 5
 #>   scenario        BM       r dat.start dat.end
 #>   <list>       <dbl>   <dbl>     <dbl>   <dbl>
 #> 1 <LmnSchmS> 0.268   0.906           0       7
@@ -249,7 +250,7 @@ metsulfuron %>%
   set_window(length=7, interval=1) %>%
   effect(max_only=FALSE) -> results
 results
-#> # A tibble: 8 × 5
+#> # A tibble: 8 x 5
 #>   scenario          BM        r dat.start dat.end
 #>   <list>         <dbl>    <dbl>     <dbl>   <dbl>
 #> 1 <LmnSchmS> 0.000113  0.000327         0       7
@@ -490,10 +491,10 @@ fitted_tktd <- fitted_growth %>%
   set_param(fit2$par)
 
 treatments <- Schmitt2013 %>% select(time=t, conc, trial=ID)
-rs_mean <- simulate_batch(
-  model_base = fitted_tktd,
-  treatments = treatments
-)
+rs_mean <- fitted_tktd %>%
+  batch(treatments) %>%
+  simulate()
+
 # Observations in long format for plotting
 obs_mean <- Schmitt2013 %>%
   select(time=t, data=obs, trial=ID)
@@ -823,7 +824,7 @@ myscenario
 #> endpt: L
 #> times: [0,5] n=6, regular
 #> forcs: none
-#> expsr: none
+#> expsr:
 #>   time conc
 #> 1    0  0.0
 #> 2    1  1.0
@@ -842,14 +843,11 @@ return simulation results:
 
 ``` r
 # the actual function calling deSolve can have a different signature
-solver_myguts <- function(scenario, times, ...) {
-  # overriding output times by function argument must be possible
-  if(missing(times))
-    times <- scenario@times
-  
+solver_myguts <- function(scenario, ...) {
   # get relevant data from scenario
   init <- scenario@init
   param <- scenario@param
+  times <- scenario@times
   exp <- scenario@exposure@series
   if(nrow(exp) == 1) { # extend exposure series to have at least two rows
     row2 <- exp[1,]
@@ -862,12 +860,13 @@ solver_myguts <- function(scenario, times, ...) {
   # Extend parameter set by interpolated exposure series
   paramx <- as.list(c(param, Cw=expf))
   
+  # pass everything to ODE solver for numerical integration
   as.data.frame(deSolve::ode(y=init, times=times, parms=paramx, func=sd_ode, ...))
 }
 
 ## Overload the solver() function ##
 # The functions signature, i.e. the number and names of its arguments, must stay as is
-setMethod("solver", "MyGuts", function(scenario, times, ...) solver_myguts(scenario, times, ...))
+setMethod("solver", "MyGuts", function(scenario, ...) solver_myguts(scenario, ...))
 ```
 
 Overloading an *S4* function is done using `setMethod()`. The first
@@ -941,7 +940,7 @@ fx_myguts <- function(scenario, window, ...) {
 
 # Derive effect levels for our sample scenario
 myscenario %>% effect()
-#> # A tibble: 1 × 4
+#> # A tibble: 1 x 4
 #>   scenario      L L.dat.start L.dat.end
 #>   <list>    <dbl>       <dbl>     <dbl>
 #> 1 <MyGuts> 0.0722           0         5
@@ -1067,11 +1066,10 @@ exp_scen <- data.frame(time = Schmitt2013$t,
                        conc = Schmitt2013$conc,
                        trial = Schmitt2013$ID)
 # simulate for all these scenarios
-results <- simulate_batch(
-  model_base = metsulfuron,
-  treatments = exp_scen,
-  param_sample = NULL
-)
+results <- metsulfuron %>%
+  batch(exp_scen) %>%
+  simulate()
+
 # plot results
 plot_sd(
   model_base = metsulfuron,
@@ -1090,7 +1088,9 @@ plot_sd(
 # simulate for all scenarios
 results <- metsulfuron %>%
   set_transfer(interval = c(5), biomass = 10) %>% # implement a biomass transfer every 5 days
-  simulate_batch(treatments = exp_scen)
+  batch(exp_scen) %>%
+  simulate()
+
 # plot results
 plot_sd(
   model_base = metsulfuron,

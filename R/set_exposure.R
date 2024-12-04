@@ -117,8 +117,13 @@ set_exposure_exs <- function(scenarios, series, reset_times=TRUE) {
   # exposure series object
   series@series <- df
   scenarios@exposure <- series
-  if(reset_times)
-    scenarios <- set_times(scenarios, series@series[,1])
+  if(reset_times) {
+    if(nrow(series@series) >= 2) {
+      scenarios <- set_times(scenarios, series@series[,1])
+    } else {
+      warning("exposure series is too short to be used as output times")
+    }
+  }
 
   scenarios
 }

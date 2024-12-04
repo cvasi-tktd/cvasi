@@ -33,9 +33,9 @@ test_that("has_exposure", {
 
 test_that("has_constant_forcings", {
   expect_true(has_constant_forcings(Lemna_Schmitt() %>%
-                                      set_exposure(data.frame(t=0,c=0))))
+                                      set_exposure(data.frame(t=0,c=0), FALSE)))
   expect_true(has_constant_forcings(Lemna_Schmitt() %>%
-                                      set_exposure(data.frame(t=0,c=0)) %>%
+                                      set_exposure(data.frame(t=0,c=0), FALSE) %>%
                                       set_forcings(temp=1,rad=1)))
   # non-constant forcings
   expect_false(has_constant_forcings(Lemna_Schmitt() %>%
@@ -44,7 +44,7 @@ test_that("has_constant_forcings", {
                                        set_exposure(data.frame(t=0:1,c=0:1)) %>%
                                        set_forcings(temp=1,rad=1)))
   expect_false(has_constant_forcings(Lemna_Schmitt() %>%
-                                       set_exposure(data.frame(t=0,c=0)) %>%
+                                       set_exposure(data.frame(t=0,c=0), FALSE) %>%
                                        set_forcings(temp=1,rad=data.frame(t=0:1,r=0:1))))
   # invalid arguments
   expect_error(has_constant_forcings(NA))

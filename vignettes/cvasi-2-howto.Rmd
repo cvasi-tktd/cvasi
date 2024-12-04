@@ -376,10 +376,10 @@ fitted_tktd <- fitted_growth %>%
   set_param(fit2$par)
 
 treatments <- Schmitt2013 %>% select(time=t, conc, trial=ID)
-rs_mean <- simulate_batch(
-  model_base = fitted_tktd,
-  treatments = treatments
-)
+rs_mean <- fitted_tktd %>%
+  batch(treatments) %>%
+  simulate()
+
 # Observations in long format for plotting
 obs_mean <- Schmitt2013 %>%
   select(time=t, data=obs, trial=ID)
@@ -656,14 +656,11 @@ simulation results:
 
 ```{r}
 # the actual function calling deSolve can have a different signature
-solver_myguts <- function(scenario, times, ...) {
-  # overriding output times by function argument must be possible
-  if(missing(times))
-    times <- scenario@times
-  
+solver_myguts <- function(scenario, ...) {
   # get relevant data from scenario
   init <- scenario@init
   param <- scenario@param
+  times <- scenario@times
   exp <- scenario@exposure@series
   if(nrow(exp) == 1) { # extend exposure series to have at least two rows
     row2 <- exp[1,]
@@ -676,12 +673,13 @@ solver_myguts <- function(scenario, times, ...) {
   # Extend parameter set by interpolated exposure series
   paramx <- as.list(c(param, Cw=expf))
   
+  # pass everything to ODE solver for numerical integration
   as.data.frame(deSolve::ode(y=init, times=times, parms=paramx, func=sd_ode, ...))
 }
 
 ## Overload the solver() function ##
 # The functions signature, i.e. the number and names of its arguments, must stay as is
-setMethod("solver", "MyGuts", function(scenario, times, ...) solver_myguts(scenario, times, ...))
+setMethod("solver", "MyGuts", function(scenario, ...) solver_myguts(scenario, ...))
 ```
 
 Overloading an *S4* function is done using `setMethod()`. The first argument
@@ -870,11 +868,10 @@ exp_scen <- data.frame(time = Schmitt2013$t,
                        conc = Schmitt2013$conc,
                        trial = Schmitt2013$ID)
 # simulate for all these scenarios
-results <- simulate_batch(
-  model_base = metsulfuron,
-  treatments = exp_scen,
-  param_sample = NULL
-)
+results <- metsulfuron %>%
+  batch(exp_scen) %>%
+  simulate()
+
 # plot results
 plot_sd(
   model_base = metsulfuron,
@@ -888,7 +885,9 @@ plot_sd(
 # simulate for all scenarios
 results <- metsulfuron %>%
   set_transfer(interval = c(5), biomass = 10) %>% # implement a biomass transfer every 5 days
-  simulate_batch(treatments = exp_scen)
+  batch(exp_scen) %>%
+  simulate()
+
 # plot results
 plot_sd(
   model_base = metsulfuron,

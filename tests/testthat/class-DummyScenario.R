@@ -58,7 +58,7 @@ DummyFails <- function() {
 setClass("DummyFails", contains="EffectScenario")
 #' @noRd
 #' @include solver.R
-setMethod("solver", "DummyFails", function(scenario, times, ...) stop("dummy scenario failed"))
+setMethod("solver", "DummyFails", function(scenario, ...) stop("dummy scenario failed"))
 #' @noRd
 setMethod("fx", "DummyFails", function(scenario, ...) stop("dummy scenario failed"))
 
@@ -75,10 +75,8 @@ DummyInconsistent <- function() {
 setClass("DummyInconsistent", contains="EffectScenario")
 #' @noRd
 #' @include solver.R
-setMethod("solver", "DummyInconsistent", function(scenario, times, ...) {
-  if(missing(times))
-    times <- scenario@times
-  data.frame(time=times, simresult=NA_real_)
+setMethod("solver", "DummyInconsistent", function(scenario, ...) {
+  data.frame(time=scenario@times, simresult=NA_real_)
 })
 #' @noRd
 #' @importFrom stats runif

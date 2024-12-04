@@ -43,7 +43,7 @@ DEB_Daphnia <- function() {
 ########################
 
 # For backwards-compatibility
-solver_debtox_daphnia <- function(scenario, times, ...) {
+solver_debtox_daphnia <- function(scenario, ...) {
   # only effective difference between model versions is the introduction of
   # parameter `a` and the limit of hazard rate `h` to 99% per hour in the newer
   # DEBtox version.
@@ -51,7 +51,7 @@ solver_debtox_daphnia <- function(scenario, times, ...) {
   # Setting the default value of a=1 disables the Weibull background hazard
   scenario <- set_param(scenario, c("a"=1))
   # Continue as a DEBtox scenario
-  solver_debtox(scenario, times=times, ...)
+  solver_debtox(scenario, ...)
 }
 
 #' @describeIn solver (deprecated) Numerically integrates *DEBtox_Daphnia* scenarios

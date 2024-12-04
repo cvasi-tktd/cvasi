@@ -9,7 +9,6 @@
 #' details.
 #'
 #' @param scenario [scenario] object
-#' @param times numeric vector of output times, overrides any scenario setting
 #' @param ... additional parameters passed on to [deSolve::ode()]
 #' @param approx string, interpolation method of exposure series, see [deSolve::forcings]
 #' @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [deSolve::forcings]
@@ -19,12 +18,12 @@
 #' @return `data.frame` with simulation results
 #' @export
 setGeneric("solver",
-           function(scenario, times, ...) standardGeneric("solver"),
+           function(scenario, ...) standardGeneric("solver"),
            signature = "scenario"
 )
 
 # Default solver which uses the model's name to switch between solver calls
-solver_default <- function(scenario, times, ...) {
+solver_default <- function(scenario, ...) {
   stop("cannot simulate unknown model type, solver missing")
 }
 

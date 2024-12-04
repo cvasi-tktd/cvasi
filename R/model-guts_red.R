@@ -168,7 +168,6 @@ GUTS_RED_SD <- function(param, init) {
 ########################
 
 # @param scenario Scenario object
-# @param times numeric vector, time points for result set
 # @param approx string, interpolation method of exposure series, see [stats::approxfun()]
 # @param hmax numeric, maximum step length in time, see [deSolve::ode()]
 # @param ... additional arguments passed to [deSolve::ode()]
@@ -176,14 +175,8 @@ GUTS_RED_SD <- function(param, init) {
 # @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
 # @param method string, numerical solver used by [deSolve::ode()]
 #' @importFrom deSolve ode
-solver_gutsredsd <- function(scenario, times, approx=c("linear","constant"),
+solver_gutsredsd <- function(scenario, approx=c("linear","constant"),
                                f=1, method="lsoda", hmax=1, ...) {
-  # use time points from scenario if nothing else is provided
-  if(missing(times))
-    times <- scenario@times
-  # check if at least two time points are present
-  if(length(times)<2) stop("times vector is not an interval")
-
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
@@ -192,7 +185,7 @@ solver_gutsredsd <- function(scenario, times, approx=c("linear","constant"),
   # make sure that parameters are present and in required order
   params <- params[c("kd", "hb", "z", "kk")]
 
-  df <- as.data.frame(ode(y=scenario@init, times=times, parms=params, dllname="cvasi",
+  df <- as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
                           initfunc="gutsredsd_init", func="gutsredsd_func", initforc="gutsredsd_forc",
                           forcings=scenario@exposure@series, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
                           outnames=c("Cw"), method=method, hmax=hmax, ...))
@@ -203,24 +196,17 @@ solver_gutsredsd <- function(scenario, times, approx=c("linear","constant"),
 }
 #' @include solver.R
 #' @describeIn solver Numerically integrates GUTS-RED-SD models
-setMethod("solver", "GutsRedSd", function(scenario, times, ...) solver_gutsredsd(scenario, times, ...))
+setMethod("solver", "GutsRedSd", function(scenario, ...) solver_gutsredsd(scenario, ...))
 
 # @param scenario Scenario object
-# @param times numeric vector, time points for result set
 # @param approx string, interpolation method of exposure series, see [stats::approxfun()]
 # @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
 # @param method string, numerical solver used by [deSolve::ode()]
 # @param hmax numeric, maximum step length in time, see [deSolve::ode()]
 # @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
-solver_gutsredit <- function(scenario, times, approx=c("linear","constant"),
+solver_gutsredit <- function(scenario, approx=c("linear","constant"),
                                f=1, method="lsoda", hmax=1, ...) {
-  # use time points from scenario if nothing else is provided
-  if(missing(times))
-    times <- scenario@times
-  # check if at least two time points are present
-  if(length(times)<2) stop("times vector is not an interval")
-
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
@@ -229,7 +215,7 @@ solver_gutsredit <- function(scenario, times, approx=c("linear","constant"),
   # make sure that parameters are present and in required order
   odeparams <- params[c("kd","hb")]
 
-  df <- as.data.frame(ode(y=scenario@init, times=times, parms=odeparams, dllname="cvasi",
+  df <- as.data.frame(ode(y=scenario@init, times=scenario@times, parms=odeparams, dllname="cvasi",
                           initfunc="gutsredit_init", func="gutsredit_func", initforc="gutsredit_forc",
                           forcings=scenario@exposure@series, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
                           outnames=c("Cw"), method=method, hmax=hmax, ...))
@@ -240,7 +226,7 @@ solver_gutsredit <- function(scenario, times, approx=c("linear","constant"),
   df
 }
 #' @describeIn solver Numerically integrates GUTS-RED-IT models
-setMethod("solver", "GutsRedIt", function(scenario, times, ...) solver_gutsredit(scenario, times, ...) )
+setMethod("solver", "GutsRedIt", function(scenario, ...) solver_gutsredit(scenario, ...) )
 
 
 ########################

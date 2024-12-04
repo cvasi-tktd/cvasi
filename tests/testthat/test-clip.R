@@ -32,15 +32,15 @@ test_that("clip_forcings", {
 test_that("clip_scenario", {
   # constant exposure series
   Lemna_Schmitt() %>%
-    set_exposure(data.frame(t=0, c=0)) %>%
+    set_exposure(data.frame(t=0:1, c=2)) %>%
     set_times(0:10) %>%
-    set_forcings(temp=data.frame(t=0,temp=20), rad=data.frame(t=-1:20,rad=42)) -> sc
+    set_forcings(temp=data.frame(t=0, temp=20), rad=data.frame(t=-1:20, rad=42)) -> sc
   clipped <- clip_scenario(sc, c(0,2.1))
 
-  expect_equal(clipped@times, c(0,1,2,2.1))
-  expect_equal(clipped@exposure@series, data.frame(t=0,c=0))
-  expect_equal(clipped@forcings[["temp"]], data.frame(t=0,temp=20))
-  expect_equal(clipped@forcings[["rad"]], data.frame(t=c(-1,0,1,2,3),rad=42), ignore_attr=TRUE)
+  expect_equal(clipped@times, c(0, 1, 2, 2.1))
+  expect_equal(clipped@exposure@series, data.frame(t=0:1, c=2))
+  expect_equal(clipped@forcings[["temp"]], data.frame(t=0, temp=20))
+  expect_equal(clipped@forcings[["rad"]], data.frame(t=c(-1, 0, 1, 2, 3), rad=42), ignore_attr=TRUE)
 
   # complex exposure series
   sc <- sc %>% set_exposure(data.frame(t=2:4,c=23))

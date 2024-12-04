@@ -1,9 +1,25 @@
+# converts a scenario object defined by the `lemna` package to a scenario
+# of the `cvasi` package
+lemna2scenario <- function(sc) {
+  if(!is(sc, "lemna_scenario"))
+    stop("argument is not a lemna scenario")
+
+  forc <- sc$envir
+  forc$conc <- NULL
+
+  Lemna_SETAC() %>%
+    set_init(sc$init) %>%
+    set_param(sc$param) %>%
+    set_exposure(sc$envir$conc) %>%
+    set_times(sc$times) %>%
+    set_forcings(forc)
+}
+
 # Make sure that simulation results of this package and 'lemna' are identical,
 # the 'lemna' package vouches for correct model implementation
 test_that("lemna::lemna, k_phot0_fixed=FALSE", {
   skip_on_os("mac") # macos numerics always deviate in some unforeseeable way
   skip_if_not_installed("lemna")
-  source(test_path("lemna_helpers.R"), local=TRUE)
 
   origR <- lemna::lemna(lemna::focusd1, times=0:20, hmax=0.01, ode_mode="r")
   origC <- lemna::lemna(lemna::focusd1, times=0:20, hmax=0.01, ode_mode="c")
@@ -19,7 +35,6 @@ test_that("lemna::lemna, k_phot0_fixed=FALSE", {
 test_that("lemna::lemna, k_phot0_fixed=TRUE", {
   skip_on_os("mac") # macos numerics always deviate in some unforeseeable way
   skip_if_not_installed("lemna")
-  source(test_path("lemna_helpers.R"), local=TRUE)
 
   lemna_sc <- lemna::focusd1
   lemna_sc$param$k_photo_fixed <- 1

@@ -11,6 +11,7 @@ test_that("plot_sd", {
     treatments = minnow_it@exposure@series %>% dplyr::mutate(trial="foo"),
     rs_mean = rs
   )
+  succeed()
 })
 
 test_that("plot_ppc", {
@@ -25,16 +26,19 @@ test_that("plot_ppc", {
            rs_range=rr,
            obs_mean=rs
   )
+  succeed()
 })
 
 test_that("plot_epx", {
   rs <- metsulfuron %>%
           epx_mtw(level = 10, factor_cutoff = 1000)
   plot_epx(rs, metsulfuron@exposure@series)
+  succeed()
 })
 
 test_that("plot_scenario", {
   lifecycle::expect_deprecated({
     plot_scenario(minnow_it)
   })
+  succeed()
 })

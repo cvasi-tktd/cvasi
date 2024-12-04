@@ -41,7 +41,9 @@ test_that("fit to dataset with replicates", {
   ##
   ## set up a scenario to create perfect fit data
   ##
-  rs <- simulate(minnow_it, times=rep(minnow_it@times, each=2))
+  rs <- minnow_it %>%
+    set_times(rep(minnow_it@times, each=2)) %>%
+    simulate()
 
   # modify scenario by setting parameter `kd` to quasi-random value
   tofit <- minnow_it %>% set_param(c(kd=0.1))

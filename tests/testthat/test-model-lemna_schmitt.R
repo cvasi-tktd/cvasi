@@ -305,3 +305,24 @@ test_that("Lemna simulation irregular transfers", {
   sc.reg %>% set_transfer(times=c(21)) -> sc.irg
   expect_equal(simulate(sc.reg), simulate(sc.irg), tolerance=tol)
 })
+
+test_that("Lemna solver", {
+  # Schmitt model
+  expect_equal(solver(metsulfuron)$time, metsulfuron@times)
+  expect_equal(solver(metsulfuron, times=0:2)$time, 0:2)
+
+  # Schmitt Threshold model
+  Lemna_SchmittThold() %>%
+    set_init(metsulfuron@init) %>%
+    set_param(metsulfuron@param) %>%
+    set_param(c("threshold"=2)) %>%
+    set_forcings(metsulfuron@forcings) %>%
+    set_exposure(metsulfuron@exposure@series) -> sc
+  expect_equal(solver(sc)$time, sc@times)
+  expect_equal(solver(sc, times=0:2)$time, 0:2)
+
+  # SETAC model
+  focusd1 %>% set_times(0:10) -> sc
+  expect_equal(solver(sc)$time, sc@times)
+  expect_equal(solver(sc, times=0:2)$time, 0:2)
+})

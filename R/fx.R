@@ -13,9 +13,10 @@ setMethod("fx", "ANY", function(scenario, ...) fx_default(scenario, ...))
 # Use value of state variable at end of simulation to derive effect
 fx_default <- function(scenario, ...) {
   row <- tail_nm(simulate(scenario, ...))
-  endpoints <- intersect(names(scenario@init), scenario@endpoints) # use only state var endpoints
-
-  row[endpoints]
+  # setNames() is required if some endpoints are not present in the output
+  # of simulate(). in this case the return value would contain columns named
+  # `<NA>`, which we want to avoid.
+  setNames(row[scenario@endpoints], scenario@endpoints)
 }
 
 # return the last row of a data.frame or matrix as a vector and assures that

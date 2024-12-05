@@ -29,9 +29,9 @@ test_that("special cases", {
   # all scenarios within a sequence need to be modified
   sequence(seq=c(sc1, sc2)) %>%
     set_param(ps1) -> seq
-  expect_equal(length(scenarios(seq)), 2)
-  expect_equal(scenarios(seq)[[1]]@param$kd, p$kd)
-  expect_equal(scenarios(seq)[[2]]@param$kd, p$kd)
+  expect_equal(length(seq@scenarios), 2)
+  expect_equal(seq@scenarios[[1]]@param$kd, p$kd)
+  expect_equal(seq@scenarios[[2]]@param$kd, p$kd)
 })
 
 test_that("invalid arguments", {

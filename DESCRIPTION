@@ -54,7 +54,6 @@ Collate:
     'class-EffectScenario.R'
     'calibrate.R'
     'class-ParameterSet.R'
-    'class-ScenarioSequence.R'
     'class-Transferable.R'
     'data.R'
     'dose_response.R'

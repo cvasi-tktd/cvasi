@@ -138,7 +138,7 @@ setMethod("simulate", "EffectScenario", function(x, ...) simulate_scenario(x, ..
 setMethod("simulate", "Transferable", function(x, ...) simulate_transfer(scenario=x, ...))
 
 #' @rdname simulate
-#' @include class-ScenarioSequence.R
+#' @include sequence.R
 setMethod("simulate", "ScenarioSequence", function(x, ...) simulate_seq(seq=x, ...))
 
 #' @rdname simulate

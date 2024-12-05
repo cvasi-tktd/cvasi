@@ -28,7 +28,7 @@ test_that("Lemna sequence", {
   simulate(lemna, method="lsoda") -> out.orig
   class(out.orig) <- c("cvasi.simulate", class(out.orig))
 
-  simulate(sequence(list(lemna)), method="lsoda") -> out.ss
+  suppressWarnings(simulate(sequence(list(lemna)), method="lsoda") -> out.ss)
   expect_equal(out.ss, out.orig)
 
   ##

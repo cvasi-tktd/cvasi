@@ -27,24 +27,39 @@ test_that("set_init", {
 })
 
 test_that("set_window", {
-  # set only a single argument: length
-  Lemna_Schmitt() %>% set_window(length=42) -> sc
-  expect_equal(sc@window.length, 42)
-  expect_equal(sc@window.interval, -1)
-  # set only a single argument: interval
-  Lemna_Schmitt() %>% set_window(interval=42) -> sc
-  expect_equal(sc@window.length, -1)
-  expect_equal(sc@window.interval, 42)
   # set both arguments at once
-  Lemna_Schmitt() %>% set_window(length=42, interval=23) -> sc
+  Lemna_Schmitt() %>%
+    set_window(length=1, interval=2) -> sc
+  expect_equal(sc@window.length, 1)
+  expect_equal(sc@window.interval, 2)
+
+  # set only a single argument: length
+  Lemna_Schmitt() %>%
+    set_window(interval=1, length=2) %>%
+    set_window(length=42) -> sc
   expect_equal(sc@window.length, 42)
-  expect_equal(sc@window.interval, 23)
-  # disable both by setting length=-1
+  expect_equal(sc@window.interval, 1)
+
+  # set only a single argument: interval
+  Lemna_Schmitt() %>%
+    set_window(interval=1, length=2) %>%
+    set_window(interval=42) -> sc
+  expect_equal(sc@window.length, 2)
+  expect_equal(sc@window.interval, 42)
+
+  # disable both by setting one to -1
   Lemna_Schmitt() %>%
     set_window(length=1, interval=2) %>%
     set_window(length=-1) -> sc
   expect_equal(sc@window.length, -1)
   expect_equal(sc@window.interval, -1)
+
+  Lemna_Schmitt() %>%
+    set_window(length=1, interval=2) %>%
+    set_window(interval=-1) -> sc
+  expect_equal(sc@window.length, -1)
+  expect_equal(sc@window.interval, -1)
+
   # vectorized scenario argument
   c(Lemna_Schmitt(), Lemna_Schmitt()) %>% set_window(length=1, interval=2) -> scs
   expect_equal(length(scs), 2)
@@ -53,9 +68,26 @@ test_that("set_window", {
   expect_equal(scs[[1]]@window.interval, 2)
   expect_equal(scs[[2]]@window.interval, 2)
 
+  # disable windows
+  sc <- new("EffectScenario") %>%
+    set_window(length=1, interval=2) %>%
+    set_nowindow()
+  expect_equal(sc@window.length, -1)
+  expect_equal(sc@window.interval, -1)
+
+  sc <- new("EffectScenario") %>%
+    set_window(length=1, interval=2)
+  scl <- set_nowindow(c(sc, sc))
+  expect_equal(scl[[1]]@window.interval, -1)
+  expect_equal(scl[[2]]@window.interval, -1)
+
   # invalid inputs
-  expect_error(set_window(new("EffectScenario"), length=c(1,2)))
-  expect_error(set_window(new("EffectScenario"), interval=c(1,2)))
+  sc <- new("EffectScenario")
+  expect_error(set_window(sc, length=0))
+  expect_error(set_window(sc, length=c(1,2)))
+  expect_error(set_window(sc, interval=c(1,2)))
+  expect_error(set_window(sc, interval=1))
+  expect_error(set_window(sc, length=1))
 })
 
 test_that("set_endpoints", {
@@ -93,6 +125,8 @@ test_that("set_forcings", {
   expect_warning(set_forcings(sc, list(foo=1)), regexp="unused forcing")
   # unnamed series
   expect_warning(set_forcings(sc, list(1)), regexp="unnamed forcing")
+  # wrong number of columns in data.frame
+  expect_error(set_forcings(sc, rad=data.frame(a=0, b=1, c=2)), regexp="two columns")
   # vectorized input in non-std eval
   expect_error(set_forcings(sc, rad=c(1,2,3)), regexp="rad.*invalid type")
 })

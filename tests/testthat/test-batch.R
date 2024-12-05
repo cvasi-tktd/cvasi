@@ -95,6 +95,9 @@ test_that("unique exposure ids", {
   suppressMessages(b <- batch(base, list(0, 1)))
   expect_equal(names(b@scenarios), c("trial1", "trial2"))
 
+  suppressMessages(b <- batch(base, list(foo=0, 1)))
+  expect_equal(names(b@scenarios), c("foo", "trial2"))
+
   # manual ids
   b <- batch(base, list(a=0, b=1))
   expect_equal(names(b@scenarios), c("a", "b"))
@@ -138,6 +141,7 @@ test_that("invalid arguments", {
   expect_error(batch(NULL, list(0)))
   expect_error(batch(list(), list(0)))
   expect_error(batch(list(1), list(0)))
+  expect_error(batch(list(minnow_it, minnow_it), list(0)))
 
   expect_error(batch(minnow_it))
   expect_error(batch(minnow_it, 1))

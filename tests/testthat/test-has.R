@@ -76,6 +76,23 @@ test_that("has_windows", {
   expect_error(any(has_windows(1:5)))
 })
 
+test_that("has_transfer", {
+  has <- Lemna_Schmitt() %>% set_transfer(interval=1)
+  has2 <- Lemna_Schmitt() %>% set_transfer(times=c(0,1,3))
+  hasnot <- Lemna_Schmitt() %>%  set_transfer(interval=-1)
+
+  # single
+  expect_true(has_transfer(has))
+  expect_true(has_transfer(has2))
+  expect_false(has_transfer(hasnot))
+
+  # multiple
+  expect_equal(has_transfer(c(has, has)), c(TRUE, TRUE))
+  expect_equal(has_transfer(c(has, has2)), c(TRUE, TRUE))
+  expect_equal(has_transfer(c(has, hasnot)), c(TRUE, FALSE))
+  expect_equal(has_transfer(c(hasnot, hasnot)), c(FALSE, FALSE))
+})
+
 test_that("has_regular_transfer", {
   expect_true(has_regular_transfer(Lemna_Schmitt() %>% set_transfer(interval=1)))
   expect_true(has_transfer(Lemna_Schmitt() %>% set_transfer(interval=1)))

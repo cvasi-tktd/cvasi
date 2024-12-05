@@ -295,3 +295,33 @@ test_that("Algae_Simple simulation", {
 
   expect_equal(result_epx$r.EP50, 1)
 })
+
+
+test_that("output variables", {
+  sc <- Rsubcapitata
+  rs <- sc %>% simulate(nout=0)
+  rs2 <- sc %>% simulate(nout=4)
+
+  expect_equal(length(rs2), length(rs) + 4)
+
+  df <- dplyr::select(rs2, dplyr::all_of(seq(length(rs)+1, length(rs2))))
+  expect_equal(names(df), c("dA", "dQ", "dP", "dDw"))
+  expect_true(any(df[, 1] != 0))
+  expect_true(any(df[, 2] != 0))
+  expect_true(any(df[, 3] != 0))
+  expect_true(any(df[, 4] != 0))
+})
+
+
+test_that("algae effects", {
+  sc <- Rsubcapitata
+  ctrl <- sc %>% set_noexposure() %>% simulate()
+  t1 <- sc %>% simulate()
+
+  myeffect <- 1 - tail(t1$A, n=1)/tail(ctrl$A, n=1)
+  expect_equal(effect(sc)$A[1], myeffect, tolerance=1e-5)
+
+  # growth rate cannot be determined if transfers are enabled
+  sc2 <- sc %>% set_transfer(interval=7)
+  expect_error(effect(sc2), regexp="biomass transfer")
+})

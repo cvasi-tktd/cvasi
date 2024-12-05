@@ -57,3 +57,16 @@ test_that("invalid arguments", {
   # wrong order
   expect_warning(expect_error(set_bounds(sc, list(kd=c(3, 2)))))
 })
+
+test_that("get_bounds", {
+  sc <- new("EffectScenario")
+  sc@param.req <- c("foo", "bar")
+
+  bnds <- list(foo=c(1, 3))
+  sc <- set_bounds(sc, bnds)
+  expect_equal(get_bounds(sc), bnds)
+
+  # invalid arguments
+  expect_error(get_bounds("foo"))
+  expect_error(get_bounds(c(sc, sc)))
+})

@@ -2,9 +2,12 @@
 % Please edit documentation in R/set_window.R
 \name{set_window}
 \alias{set_window}
+\alias{set_nowindow}
 \title{Set window length}
 \usage{
 set_window(x, length, interval)
+
+set_nowindow(x)
 }
 \arguments{
 \item{x}{vector of \code{EffectScenario} objects}
@@ -24,9 +27,19 @@ of \code{24} will consider the exposure within 24 hours intervals for effect
 calculation. The same applies for the window interval, i.e. the period between
 considered exposure windows. Set \code{length=-1} to disable moving windows.
 }
+\section{Functions}{
+\itemize{
+\item \code{set_nowindow()}: Disable moving windows
+
+}}
 \examples{
-# calculate the maximum effect for all windows of 10 days length
+# Calculate the maximum effect for all windows of 10 days length
 metsulfuron \%>\%
   set_window(length=10, interval=1) \%>\%
+  effect()
+
+# Disable moving exposure windows
+metsulfuron \%>\%
+  set_nowindow() \%>\%
   effect()
 }

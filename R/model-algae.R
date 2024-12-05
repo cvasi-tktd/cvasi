@@ -414,15 +414,13 @@ solver_algae_weber <- function(scenario, approx = c("linear","constant"),
                  "T_opt", "T_min", "T_max", "I_opt", "EC_50", "b", "k"
   )
 
+  approx <- match.arg(approx)
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
 
   # reorder parameters for deSolve
   params <- params[params.req]
-
-  if(is.list(params)) params <- unlist(params)
-  approx <- match.arg(approx)
 
   # create forcings list
   forcings <- list(
@@ -463,6 +461,7 @@ solver_algae_tktd <- function(scenario, approx = c("linear","constant"),
                  "EC_50", "b", "kD", "dose_resp"
   )
 
+  approx <- match.arg(approx)
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
@@ -476,9 +475,6 @@ solver_algae_tktd <- function(scenario, approx = c("linear","constant"),
     scenario@forcings$I,
     scenario@forcings$T_act
   )
-
-  if(is.list(params)) params <- unlist(params)
-  approx <- match.arg(approx)
 
   # set names of additional output variables
   outnames <- c("dA", "dQ", "dP", "dDw")
@@ -506,6 +502,7 @@ setMethod("solver", "AlgaeTKTD", solver_algae_tktd)
 #' @importFrom deSolve ode
 solver_algae_simple <- function(scenario, approx = c("linear","constant"),
                                 f = 1, method = "ode45", hmax = 0.01, ...) {
+  approx <- match.arg(approx)
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
@@ -514,15 +511,9 @@ solver_algae_simple <- function(scenario, approx = c("linear","constant"),
   forcings <- list(scenario@exposure@series, scenario@forcings$f_growth)
 
   #required for C code
-  params.req = c("mu_max",
-                 "EC_50", "b", "kD",
-                 "scaled", "dose_response"
-  )
+  params.req = c("mu_max", "EC_50", "b", "kD", "scaled", "dose_response")
   # reorder parameters for deSolve
   params <- params[params.req]
-
-  if(is.list(params)) params <- unlist(params)
-  approx <- match.arg(approx)
 
   # set names of additional output variables
   outnames <- c("Cw", "f_growth", "dA", "dDw")

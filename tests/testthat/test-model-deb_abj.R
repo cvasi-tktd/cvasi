@@ -1,5 +1,6 @@
 test_that("simulate", {
-  sc <- americamysis %>% set_param(list(p_M=NULL))
+  sc <- americamysis
+  sc@param["p_M"] <- NULL
   expect_error(simulate(sc), "missing parameter")
 
   # optional output variables

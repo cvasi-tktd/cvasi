@@ -1,4 +1,4 @@
-# Extensive tests of model behavior and outputs is part of the automated model
+# Extensive tests of model behavior and outputs are part of the automated model
 # verification, see `test-verify-guts_red.R`
 
 test_that("background mortality", {
@@ -56,9 +56,9 @@ test_that("output variables", {
 })
 
 test_that("solvers", {
-  # IT model
+  # RED-IT
   expect_equal(solver(minnow_it)$time, minnow_it@times)
-  # SD model
+  # RED-SD
   expect_equal(solver(minnow_it)$time, minnow_it@times)
 })
 

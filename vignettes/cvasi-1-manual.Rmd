@@ -223,7 +223,7 @@ by setting the argument `reset_times=FALSE`:
 ```{r}
 # Update the exposure time-series but keep former output time points
 myscenario %>%
-  set_exposure(no_exposure(), reset_times=FALSE)
+  set_noexposure()
 ```
 
 Note that `times` still has the original four elements although the assigned exposure
@@ -244,9 +244,9 @@ DEB_abj() %>%
   set_param(myparam) %>%
   set_init(myinit) %>%
   set_exposure(myexposure, reset_times=FALSE) %>%
-  set_times(0:10) %>%             # Output times 0,1,2,...,10
-  set_mode_of_action(4) %>%       # Method of Action #4 to be activated
-  set_window(length=3)            # Using moving exposure windows of length 3 days
+  set_times(0:10) %>%              # Output times 0,1,2,...,10
+  set_mode_of_action(4) %>%        # Method of Action #4 to be activated
+  set_window(length=3, interval=1) # Using moving exposure windows of length 3 days
 ```
 
 ## Running a simulation

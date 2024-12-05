@@ -175,7 +175,7 @@ exposure_profile <- data.frame(time=0:14, conc=random_conc)
 minnow_it %>%
   set_exposure(exposure_profile) %>%  # set a specific exposure scenario
   epx()  # run EPx calculations
-#> # A tibble: 1 x 3
+#> # A tibble: 1 × 3
 #>   scenario   L.EP10 L.EP50
 #>   <list>      <dbl>  <dbl>
 #> 1 <GutsRdIt>   67.0   111.
@@ -198,7 +198,7 @@ on demand:
 metsulfuron %>% 
   set_window(length=7, interval=1) %>%
   effect(max_only=FALSE)
-#> # A tibble: 8 x 5
+#> # A tibble: 8 × 5
 #>   scenario          BM         r dat.start dat.end
 #>   <list>         <dbl>     <dbl>     <dbl>   <dbl>
 #> 1 <LmnSchmS>  2.68e- 1  9.06e- 1         0       7
@@ -223,7 +223,7 @@ example:
 metsulfuron %>% 
   set_window(length=7, interval=1) %>%
   effect(max_only=FALSE, marginal_effect=1e-5)
-#> # A tibble: 8 x 5
+#> # A tibble: 8 × 5
 #>   scenario        BM       r dat.start dat.end
 #>   <list>       <dbl>   <dbl>     <dbl>   <dbl>
 #> 1 <LmnSchmS> 0.268   0.906           0       7
@@ -250,7 +250,7 @@ metsulfuron %>%
   set_window(length=7, interval=1) %>%
   effect(max_only=FALSE) -> results
 results
-#> # A tibble: 8 x 5
+#> # A tibble: 8 × 5
 #>   scenario          BM        r dat.start dat.end
 #>   <list>         <dbl>    <dbl>     <dbl>   <dbl>
 #> 1 <LmnSchmS> 0.000113  0.000327         0       7
@@ -940,7 +940,7 @@ fx_myguts <- function(scenario, window, ...) {
 
 # Derive effect levels for our sample scenario
 myscenario %>% effect()
-#> # A tibble: 1 x 4
+#> # A tibble: 1 × 4
 #>   scenario      L L.dat.start L.dat.end
 #>   <list>    <dbl>       <dbl>     <dbl>
 #> 1 <MyGuts> 0.0722           0         5

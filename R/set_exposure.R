@@ -76,7 +76,7 @@ setGeneric("set_exposure",
 
 #' @rdname set_exposure
 #' @export
-setMethod("set_exposure", c("ANY","ANY"), function(scenarios, series) {
+setMethod("set_exposure", c("ANY","ANY"), function(scenarios, series, ...) {
   stop("argument types not supported")
 })
 

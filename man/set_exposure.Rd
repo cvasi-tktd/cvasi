@@ -12,7 +12,7 @@
 \usage{
 set_exposure(scenarios, series, ...)
 
-\S4method{set_exposure}{ANY,ANY}(scenarios, series)
+\S4method{set_exposure}{ANY,ANY}(scenarios, series, ...)
 
 \S4method{set_exposure}{EffectScenario,data.frame}(scenarios, series, ...)
 

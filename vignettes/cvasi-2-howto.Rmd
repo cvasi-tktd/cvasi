@@ -471,17 +471,20 @@ simulated one after the other.
 
 
 ```{r}
-# base scenario only valid until day 7
+# A base scenario is created for the whole period, but parameters are only
+# valid until day 7
 sc1 <- metsulfuron %>%
-  set_times(0:7)
+  set_times(0:14)
 
-# a parameter change occurs at day 7: k_loss increases from 0 to 0.1 d-1
-sc2 <- metsulfuron %>%
-  set_times(7:14) %>%
+# A parameter change occurs at day 7: k_loss increases from 0 to 0.1 d-1
+sc2 <- sc1 %>%
   set_param(c(k_loss=0.1))
- 
-seq <- sequence(list(sc1, sc2))
-simulate(seq)
+
+# Combine both scenarios to a sequence with a break at *t = 7*:
+# scenario `sc1` will be simulated for *t = [0, 7]*, and
+# scenario `sc2` will be simulated for *t = [7, 14]*.
+sq <- sequence(list(sc1, sc2), breaks=7)
+simulate(sq)
 ```
 For more information:
 

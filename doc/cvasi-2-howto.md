@@ -175,6 +175,12 @@ exposure_profile <- data.frame(time=0:14, conc=random_conc)
 minnow_it %>%
   set_exposure(exposure_profile) %>%  # set a specific exposure scenario
   epx()  # run EPx calculations
+#> Warning: package 'purrr' was built under R version 4.3.3
+#> 
+#> Attaching package: 'purrr'
+#> The following object is masked from 'package:testthat':
+#> 
+#>     is_null
 #> # A tibble: 1 × 3
 #>   scenario   L.EP10 L.EP50
 #>   <list>      <dbl>  <dbl>
@@ -609,17 +615,23 @@ of several scenarios. The sequence is treated as a single scenario and
 each scenario is simulated one after the other.
 
 ``` r
-# base scenario only valid until day 7
+# A base scenario is created for the whole period, but parameters are only
+# valid until day 7
 sc1 <- metsulfuron %>%
-  set_times(0:7)
+  set_times(0:14)
 
-# a parameter change occurs at day 7: k_loss increases from 0 to 0.1 d-1
-sc2 <- metsulfuron %>%
-  set_times(7:14) %>%
+# A parameter change occurs at day 7: k_loss increases from 0 to 0.1 d-1
+sc2 <- sc1 %>%
   set_param(c(k_loss=0.1))
- 
-seq <- sequence(list(sc1, sc2))
-simulate(seq)
+
+# Combine both scenarios to a sequence with a break at *t = 7*:
+# scenario `sc1` will be simulated for *t = [0, 7]*, and
+# scenario `sc2` will be simulated for *t = [7, 14]*.
+sq <- sequence(list(sc1, sc2), breaks=7)
+#> Modifying sequence to consider breaks ...
+#>   Scenario #1: simulated period [0, 7]
+#>   Scenario #2: simulated period [7, 14]
+simulate(sq)
 #>    time       BM E      M_int      C_int  FrondNo
 #> 1     0 50.00000 1   0.000000 0.00000000 500000.0
 #> 2     1 52.15858 1 223.074470 0.25609887 521585.8

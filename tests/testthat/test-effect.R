@@ -112,8 +112,8 @@ test_that("window finding Lemna", {
 
   # absolute value of effect
   expect_gt(estr$BM, 0.19)
-  expect_equal(estr$BM, emid$BM)
-  expect_equal(estr$BM, eend$BM)
+  expect_equal(estr$BM, emid$BM, tolerance=1e-5)
+  expect_equal(estr$BM, eend$BM, tolerance=1e-5)
 })
 
 test_that("Lemna effects", {
@@ -150,20 +150,20 @@ test_that("general arguments", {
   metsulfuron %>% set_window(7,1) -> lemna
 
   # results for all relevant windows
-  effect(lemna, max_only=FALSE, hmax=1) -> ep
+  effect(lemna, max_only=FALSE, hmax=1, method="ode45") -> ep
   expect_equal(ep$dat.start,    0:7)
   expect_equal(ep$dat.end,      7:14)
-  expect_true(all(ep$BM[1:7]>0))
-  expect_true(ep$BM[8]==0)
+  expect_true(all(ep$BM[1:7] > 0))
+  expect_true(ep$BM[8] == 0)
 
   effect(lemna, hmax=1) -> epmax
-  expect_equal(epmax$BM[1], max(ep$BM))
+  expect_equal(epmax$BM[1], max(ep$BM), tolerance=1e-5)
 
   # factor applied to exposure series
   factor <- 3.21
   lemna2 <- lemna
   lemna2@exposure@series[,2] <- lemna2@exposure@series[,2]*factor
-  expect_equal(effect(lemna, factor=factor), effect(lemna2))
+  expect_equal(effect(lemna, factor=factor), effect(lemna2), tolerance=1e-5)
 })
 
 test_that("marginal effects", {

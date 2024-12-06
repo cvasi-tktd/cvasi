@@ -96,6 +96,15 @@ setClass("GutsRedIt", contains="EffectScenario")
 #' *S = (1- F(t))*. The background hazard rate `hb` is already considered in state
 #' variable `H` and therefore does not occur as an additional term to derive `S`.
 #'
+#' @section Solver settings:
+#' The arguments to ODE solver [deSolve::ode()] control how model equations
+#' are numerically integrated. The settings influence stability of the numerical
+#' integration scheme as well as numerical precision of model outputs. Generally, the
+#' default settings as defined by *deSolve* are used, but all *deSolve* settings
+#' can be modified in *cvasi* workflows by the user, if needed. Please refer
+#' to e.g. [simulate()] on how to pass arguments to *deSolve* in *cvasi*
+#' workflows.
+#'
 #' @inherit GUTS-RED-models references
 #'
 #' @param param optional named `list` or `vector` with model parameters
@@ -131,7 +140,6 @@ GUTS_RED_IT <- function(param, init) {
 #' @inheritSection GUTS-RED-models State variables
 #' @inheritSection GUTS-RED-models SD model parameters
 #' @inheritSection GUTS-RED-models Effects
-#' @inherit GUTS-RED-models references
 #' @inheritParams GUTS_RED_IT
 #' @section Simulation output:
 #' The return value of [simulate()] will contain values for the state variables,
@@ -140,6 +148,8 @@ GUTS_RED_IT <- function(param, init) {
 #' *S = exp(-H)*. The background hazard rate `hb` is already considered in state
 #' variable `H` and therefore does not occur as an additional term to derive `S`.
 #'
+#' @inheritSection GUTS_RED_IT Solver settings
+#' @inherit GUTS-RED-models references
 #' @return an S4 object of type [GutsRedSd-class]
 #'
 #' @export
@@ -168,27 +178,22 @@ GUTS_RED_SD <- function(param, init) {
 ########################
 
 # @param scenario Scenario object
-# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
 # @param hmax numeric, maximum step length in time, see [deSolve::ode()]
-# @param ... additional arguments passed to [deSolve::ode()]
-# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
-# @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
 # @param method string, numerical solver used by [deSolve::ode()]
+# @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
-solver_gutsredsd <- function(scenario, approx=c("linear","constant"),
-                               f=1, method="lsoda", hmax=1, ...) {
+solver_gutsredsd <- function(scenario, method="lsoda", hmax=1, ...) {
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
-  approx <- match.arg(approx)
 
   # make sure that parameters are present and in required order
   params <- params[c("kd", "hb", "z", "kk")]
 
   df <- as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
                           initfunc="gutsredsd_init", func="gutsredsd_func", initforc="gutsredsd_forc",
-                          forcings=scenario@exposure@series, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
-                          outnames=c("Cw"), method=method, hmax=hmax, ...))
+                          forcings=scenario@exposure@series, outnames=c("Cw"),
+                          method=method, hmax=hmax, ...))
   # Derive survival probability, see EFSA Scientific Opinion on TKTD models, p. 33
   # doi:10.2903/j.efsa.2018.5377
   df$S <- exp(-df$H) # background hazard rate included in H (if enabled)
@@ -199,26 +204,22 @@ solver_gutsredsd <- function(scenario, approx=c("linear","constant"),
 setMethod("solver", "GutsRedSd", function(scenario, ...) solver_gutsredsd(scenario, ...))
 
 # @param scenario Scenario object
-# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
-# @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
 # @param method string, numerical solver used by [deSolve::ode()]
 # @param hmax numeric, maximum step length in time, see [deSolve::ode()]
 # @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
-solver_gutsredit <- function(scenario, approx=c("linear","constant"),
-                               f=1, method="lsoda", hmax=1, ...) {
+solver_gutsredit <- function(scenario, method="lsoda", hmax=1, ...) {
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
-  approx <- match.arg(approx)
 
   # make sure that parameters are present and in required order
   odeparams <- params[c("kd","hb")]
 
   df <- as.data.frame(ode(y=scenario@init, times=scenario@times, parms=odeparams, dllname="cvasi",
                           initfunc="gutsredit_init", func="gutsredit_func", initforc="gutsredit_forc",
-                          forcings=scenario@exposure@series, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
-                          outnames=c("Cw"), method=method, hmax=hmax, ...))
+                          forcings=scenario@exposure@series, outnames=c("Cw"),
+                          method=method, hmax=hmax, ...))
   # Derive survival probability, EFSA Scientific Opinion on TKTD models, p. 33
   # doi:10.2903/j.efsa.2018.5377
   FS <- (1 / (1 + (cummax(df$D) / params["alpha"])^(-params["beta"])))

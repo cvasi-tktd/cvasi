@@ -144,6 +144,23 @@ setClass("LemnaSchmittScenario", contains="LemnaSchmitt")
 #'   * `nout >= 13`: `d E/dt`, current change in effect
 #'   * `nout >= 14`: `d M_int/dt`, current change in internal toxicant mass
 #'
+#' @section Solver settings:
+#' The arguments to ODE solver [deSolve::ode()] control how model equations
+#' are numerically integrated. The settings influence stability of the numerical
+#' integration scheme as well as numerical precision of model outputs. Generally, the
+#' default settings as defined by *deSolve* are used, but all *deSolve* settings
+#' can be modified in *cvasi* workflows by the user, if needed. Please refer
+#' to e.g. [simulate()] on how to pass arguments to *deSolve* in *cvasi*
+#' workflows.
+#'
+#' Some default settings of *deSolve* were adapted for this model by expert
+#' judgement to enable precise, but also computationally efficient, simulations
+#' for most model parameters. These settings can be modified by the user,
+#' if needed:
+#'
+#' - `hmax = 0.1`<br>
+#'    Maximum step length in time suitable for most simulations.
+#'
 #' @inheritSection Transferable Biomass transfer
 #'
 #' @param param optional named `list` or `vector` of model parameters
@@ -216,20 +233,16 @@ Lemna_SchmittThold <- function(param, init) {
 ########################
 
 # @param scenario Scenario object
-# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
-# @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
 # @param nout `numeric`, number of additional output variables, `nout=1` appends
 #   the internal concentration `C_int`, the maximum number is 13
 # @param method string, numerical solver used by [deSolve::ode()]
 # @param hmax numeric, maximum step length in time, see [deSolve::ode()]
 # @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
-solver_lemna_schmitt <- function(scenario, approx=c("linear","constant"),
-                                 f=1, nout=2, method="ode45", hmax=0.1, ...) {
+solver_lemna_schmitt <- function(scenario, nout=2, method="lsoda", hmax=0.1, ...) {
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
-  approx <- match.arg(approx)
 
   # make sure that parameters are present and in required order
   params.req <- c("Emax","EC50","b","P_up","AperBM","Kbm","P_Temp","MolWeight",
@@ -271,8 +284,8 @@ solver_lemna_schmitt <- function(scenario, approx=c("linear","constant"),
   # run solver
   as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
                     initfunc="lemna_schmitt_init", func="lemna_schmitt_func", initforc="lemna_schmitt_forc",
-                    forcings=forcings, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
-                    nout=nout, outnames=outnames, method=method, hmax=hmax, ...))
+                    forcings=forcings, nout=nout, outnames=outnames, method=method,
+                    hmax=hmax, ...))
 }
 #' @include solver.R
 #' @describeIn solver Numerically integrates Lemna_Schmitt models

@@ -23,43 +23,15 @@ solver(scenario, ...)
 
 \S4method{solver}{ANY}(scenario, ...)
 
-\S4method{solver}{AlgaeWeber}(
-  scenario,
-  approx = c("linear", "constant"),
-  f = 1,
-  method = "lsoda",
-  hmax = 0.1,
-  ...
-)
+\S4method{solver}{AlgaeWeber}(scenario, method = "lsoda", hmax = 0.1, ...)
 
-\S4method{solver}{AlgaeTKTD}(
-  scenario,
-  approx = c("linear", "constant"),
-  f = 1,
-  method = "lsoda",
-  hmax = 0.1,
-  ...
-)
+\S4method{solver}{AlgaeTKTD}(scenario, method = "lsoda", hmax = 0.1, ...)
 
-\S4method{solver}{AlgaeSimple}(
-  scenario,
-  approx = c("linear", "constant"),
-  f = 1,
-  method = "ode45",
-  hmax = 0.01,
-  ...
-)
+\S4method{solver}{AlgaeSimple}(scenario, method = "lsoda", hmax = 0.1, ...)
 
 \S4method{solver}{DebAbj}(scenario, ...)
 
-\S4method{solver}{DebTox}(
-  scenario,
-  approx = c("linear", "constant"),
-  f = 1,
-  rule = 2,
-  method = "ode45",
-  ...
-)
+\S4method{solver}{DebTox}(scenario, method = "ode45", ...)
 
 \S4method{solver}{DebDaphnia}(scenario, ...)
 
@@ -80,15 +52,9 @@ solver(scenario, ...)
 
 \item{...}{additional parameters passed on to \code{\link[deSolve:ode]{deSolve::ode()}}}
 
-\item{approx}{string, interpolation method of exposure series, see \link[deSolve:forcings]{deSolve::forcings}}
-
-\item{f}{if \code{approx="constant"}, a number between 0 and 1 inclusive, see \link[deSolve:forcings]{deSolve::forcings}}
-
 \item{method}{string, numerical solver used by \code{\link[deSolve:ode]{deSolve::ode()}}}
 
 \item{hmax}{numeric, maximum step length in time, see \code{\link[deSolve:ode]{deSolve::ode()}}}
-
-\item{rule}{if \code{approx="constant"}, a number between 0 and 1 inclusive, see \link[deSolve:forcings]{deSolve::forcings}}
 }
 \value{
 \code{data.frame} with simulation results
@@ -98,9 +64,8 @@ Please refer to the \emph{Modeling Howto} vignette on how to implement custom
 models by overloading the \code{solver} function.
 }
 \details{
-Please note that not all solvers support setting the parameters listed here.
-In addition, some solvers may set reasonable default values for e.g. maximum step
-length in time, but not all do. Please check the model documentation for
+Some solvers may set reasonable default values for e.g. maximum step
+length in time (\code{hmax}), but not all do. Please check the model documentation for
 details.
 }
 \section{Methods (by class)}{

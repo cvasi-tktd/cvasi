@@ -109,6 +109,23 @@ setClass("MyrioLogScenario", contains="MyrioLog")
 #'   - `nout` >= 6: `dBM`, biomass derivative (g dw m-2 d-1)
 #'   - `nout` >= 7: `dM_int`, mass of toxicant in plants derivative (mass per m2 d-1)
 #'
+#' @section Solver settings:
+#' The arguments to ODE solver [deSolve::ode()] control how model equations
+#' are numerically integrated. The settings influence stability of the numerical
+#' integration scheme as well as numerical precision of model outputs. Generally, the
+#' default settings as defined by *deSolve* are used, but all *deSolve* settings
+#' can be modified in *cvasi* workflows by the user, if needed. Please refer
+#' to e.g. [simulate()] on how to pass arguments to *deSolve* in *cvasi*
+#' workflows.
+#'
+#' Some default settings of *deSolve* were adapted for this model by expert
+#' judgement to enable precise, but also computationally efficient, simulations
+#' for most model parameters. These settings can be modified by the user,
+#' if needed:
+#'
+#' - `hmax = 0.1`<br>
+#'    Maximum step length in time suitable for most simulations.
+#'
 #' @inheritSection Lemna_SETAC Effects
 #' @inheritSection Transferable Biomass transfer
 #' @references
@@ -175,6 +192,7 @@ Myrio <- function() {
 #'
 #' @inheritSection Myrio Environmental factors
 #' @inheritSection Myrio Simulation output
+#' @inheritSection Myrio Solver settings
 #' @inheritSection Myrio Effects
 #' @inheritSection Transferable Biomass transfer
 #' @inheritSection Myrio Parameter boundaries
@@ -237,9 +255,7 @@ setMethod("solver", "MyrioLog", function(scenario, ...) solver_myriolog(scenario
 # @param scenario
 # @param ... additional parameters passed on to [deSolve::ode()]
 # @return data.frame
-solver_myrio <- function(scenario, approx=c("linear","constant"),
-                         f=0, nout=2, method="lsoda", hmax=0.1, ...) {
-  approx <- match.arg(approx)
+solver_myrio <- function(scenario, nout=2, method="lsoda", hmax=0.1, ...) {
   params <- scenario@param
   # make sure that parameters are present and in required order
   params_order <- c("k_photo_max", "growthno", "BM_L", "E_max", "EC50_int", "b",
@@ -256,15 +272,14 @@ solver_myrio <- function(scenario, approx=c("linear","constant"),
   # reorder parameters for deSolve
   params <- params[params_order]
   forcings <- list(scenario@exposure@series)
-  fcontrol <- list(method=approx, rule=2, f=f, ties="ordered")
 
   # set names of additional output variables
   outnames <- c("C_int", "TSL", "f_photo", "C_int_unb", "C_ext", "dBM", "dM_int")
 
   as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
                     initfunc="myrio_init", func="myrio_func", initforc="myrio_forc",
-                    forcings=forcings, fcontrol=fcontrol, nout=nout, method=method,
-                    hmax=hmax, outnames=outnames, ...))
+                    forcings=forcings, nout=nout, method=method, hmax=hmax,
+                    outnames=outnames, ...))
 }
 
 

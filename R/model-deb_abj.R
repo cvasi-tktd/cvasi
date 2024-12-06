@@ -94,6 +94,15 @@ setClass("DebAbj", contains="Deb")
 #' - `nout` >= 3: `pA` assimilation flux (J/d)
 #' - `nout` >= 4: `pJ` energy invested in maturity flux (J/d)
 #'
+#' @section Solver settings:
+#' The arguments to ODE solver [deSolve::ode()] control how model equations
+#' are numerically integrated. The settings influence stability of the numerical
+#' integration scheme as well as numerical precision of model outputs. Generally, the
+#' default settings as defined by *deSolve* are used, but all *deSolve* settings
+#' can be modified in *cvasi* workflows by the user, if needed. Please refer
+#' to e.g. [simulate()] on how to pass arguments to *deSolve* in *cvasi*
+#' workflows.
+#'
 #' @return an S4 object of type [DebAbj-class]
 #' @export
 #' @family DEB models
@@ -132,9 +141,7 @@ DEB_abj <- function() {
 ########################
 
 #' @importFrom deSolve ode
-solver_deb_abj <- function(scenario, approx=c("linear","constant"), f=1,
-                           method="lsoda", ...) {
-  approx <- match.arg(approx)
+solver_deb_abj <- function(scenario, method="lsoda", ...) {
   # make sure that parameters are present and in required order
   params.req <- c("p_M","v","k_J","p_Am","kap","E_G","f","E_Hj","E_Hp","kap_R","ke","c0",
                   "cT","L_b","L_j","MoA")
@@ -158,9 +165,8 @@ solver_deb_abj <- function(scenario, approx=c("linear","constant"), f=1,
 
   # run solver
   as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, method=method,
-                    dllname="cvasi", initfunc="deb_abj_init", func="deb_abj_func", initforc="deb_abj_forc",
-                    forcings=forcings, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
-                    outnames=outnames, ...))
+                    dllname="cvasi", initfunc="deb_abj_init", func="deb_abj_func",
+                    initforc="deb_abj_forc", forcings=forcings, outnames=outnames, ...))
 }
 #' @include solver.R
 #' @describeIn solver Numerically integrates DEB_abj models

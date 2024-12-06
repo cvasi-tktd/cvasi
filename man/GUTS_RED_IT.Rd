@@ -28,6 +28,17 @@ for each time point. \code{S} is calculated as described in EFSA (2018) as
 variable \code{H} and therefore does not occur as an additional term to derive \code{S}.
 }
 
+\section{Solver settings}{
+
+The arguments to ODE solver \code{\link[deSolve:ode]{deSolve::ode()}} control how model equations
+are numerically integrated. The settings influence stability of the numerical
+integration scheme as well as numerical precision of model outputs. Generally, the
+default settings as defined by \emph{deSolve} are used, but all \emph{deSolve} settings
+can be modified in \emph{cvasi} workflows by the user, if needed. Please refer
+to e.g. \code{\link[=simulate]{simulate()}} on how to pass arguments to \emph{deSolve} in \emph{cvasi}
+workflows.
+}
+
 \section{State variables}{
 
 The following list describes the default names and standard units of \emph{GUTS-RED}

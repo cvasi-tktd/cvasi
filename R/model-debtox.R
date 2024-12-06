@@ -145,6 +145,24 @@ setClass("DebTox", contains="Deb")
 #'  - `nout` >= 13: `xG`, damage feedback factor for growth dilution
 #'  - `nout` >= 14: `xR`, damage feedback factor for losses with repro
 #'
+#' ## Solver settings
+#' The arguments to ODE solver [deSolve::ode()] control how model equations
+#' are numerically integrated. The settings influence stability of the numerical
+#' integration scheme as well as numerical precision of model outputs. Generally, the
+#' default settings as defined by *deSolve* are used, but all *deSolve* settings
+#' can be modified in *cvasi* workflows by the user, if needed. Please refer
+#' to e.g. [simulate()] on how to pass arguments to *deSolve* in *cvasi*
+#' workflows.
+#'
+#' Some default settings of *deSolve* were adapted for this model by expert
+#' judgement to enable precise, but also computationally efficient, simulations
+#' for most model parameters. These settings can be modified by the user,
+#' if needed:
+#'
+#' - `method = 'ode45'`<br>
+#'    Selects the Dormand-Prince 4(5) method of the Runge-Kutta family, see
+#'    [deSolve::rkMethod()] for details.
+#'
 #' ## Model history and changes
 #'
 #' - cvasi v1.0.0
@@ -190,12 +208,10 @@ DEBtox <- function() {
 ########################
 
 #' @importFrom deSolve ode
-solver_debtox <- function(scenario, approx=c("linear", "constant"),
-                          f=1, rule=2, method="ode45", ...) {
+solver_debtox <- function(scenario, method="ode45", ...) {
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
-  approx <- match.arg(approx)
 
   if(scenario@init[["L"]] < params[["L0"]])
     warning("initial L is smaller than parameter L0")
@@ -245,8 +261,7 @@ solver_debtox <- function(scenario, approx=c("linear", "constant"),
   # run solver
   out <- ode(y=scenario@init, times=times, parms=params[params_req], dllname="cvasi",
              initfunc="debtox_init", func="debtox_func", initforc="debtox_forc",
-             forcings=forcings, fcontrol=list(method=approx, rule=rule, f=f, ties="ordered"),
-             outnames=outnames, method=method, ...)
+             forcings=forcings, outnames=outnames, method=method, ...)
   out <- as.data.frame(out)
 
   # When animal cannot shrink in length (but does on weight!)

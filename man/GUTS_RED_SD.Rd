@@ -59,6 +59,17 @@ one (\code{1.0}) denotes a lethality rate of 100\%, i.e. no survivors.
 The survival probability \code{S} is available in the return value of \code{\link[=simulate]{simulate()}}.
 }
 
+\section{Solver settings}{
+
+The arguments to ODE solver \code{\link[deSolve:ode]{deSolve::ode()}} control how model equations
+are numerically integrated. The settings influence stability of the numerical
+integration scheme as well as numerical precision of model outputs. Generally, the
+default settings as defined by \emph{deSolve} are used, but all \emph{deSolve} settings
+can be modified in \emph{cvasi} workflows by the user, if needed. Please refer
+to e.g. \code{\link[=simulate]{simulate()}} on how to pass arguments to \emph{deSolve} in \emph{cvasi}
+workflows.
+}
+
 \references{
 EFSA PPR Panel (EFSA Panel on Plant Protection Products and their Residues),
 Ockleford C, Adriaanse P, Berny P, et al., 2018: \emph{Scientific Opinion on the

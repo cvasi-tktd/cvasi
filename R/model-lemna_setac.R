@@ -124,6 +124,23 @@ setClass("LemnaSetacScenario", contains="LemnaSetac")
 #'   - `nout >= 17`: `dBM`, biomass derivative (g dw m-2 d-1)
 #'   - `nout >= 18`: `dM_int`, mass of toxicant in plants derivative (mass per m2 d-1)
 #'
+#' @section Solver settings:
+#' The arguments to ODE solver [deSolve::ode()] control how model equations
+#' are numerically integrated. The settings influence stability of the numerical
+#' integration scheme as well as numerical precision of model outputs. Generally, the
+#' default settings as defined by *deSolve* are used, but all *deSolve* settings
+#' can be modified in *cvasi* workflows by the user, if needed. Please refer
+#' to e.g. [simulate()] on how to pass arguments to *deSolve* in *cvasi*
+#' workflows.
+#'
+#' Some default settings of *deSolve* were adapted for this model by expert
+#' judgement to enable precise, but also computationally efficient, simulations
+#' for most model parameters. These settings can be modified by the user,
+#' if needed:
+#'
+#' - `hmax = 0.1`<br>
+#'    Maximum step length in time suitable for most simulations.
+#'
 #' @inheritSection Transferable Biomass transfer
 #'
 #' @references
@@ -210,9 +227,6 @@ Lemna_SETAC <- function() {
 # Numerically integrate Lemna_SETAC scenarios
 #
 # @param scenario an EffectScenario object
-# @param approx how to interpolate between data points in forcing series, see [deSolve::ode()]
-# @param rule how to handle data points outside of time-series, see [deSolve::forcings]
-# @param f how to approximate data points for `constant` interpolation, see [deSolve::forcings]
 # @param nout number of additional output variables, see [deSolve::ode()]
 # @param method numerical integration method, see [deSolve::ode()]
 # @param hmax numeric, set max step length in time, defaults to `0.1`
@@ -220,11 +234,9 @@ Lemna_SETAC <- function() {
 #
 # @return data.frame
 #' @importFrom deSolve ode
-solver_lemna_setac <- function(scenario, approx = c("linear","constant"),
-                               f=0, nout=2, method="lsoda", hmax=0.1, ...) {
+solver_lemna_setac <- function(scenario, nout=2, method="lsoda", hmax=0.1, ...) {
   params <- scenario@param
   if(is.list(params)) params <- unlist(params)
-  approx <- match.arg(approx)
 
   # check for missing parameters
   params.missing <- setdiff(scenario@param.req, names(params))
@@ -259,8 +271,7 @@ solver_lemna_setac <- function(scenario, approx = c("linear","constant"),
   # run deSolve
   as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
                     initfunc="lemna_setac_init", func="lemna_setac_func", initforc="lemna_setac_forc",
-                    forcings=forcings, fcontrol=list(method=approx, rule=2, f=f, ties="ordered"),
-                    nout=nout, outnames=outnames, method=method, hmax=hmax, ...))
+                    forcings=forcings, nout=nout, outnames=outnames, method=method, hmax=hmax, ...))
 }
 #' @include solver.R
 #' @describeIn solver Numerically integrates Lemna_SETAC models

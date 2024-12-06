@@ -1,23 +1,38 @@
 # cvasi Development version
 
 * New `batch()` function to ease the creation of batch simulations based on a
-  single scenario and multiple exposure series
+  single scenario and multiple exposure series.
+* New overloads of `plot()` which can graphically depict the return values of
+  *cvasi* functions such as `simulate()` and `dose_response()`.
+* New parameter for `sequence()`: argument `breaks` can split the sequence
+  elements at the given time points to ease the creation of sequences.
+* Example scenarios `minnow_it` and `minnow_sw` now feature a non-zero
+  background mortality rate.
+* Default solver of `Algae_Simple` and `Lemna_Schmitt` set to `lsoda`
+  to harmonize the numerical scheme used within a class of models
+  (before, `ode45` was used).
+* Parameter list of `solver()` functions simplified; the following parameters
+  no longer need to be accepted:
+   * `times`, output times are solely defined by the exposure scenario itself
+   * `f`, `approx`, and `rule`: if default settings of *deSolve*'s interpolation of
+      forcings series needs to be adapted, the `fcontrol` argument has to be
+      provided by users
 
 # cvasi 1.3.1
 
 * Improved `import_toxswa()`: now supports scaling of imported time series,
   importing selected *TOXSWA* output variables, as well as importing selected
-  substance concentrations
-* Function `import_exposure_text()` moved to the *cvasi.ui* package
-* Small bugfix in `plot_ppc()`
+  substance concentrations.
+* Function `import_exposure_text()` moved to the *cvasi.ui* package.
+* Small bugfix in `plot_ppc()`.
 * `morse()` renamed to `import_morse()`, the function now supports loading
   parameter sets from *morse* objects directly, as well as from *.RData* and
-  *.RDS* files
+  *.RDS* files.
 * Parameters to `import_morse()` renamed to a more canonical standard, i.e.
   `find.IT` to `find_it`, `find.SD` to `find_sd` and so forth. Using the old
   parameter names still works but will raise a warning.
 * New overloads for the generic `plot()` to depict return values of functions
-  such as `simulate()` and `dose_response()`
+  such as `simulate()` and `dose_response()`.
 * Model equations of the `Lemna_SETAC()` model by Klein et al. was integrated
   into the package. This removes package `lemna` as a dependency.
 * Scenario defaults of `Lemna_SETAC()` were modified to ease scenario creation

@@ -164,6 +164,27 @@ required output level and pass it to \code{\link[=simulate]{simulate()}}.
 }
 }
 
+\subsection{Solver settings}{
+
+The arguments to ODE solver \code{\link[deSolve:ode]{deSolve::ode()}} control how model equations
+are numerically integrated. The settings influence stability of the numerical
+integration scheme as well as numerical precision of model outputs. Generally, the
+default settings as defined by \emph{deSolve} are used, but all \emph{deSolve} settings
+can be modified in \emph{cvasi} workflows by the user, if needed. Please refer
+to e.g. \code{\link[=simulate]{simulate()}} on how to pass arguments to \emph{deSolve} in \emph{cvasi}
+workflows.
+
+Some default settings of \emph{deSolve} were adapted for this model by expert
+judgement to enable precise, but also computationally efficient, simulations
+for most model parameters. These settings can be modified by the user,
+if needed:
+\itemize{
+\item \code{method = 'ode45'}\if{html}{\out{<br>}}
+Selects the Dormand-Prince 4(5) method of the Runge-Kutta family, see
+\code{\link[deSolve:rkMethod]{deSolve::rkMethod()}} for details.
+}
+}
+
 \subsection{Model history and changes}{
 \itemize{
 \item cvasi v1.0.0

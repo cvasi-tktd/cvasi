@@ -139,6 +139,23 @@ setClass("AlgaeSimpleScenario", contains = "AlgaeSimple")
 #'    - `nout >= 3`: `dP`, external phosphorous derivative (mg P L-1)
 #'    - `nout >= 4`: `dC`, external concentration derivative (ug L-1)
 #'
+#' @section Solver settings:
+#' The arguments to ODE solver [deSolve::ode()] control how model equations
+#' are numerically integrated. The settings influence stability of the numerical
+#' integration scheme as well as numerical precision of model outputs. Generally, the
+#' default settings as defined by *deSolve* are used, but all *deSolve* settings
+#' can be modified in *cvasi* workflows by the user, if needed. Please refer
+#' to e.g. [simulate()] on how to pass arguments to *deSolve* in *cvasi*
+#' workflows.
+#'
+#' Some default settings of *deSolve* were adapted for this model by expert
+#' judgement to enable precise, but also computationally efficient, simulations
+#' for most model parameters. These settings can be modified by the user,
+#' if needed:
+#'
+#' - `hmax = 0.1`<br>
+#'    Maximum step length in time suitable for most simulations.
+#'
 #' @section Parameter boundaries:
 #' Default values for parameter boundaries are set for all parameters by expert
 #' judgement, for calibration purposes. Values can be access from the object, and
@@ -259,6 +276,23 @@ Algae_Weber <- function() {
 #'    - `nout >= 3`: `dP`, external phosphorous derivative (mg P L-1)
 #'    - `nout >= 4`: `dDw`, damage concentration derivative (ug L-1)
 #'
+#' @section Solver settings:
+#' The arguments to ODE solver [deSolve::ode()] control how model equations
+#' are numerically integrated. The settings influence stability of the numerical
+#' integration scheme as well as numerical precision of model outputs. Generally, the
+#' default settings as defined by *deSolve* are used, but all *deSolve* settings
+#' can be modified in *cvasi* workflows by the user, if needed. Please refer
+#' to e.g. [simulate()] on how to pass arguments to *deSolve* in *cvasi*
+#' workflows.
+#'
+#' Some default settings of *deSolve* were adapted for this model by expert
+#' judgement to enable precise, but also computationally efficient, simulations
+#' for most model parameters. These settings can be modified by the user,
+#' if needed:
+#'
+#' - `hmax = 0.1`<br>
+#'    Maximum step length in time suitable for most simulations.
+#'
 #' @references
 #' Weber D, Schaeffer D, Dorgerloh M, Bruns E, Goerlitz G, Hammel K, Preuss TG
 #' and Ratte HT, 2012. Combination of a higher-tier flow-through system and
@@ -360,6 +394,22 @@ Algae_TKTD <- function() {
 #' - `nout >= 3`: `dA`, biomass derivative (µg)
 #' - `nout >= 4`: `dDw`, damage concentration derivative (ug L-1)
 #'
+#' @section Solver settings:
+#' The arguments to ODE solver [deSolve::ode()] control how model equations
+#' are numerically integrated. The settings influence stability of the numerical
+#' integration scheme as well as numerical precision of model outputs. Generally, the
+#' default settings as defined by *deSolve* are used, but all *deSolve* settings
+#' can be modified in *cvasi* workflows by the user, if needed. Please refer
+#' to e.g. [simulate()] on how to pass arguments to *deSolve* in *cvasi*
+#' workflows.
+#'
+#' Some default settings of *deSolve* were adapted for this model by expert
+#' judgement to enable precise, but also computationally efficient, simulations
+#' for most model parameters. These settings can be modified by the user,
+#' if needed:
+#'
+#' - `hmax = 0.01`<br>
+#'    Maximum step length in time suitable for most simulations.
 #'
 #' @references
 #' Weber D, Schaeffer D, Dorgerloh M, Bruns E, Goerlitz G, Hammel K, Preuss TG
@@ -401,20 +451,15 @@ Algae_Simple <- function() {
 
 # Solver function for Algae_Weber models
 # @param scenario Scenario object
-# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
-# @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
-# @param rule how to handle data points outside of time-series, see [deSolve::forcings]
 # @param method string, numerical solver used by [deSolve::ode()]
 # @param hmax numeric, maximum step length in time, see [deSolve::ode()]
 # @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
-solver_algae_weber <- function(scenario, approx = c("linear","constant"),
-                               f = 1, method = "lsoda", hmax = 0.1, ...) {
+solver_algae_weber <- function(scenario, method = "lsoda", hmax = 0.1, ...) {
   params.req = c("mu_max", "m_max", "v_max", "k_s", "Q_min", "Q_max", "R_0", "D",
                  "T_opt", "T_min", "T_max", "I_opt", "EC_50", "b", "k"
   )
 
-  approx <- match.arg(approx)
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
@@ -435,7 +480,7 @@ solver_algae_weber <- function(scenario, approx = c("linear","constant"),
   # run solver
   as.data.frame(ode(y = scenario@init, times=scenario@times, initfunc = "algae_init",
                     func = "algae_func", initforc = "algae_forc", parms = params,
-                    forcings = forcings, fcontrol = list(rule = 2, method = approx, f = f, ties = "ordered"),
+                    forcings = forcings,
                     dllname = "cvasi", method = method, hmax = hmax, outnames = outnames,
                     ...))
 }
@@ -446,22 +491,17 @@ setMethod("solver", "AlgaeWeber", solver_algae_weber)
 
 # Solver function for Algae_TKTD models
 # @param scenario Scenario object
-# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
-# @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
-# @param rule how to handle data points outside of time-series, see [deSolve::forcings]
 # @param method string, numerical solver used by [deSolve::ode()]
 # @param hmax numeric, maximum step length in time, see [deSolve::ode()]
 # @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
-solver_algae_tktd <- function(scenario, approx = c("linear","constant"),
-                              f = 1, method = "lsoda", hmax = 0.1, ...) {
+solver_algae_tktd <- function(scenario, method = "lsoda", hmax = 0.1, ...) {
   params.req = c("mu_max", "m_max", "v_max", "k_s",
                  "Q_min", "Q_max",
                  "T_opt", "T_min", "T_max", "I_opt",
                  "EC_50", "b", "kD", "dose_resp"
   )
 
-  approx <- match.arg(approx)
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
@@ -482,7 +522,7 @@ solver_algae_tktd <- function(scenario, approx = c("linear","constant"),
   # run solver
   as.data.frame(ode(y = scenario@init, times=scenario@times, initfunc = "algae_TKTD_init",
                     func = "algae_TKTD_func", initforc = "algae_TKTD_forc",
-                    parms = params, forcings = forcings, fcontrol = list(rule = 2, method = approx, f = f, ties = "ordered"),
+                    parms = params, forcings = forcings,
                     dllname = "cvasi", method = method, hmax = hmax, outnames = outnames,
                     ...))
 }
@@ -493,16 +533,11 @@ setMethod("solver", "AlgaeTKTD", solver_algae_tktd)
 
 # Solver function for Algae_Weber models
 # @param scenario Scenario object
-# @param approx string, interpolation method of exposure series, see [stats::approxfun()]
-# @param f if `approx="constant"`, a number between 0 and 1 inclusive, see [stats::approxfun()]
-# @param rule how to handle data points outside of time-series, see [deSolve::forcings]
 # @param method string, numerical solver used by [deSolve::ode()]
 # @param hmax numeric, maximum step length in time, see [deSolve::ode()]
 # @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
-solver_algae_simple <- function(scenario, approx = c("linear","constant"),
-                                f = 1, method = "ode45", hmax = 0.01, ...) {
-  approx <- match.arg(approx)
+solver_algae_simple <- function(scenario, method = "lsoda", hmax = 0.1, ...) {
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
@@ -521,7 +556,7 @@ solver_algae_simple <- function(scenario, approx = c("linear","constant"),
   # run solver
   as.data.frame(ode(y = scenario@init, times=scenario@times, initfunc = "algae_simple_init",
                     func = "algae_simple_func", initforc = "algae_simple_forc",
-                    parms = params, forcings = forcings, fcontrol = list(rule = 2, method = approx, f = f, ties = "ordered"),
+                    parms = params, forcings = forcings,
                     dllname = "cvasi", method = method, hmax = hmax, outnames = outnames,
                     ...))
 }

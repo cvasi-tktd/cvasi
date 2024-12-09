@@ -254,7 +254,7 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
   if(t_max > max(tr_points)) {
     period <- times[times >= t_start]
     out <- solver(set_times(scenario, period), ...)
-    df <- rbind(df, out[-1,])
+    df <- rbind(df, out[-seq(sum(period == t)),])
   }
 
   # add metadata at which system state the subsequent simulation should start

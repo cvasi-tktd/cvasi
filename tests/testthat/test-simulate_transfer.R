@@ -12,11 +12,15 @@ test_that("regular intervals with redundant time-points", {
   metsulfuron %>%
     set_init(c(BM=1)) %>%
     set_noexposure() %>%
-    set_times(rep(0:14, each=2)) %>%
+    set_times(rep(0:13, each=2)) %>%
     set_transfer(interval=2, biomass=1) %>%
     simulate() -> rs
 
-  expect_equal(rs$time, rep(0:14, each=2))
+  expect_equal(rs$time, rep(0:13, each=2))
+  # starts at 0 with init, then values at t+1, t+2 should repeat until the end
+  expect_equal(rs$BM[1:2], c(1, 1))
+  expect_equal(rs$BM[c(3,4,7,8,27,28)], rep(1.0881825, 6), tolerance=1e-5)
+  expect_equal(rs$BM[c(5,6,9,10)], rep(1.18407, 4), tolerance=1e-5)
 })
 
 test_that("custom time points", {

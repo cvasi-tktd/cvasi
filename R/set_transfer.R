@@ -151,3 +151,10 @@ set_transfer2 <- function(x, interval, times, biomass, scaled_comp) {
   }
   x
 }
+
+set_notransfer <- function(x) {
+  if(length(x) > 1)
+    return(sapply(x, set_notransfer))
+
+  set_transfer(x, interval=-1)
+}

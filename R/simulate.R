@@ -180,26 +180,34 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
 
   times <- scenario@times
   t_min <- min(times)
-  if(t_min < 0)
-    stop("output times must not be negative")
   t_max <- max(times)
 
   # find transfer time points that occur during the simulated period
   tr_points <- vector("numeric")
   ends_on_transfer <- FALSE
   if(has_regular_transfer(scenario)) {
-    # sim has to be long enough for transfers to occur
-    if(t_max >= scenario@transfer.interval) {
-      tr_points <- seq(scenario@transfer.interval, t_max, scenario@transfer.interval)
-    }
+    seq_start <- ceiling(t_min / scenario@transfer.interval) * scenario@transfer.interval
+    seq_end <- t_max
+    if(seq_start <= seq_end) # avoid errors in case no transfer occurs
+      tr_points <- seq(seq_start, seq_end, scenario@transfer.interval)
   } else {
     tr_points <- scenario@transfer.times
   }
+  # does simulation period end on a transfer?
   if(length(tr_points) > 0)
-    ends_on_transfer <- tail(tr_points, 1) == t_max
+    ends_on_transfer <- tr_points[length(tr_points)] == t_max
   # limit vector to transfer time points which occur during the simulated period.
   # but exclude the starting time as a potential transfer
   tr_points <- tr_points[tr_points > t_min & tr_points <= t_max]
+
+  # if no transfers occurs during simulated period -> early exit
+  if(length(tr_points) == 0 & !ends_on_transfer)
+    return(simulate_scenario(set_times(scenario, times), ...))
+
+  # add all transfer time points to the output times vector
+  tr_inserted <- setdiff(tr_points, times)
+  if(length(tr_inserted) > 0)
+    times <- sort(c(times, tr_inserted))
 
   # biomass level after each transfer
   if(length(scenario@transfer.biomass) == 1)
@@ -209,34 +217,26 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
   else
     stop("length of biomass and transfer times vectors do not match", call.=FALSE)
 
-  # if no transfers occur -> early exit
-  if(length(tr_points) == 0 & !ends_on_transfer)
-    return(simulate_scenario(scenario, times=times, ...))
-
-  # transfer time points must be contained in output time points
-  if(length(setdiff(tr_points, times)) > 0)
-    stop(paste("transfer time points missing in output times:", paste(setdiff(tr_points, times), sep=",")))
-
   df <- data.frame()
   t_start <- t_min
-  #tr_points <- c(tr_points, t_max)
-  #tr_biomass <- c(tr_biomass, NA_real_) # dummy value
+  # add last time point to also simulate the remainder of the scenario, if it exists
+  if(!ends_on_transfer)
+    tr_points <- c(tr_points, t_max)
   # simulate population until next transfer to new medium
-  for(i in seq_along(tr_points)) {
-    t <- tr_points[i]
-    period <- times[times >= t_start & times <= t]
-    # simulate
+  for(i in seq_along(tr_points))
+  {
+    tr <- tr_points[i]
+    period <- times[times >= t_start & times <= tr]
     out <- solver(set_times(scenario, period), ...)
 
-    # append results to output data.frame
-    if(i==1) {
-      df <- rbind(df, out)
-    } else {
-      # append simulation results, but exclude values for the starting time point
-      # where the transfer occurred. the starting time point `t` could be included more
-      # than once in the `times` or `period` vector
-      df <- rbind(df, out[-seq(sum(period == t)),])
+    # select rows/time points:
+    # 1) that do NOT occur directly after a transfer, i.e. the start of a simulation
+    selector <- i == 1 | period != t_start
+    # 2) that were NOT inserted for technical reasons
+    if(length(tr_inserted) > 0) {
+      selector <- selector & !(period %in% tr_inserted)
     }
+    df <- rbind(df, out[selector, ])
 
     # Transfer a fixed number of biomass to a new medium:
     # use last state as starting point
@@ -248,13 +248,7 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
     # scale other compartments relative to new biomass
     init[scenario@transfer.comp.scaled] <- init[scenario@transfer.comp.scaled] * BM.fac
     scenario <- set_init(scenario, init)
-    t_start <- t
-  }
-  # simulate the remainder of the scenario if any exists
-  if(t_max > max(tr_points)) {
-    period <- times[times >= t_start]
-    out <- solver(set_times(scenario, period), ...)
-    df <- rbind(df, out[-seq(sum(period == t)),])
+    t_start <- tr
   }
 
   # add metadata at which system state the subsequent simulation should start

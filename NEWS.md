@@ -6,6 +6,9 @@
   *cvasi* functions such as `simulate()` and `dose_response()`.
 * New parameter for `sequence()`: argument `breaks` can split the sequence
   elements at the given time points to ease the creation of sequences.
+* Requirements relaxed for scenarios with simulated biomass transfers:
+  * Transfer time points no longer need to be part of the output times.
+  * Negative output times are now supported.
 * Example scenarios `minnow_it` and `minnow_sw` now feature a non-zero
   background mortality rate.
 * Default solver of `Algae_Simple` and `Lemna_Schmitt` set to `lsoda`

@@ -7,7 +7,7 @@
 #' @section Biomass transfer:
 #' Models supporting biomass transfer can be instructed to move a fixed amount
 #' of biomass to a new medium after a period of time. This feature replicates
-#' a procedure occurring in e.g. Lemna effect studies and may be necessary to
+#' a procedure occurring in e.g. *Lemna* effect studies and may be necessary to
 #' recreate study results.
 #'
 #' The biomass transfer feature assumes that always a fixed amount of
@@ -17,16 +17,20 @@
 #' to e.g. reflect the change in internal toxicant mass when biomass is modified.
 #' Transfer settings can be modified using [set_transfer()].
 #'
-#' Any transfer time point must also be an output time point. If a transfer
-#' occurs, simulation results of that time point will report the model state
-#' **before** the transfer. Be aware that in order to use transfers at regular
-#' intervals, the simulation must start at time point zero.
+#' If a transfer occurs, simulation results of that time point will report the model state
+#' **before** the transfer. Be aware that if transfers are defined using the
+#' `interval` argument, the transfers will always occur relative to time point
+#' zero (`t = 0`). As an example, setting a regular transfer of seven days,
+#' `interval =  7`, will result at transfers occurring at time points which are
+#' integer multiplicates of seven, such as `t=0`, `t=7`, `t=14` and so forth.
+#' The starting and end times of a scenario do not influece **when** a regular
+#' transfer occurs, only **if** it occurs.
 #'
 #' @seealso [set_transfer()]
-#' @slot transfer.times  `numeric`, vector of time points at which transfers occur,
-#'  e.g. `c(7,10,14)`
-#' @slot transfer.interval `numeric`, interval length until frond transfer to new
-#'  medium
+#' @slot transfer.times  `numeric`, vector of custom time points at which transfers occur,
+#'  e.g. `c(2,5,14)`
+#' @slot transfer.interval `numeric`, length of regular interval until biomass transfer to new
+#'  medium, regular transfers always occur relative to time point zero
 #' @slot transfer.biomass `numeric`, amount of biomass transferred to new medium
 #' @slot transfer.comp.biomass `character` state variable which describes
 #'   biomass
@@ -35,6 +39,18 @@
 #' @name Transferable
 #' @family scenario-related
 #' @aliases Biomass-transfer Transferable-class
+#' @examples
+#' # Simulation without biomass transfers
+#' metsulfuron %>%
+#'   set_noexposure() %>%
+#'   set_notransfer() %>%
+#'   simulate()
+#'
+#' # With biomass transfer every 7 days, biomass is reset to 50 *g/m²* on transfer
+#' metsulfuron %>%
+#'   set_noexposure() %>%
+#'   set_transfer(interval=7, biomass=50) %>%
+#'   simulate()
 NULL
 
 #' @export

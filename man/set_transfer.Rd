@@ -4,6 +4,7 @@
 \alias{set_transfer}
 \alias{set_transfer,ANY-method}
 \alias{set_transfer,Transferable-method}
+\alias{set_notransfer}
 \title{Set transfer events}
 \usage{
 set_transfer(x, interval, times, biomass, scaled_comp)
@@ -11,6 +12,8 @@ set_transfer(x, interval, times, biomass, scaled_comp)
 \S4method{set_transfer}{ANY}(x, interval, times, biomass, scaled_comp)
 
 \S4method{set_transfer}{Transferable}(x, interval, times, biomass, scaled_comp)
+
+set_notransfer(x)
 }
 \arguments{
 \item{x}{vector of \code{EffectScenario} objects}
@@ -27,19 +30,26 @@ transferred at each transfer}
 that are scaled according to new biomass levels}
 }
 \value{
-Modified \code{EffectScenario} objects
+Modified \link{scenario} objects
 }
 \description{
-A \emph{transfer} refers to an event where a certain amount of biomass (\emph{BM})
-is moved to a new medium after a period of time. This feature replicates
-a procedure occurring e.g. in Lemna effect studies and may be necessary to recreate
-study results.
+A \emph{transfer} refers to an event where a certain amount of biomass
+is moved to a new medium after a period of time. Effectively, this resets
+the scenario's state variable representing biomass and scales all state
+variables which are correlated with biomass, such as adsorbed chemical mass,
+accordingly.
+This feature replicates a procedure occurring e.g. in \emph{Lemna} effect studies
+and may be necessary to recreate study results.
 }
 \details{
-Any transfer time point must also be an output time point. If a transfer
-occurs, simulation results of that time point will report the model state
-\strong{before} the transfer. Be aware that in order to use transfers at regular
-intervals, the simulation must start at time point zero.
+If a transfer occurs, simulation results of that time point will report the model state
+\strong{before} the transfer. Be aware that if transfers are defined using the
+\code{interval} argument, the transfers will always occur relative to time point
+zero (\code{t = 0}). As an example, setting a regular transfer of seven days,
+\code{interval =  7}, will result at transfers occurring at time points which are
+integer multiplicates of seven, such as \code{t=0}, \code{t=7}, \code{t=14} and so forth.
+The starting and end times of a scenario do not influece \strong{when} a regular
+transfer occurs, only \strong{if} it occurs.
 \subsection{Transferred biomass}{
 
 At each transfer, a defined amount of biomass is transferred to a new medium.
@@ -85,22 +95,32 @@ custom, user-defined models. If no compartment needs to be scaled, set or
 use the default value of \code{character(0)}.
 }
 }
+\section{Functions}{
+\itemize{
+\item \code{set_notransfer()}: Disable biomass transfers
+
+}}
 \examples{
-# Simulate biomass transfer of 50 *g dw/m²* at a regular interval of 7 *days*
+# Simulate biomass transfer of 50 *g/m²* at a regular interval of 7 *days*
 metsulfuron \%>\%
   set_transfer(interval=7, biomass=50) \%>\%
   simulate()
 
 # Simulate irregular biomass transfers occuring at days 5, 10, and 12
 metsulfuron \%>\%
-  set_transfer(times=c(5,10,12), biomass=50) \%>\%
+  set_transfer(times=c(5, 10, 12), biomass=50) \%>\%
   simulate()
 
 # Simulate irregular transfers with changing amounts of transferred biomass
 metsulfuron \%>\%
-  set_transfer(times=c(5,10,12), biomass=c(50,20,10)) \%>\%
+  set_transfer(times=c(5, 10, 12), biomass=c(50, 20, 10)) \%>\%
+  simulate()
+
+# Disable all biomass transfers
+metsulfuron \%>\%
+  set_notransfer() \%>\%
   simulate()
 }
 \seealso{
-\code{\link[=Lemna_Schmitt]{Lemna_Schmitt()}}
+\link{Lemna-models}
 }

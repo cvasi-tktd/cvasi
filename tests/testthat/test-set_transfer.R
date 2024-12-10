@@ -1,3 +1,8 @@
+test_that("set_transfer default handler", {
+  expect_error(new("EffectScenario") %>% set_transfer(interval=1), "not support")
+  expect_error("foo" %>% set_transfer(interval=1), "not support")
+})
+
 test_that("set_transfer interval", {
   # no transfer
   Lemna_Schmitt() %>% set_transfer(interval=-1) -> sc
@@ -66,10 +71,30 @@ test_that("set_transfer biomass", {
 })
 
 test_that("set_transfer invalid arguments", {
+  sc <- Lemna_Schmitt()
   # invalid inputs
-  expect_error(set_transfer(sc, interval=NA))
-  expect_error(set_transfer(sc, interval=2, times=2))
-  expect_error(set_transfer(sc, times=c(2,NA,3)))
-  expect_error(set_transfer(sc, times=1, biomass=1:3))
-  expect_error(set_transfer(sc, interval=1, biomass=1:3))
+  expect_error(set_transfer(sc, interval=NA), "numeric")
+  expect_error(set_transfer(sc, interval=2, times=2), "cannot be used")
+  expect_error(set_transfer(sc, times=c(2,NA,3)), "invalid value")
+  expect_error(set_transfer(sc, times=1, biomass="foo"), "invalid value")
+  expect_error(set_transfer(sc, times=1, biomass=c(1, NA_real_)), "invalid value")
+  expect_error(set_transfer(sc, times=1, biomass=1:3), "length of")
+  expect_error(set_transfer(sc, interval=1, biomass=1:3), "length of")
+  # invalid object state
+  expect_error(set_transfer(sc, interval=1, scaled_comp=character(0)), "not be empty")
+  expect_error(set_transfer(sc, interval=1, scaled_comp="foo"), "state variables")
+  sc2 <- sc
+  sc2@transfer.comp.biomass <- NA_character_
+  expect_error(set_transfer(sc2, interval=1), "biomass state variable.*not set")
+  sc2@transfer.comp.biomass <- character(0)
+  expect_error(set_transfer(sc2, interval=1), "biomass state variable.*length 1")
+})
+
+test_that("set_notransfer", {
+  tr <- Lemna_Schmitt() %>% set_transfer(interval=5)
+
+  # single scenario
+  expect_false(has_transfer(tr %>% set_notransfer()))
+  # multiple scenarios
+  expect_equal(has_transfer(list(tr, tr) %>% set_notransfer()), c(FALSE, FALSE))
 })

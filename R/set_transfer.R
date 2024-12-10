@@ -1,14 +1,20 @@
 #' Set transfer events
 #'
-#' A *transfer* refers to an event where a certain amount of biomass (*BM*)
-#' is moved to a new medium after a period of time. This feature replicates
-#' a procedure occurring e.g. in Lemna effect studies and may be necessary to recreate
-#' study results.
+#' A *transfer* refers to an event where a certain amount of biomass
+#' is moved to a new medium after a period of time. Effectively, this resets
+#' the scenario's state variable representing biomass and re-scales all state
+#' variables which are correlated with biomass, such as adsorbed chemical mass.
+#' This feature replicates a procedure occurring e.g. in *Lemna* effect studies
+#' and may be necessary to recreate study results.
 #'
-#' Any transfer time point must also be an output time point. If a transfer
-#' occurs, simulation results of that time point will report the model state
-#' **before** the transfer. Be aware that in order to use transfers at regular
-#' intervals, the simulation must start at time point zero.
+#' If a transfer occurs, simulation results of that time point will report the model state
+#' **before** the transfer. Be aware that if transfers are defined using the
+#' `interval` argument, the transfers will always occur relative to time point
+#' zero (`t = 0`). As an example, setting a regular transfer of seven days,
+#' `interval =  7`, will result at transfers occurring at time points which are
+#' integer multiplicates of seven, such as `t=0`, `t=7`, `t=14` and so forth.
+#' The starting and end times of a scenario do not influece **when** a regular
+#' transfer occurs, only **if** it occurs.
 #'
 #' ### Transferred biomass
 #'
@@ -61,25 +67,30 @@
 #'    transferred at each transfer
 #' @param scaled_comp optional `character` vector of affected compartments
 #'    that are scaled according to new biomass levels
-#' @seealso [Lemna_Schmitt()]
-#' @return Modified `EffectScenario` objects
+#' @seealso [Lemna-models]
+#' @return Modified [scenario] objects
 #' @export
 #' @include class-EffectScenario.R
 #' @rdname set_transfer
 #' @examples
-#' # Simulate biomass transfer of 50 *g dw/m²* at a regular interval of 7 *days*
+#' # Simulate biomass transfer of 50 *g/m²* at a regular interval of 7 *days*
 #' metsulfuron %>%
 #'   set_transfer(interval=7, biomass=50) %>%
 #'   simulate()
 #'
 #' # Simulate irregular biomass transfers occuring at days 5, 10, and 12
 #' metsulfuron %>%
-#'   set_transfer(times=c(5,10,12), biomass=50) %>%
+#'   set_transfer(times=c(5, 10, 12), biomass=50) %>%
 #'   simulate()
 #'
 #' # Simulate irregular transfers with changing amounts of transferred biomass
 #' metsulfuron %>%
-#'   set_transfer(times=c(5,10,12), biomass=c(50,20,10)) %>%
+#'   set_transfer(times=c(5, 10, 12), biomass=c(50, 20, 10)) %>%
+#'   simulate()
+#'
+#' # Disable all biomass transfers
+#' metsulfuron %>%
+#'   set_notransfer() %>%
 #'   simulate()
 setGeneric("set_transfer",
            function(x, interval, times, biomass, scaled_comp) standardGeneric("set_transfer"),
@@ -129,8 +140,8 @@ set_transfer2 <- function(x, interval, times, biomass, scaled_comp) {
   if(!missing(biomass)) {
     biomass <- unlist(biomass)
     if(!is.numeric(biomass))
-      stop("biomass ")
-    if(any(is.nan(biomass)) | any(biomass<=0))
+      stop("biomass has invalid value")
+    if(any(is.nan(biomass)) | any(biomass <= 0))
       stop("biomass has invalid value")
     if(length(biomass) > 1 & length(x@transfer.times) != length(biomass))
       stop("length of biomass and transfer times vectors do not match")
@@ -152,6 +163,8 @@ set_transfer2 <- function(x, interval, times, biomass, scaled_comp) {
   x
 }
 
+#' @export
+#' @describeIn set_transfer Disable biomass transfers
 set_notransfer <- function(x) {
   if(length(x) > 1)
     return(sapply(x, set_notransfer))

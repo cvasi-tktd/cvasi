@@ -132,7 +132,7 @@ with biomass transfers.
 
 Models supporting biomass transfer can be instructed to move a fixed amount
 of biomass to a new medium after a period of time. This feature replicates
-a procedure occurring in e.g. Lemna effect studies and may be necessary to
+a procedure occurring in e.g. \emph{Lemna} effect studies and may be necessary to
 recreate study results.
 
 The biomass transfer feature assumes that always a fixed amount of
@@ -142,10 +142,14 @@ transferred amount and additional compartments can be scaled 1:1 accordingly,
 to e.g. reflect the change in internal toxicant mass when biomass is modified.
 Transfer settings can be modified using \code{\link[=set_transfer]{set_transfer()}}.
 
-Any transfer time point must also be an output time point. If a transfer
-occurs, simulation results of that time point will report the model state
-\strong{before} the transfer. Be aware that in order to use transfers at regular
-intervals, the simulation must start at time point zero.
+If a transfer occurs, simulation results of that time point will report the model state
+\strong{before} the transfer. Be aware that if transfers are defined using the
+\code{interval} argument, the transfers will always occur relative to time point
+zero (\code{t = 0}). As an example, setting a regular transfer of seven days,
+\code{interval =  7}, will result at transfers occurring at time points which are
+integer multiplicates of seven, such as \code{t=0}, \code{t=7}, \code{t=14} and so forth.
+The starting and end times of a scenario do not influece \strong{when} a regular
+transfer occurs, only \strong{if} it occurs.
 }
 
 \references{

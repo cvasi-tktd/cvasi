@@ -200,7 +200,7 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
   # but exclude the starting time as a potential transfer
   tr_points <- tr_points[tr_points > t_min & tr_points <= t_max]
 
-  # if no transfers occurs during simulated period -> early exit
+  # if no transfer occurs during simulated period -> early exit
   if(length(tr_points) == 0 & !ends_on_transfer)
     return(simulate_scenario(set_times(scenario, times), ...))
 

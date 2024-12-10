@@ -141,7 +141,7 @@ set_transfer2 <- function(x, interval, times, biomass, scaled_comp) {
     biomass <- unlist(biomass)
     if(!is.numeric(biomass))
       stop("biomass has invalid value")
-    if(any(is.nan(biomass)) | any(biomass <= 0))
+    if(any(is.na(biomass) | is.nan(biomass)) | any(biomass <= 0))
       stop("biomass has invalid value")
     if(length(biomass) > 1 & length(x@transfer.times) != length(biomass))
       stop("length of biomass and transfer times vectors do not match")

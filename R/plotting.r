@@ -496,7 +496,7 @@ plot_epx <- function(EPx_ts, exposure_ts, draw = TRUE, time_col = "time", conc_c
                      epx_x_title = "Start time", conc_y_title = "Exposure conc.") {
 
   plot_dat <- EPx_ts %>%
-    dplyr::select(!dplyr::matches("window.end", "level"))
+    dplyr::select(!c("window.end", "level"))
 
   # EPx plot ----
   ep_level <- unique(EPx_ts[["level"]])

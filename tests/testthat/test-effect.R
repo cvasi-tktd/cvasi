@@ -19,6 +19,32 @@ window_IT <- function(df,window=-1,interval=-1) {
   c(tib[[1,"dat.start"]],tib[[1,"dat.end"]])
 }
 
+test_that("generic effect calculation", {
+  # no effect
+  expect_equal(calc_effect(1, 1), 0)
+  expect_equal(calc_effect(0, 0), 0)
+  expect_equal(calc_effect(-1, -1), 0)
+  # positive finite effects, i.e. treatment is lower than control
+  expect_equal(calc_effect(0.9, 1), 0.1)
+  expect_equal(calc_effect(0,  1), 1)
+  expect_equal(calc_effect(-1, 1), 2)
+
+  expect_equal(calc_effect(-1.1, -1), 0.1)
+  expect_equal(calc_effect(-2,   -1), 1)
+  expect_equal(calc_effect(-3,   -1), 2)
+  # negative finite effects, i.e. treatment is higher than control
+  expect_equal(calc_effect(1.1, 1), -0.1)
+  expect_equal(calc_effect(2,   1), -1)
+  expect_equal(calc_effect(3,   1), -2)
+
+  expect_equal(calc_effect(-0.9, -1), -0.1)
+  expect_equal(calc_effect( 0,   -1), -1)
+  expect_equal(calc_effect( 1,   -1), -2)
+  # infinite effects, i.e. control is zero
+  expect_equal(calc_effect(0.1,   0), -Inf)
+  expect_equal(calc_effect(-0.1,  0), Inf)
+})
+
 test_that("GUTS-RED pulsed exposure", {
   # allowed numerical tolerance between model runs
   tol <- 0.001
@@ -124,13 +150,13 @@ test_that("Lemna effects", {
 
   # check that r does not exceed 1.0 in case of negative growth rates
   metsulfuron %>%
-    set_exposure(data.frame(t=0:14,c=1000)) -> sc
+    set_exposure(data.frame(t=0:14, c=1000)) -> sc
   sc %>% simulate() -> out
   # check that we indeed have negative growth
-  expect_true(out$BM[1]>tail(out$BM,1))
-  # r effect endpoint should then max out at 1.0
+  expect_true(out$BM[1] > tail(out$BM,1))
+  # r effect endpoint should be greater than 1.0
   sc %>% effect() -> efx
-  expect_equal(efx %>% dplyr::pull(r), 1)
+  expect_gt(efx$r[1], 1)
   # all endpoints contained in output?
   expect_true(all(c("BM","r") %in% names(efx)))
 })

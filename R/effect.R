@@ -10,6 +10,25 @@
 #' be converted to long-format and will contain effect levels for each
 #' assessed exposure window.
 #'
+#' ## Calculation
+#'
+#' Effects are calculated similarly to *relative errors*, i.e. the difference
+#' between control and treatment scenarios is divided by the absolute value
+#' of the control. Effects are usually in the interval `[0,1]`, but values
+#' larger than one or smaller than zero can occur. As a special case, if the
+#' endpoint from the control scenario is zero, then the effect is either
+#' - zero, if also the treatment is zero
+#' - positive infinity, if the treatment is smaller than zero
+#' - negative infinity, if the treatment is greater than zero
+#'
+#' As an example, a control scenario achieves a biomass of
+#' 1.0 and the treatment scenario achieves a biomass of 0.9, the effect will
+#' be equal to 0.1 or 10%. However, effects can take on any real value. If,
+#' for example, the biomass of the previously mentioned treatment scenario drops
+#' below zero, then an effect larger than 1.0 will be calculated If, instead,
+#' the biomass in the treatment scenario is greater than in the control, then the
+#' effect will be negative.
+#'
 #' ### Output formatting
 #' Start and end time of exposure windows can be disabled by setting `ep_only=TRUE`.
 #' Effect levels smaller than a certain threshold can be automatically set to
@@ -117,22 +136,21 @@ effect <- function(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_effect, .
 }
 
 # Calculates the effect based on simulation and control. Takes into
-# account some edge cases where sim/control are zero which may introduce
-# NaN.
+# account some edge cases where sim/control are zero which would otherwise
+# introduce NaNs.
 #
+# @param sim Usually a scenario with non-zero exposure, i.e. a treatment
+# @param control A scenario with zero exposure
+# @return Any real value
 calc_effect <- function(sim, control) {
-  rs <- 1 - sim / control # effect relative to control
+  rs <- (control - sim) / abs(control) # effect relative to control
   # handle zeroes in control endpoints
-  if(any(is.nan(rs))) {
-    idx_c0 <- control==0
-    rs[idx_c0 & sim==0] <- 0 # no effect if control and sim are zero
-    rs[idx_c0 & sim>0]  <- 1 # 100% effect if sim>0 but control is zero
-    # everything else should stay as it is, including NaNs
+  idx_c0 <- control == 0
+  if(any(idx_c0)) {
+    rs[idx_c0]  <- -sign(sim[idx_c0]) * Inf # infinite effect if sim <> 0 but control is zero
+    rs[idx_c0 & sim == 0] <- 0      # no effect if control and sim are zero
   }
-  # if e.g. control's endpoint>0 and current endpoint<0, the calculated effect
-  # would be greater than 1.0 which we want to avoid because an effect cannot
-  # be greater than 100%
-  pmin(rs, 1)
+  rs
 }
 
 

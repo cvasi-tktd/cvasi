@@ -1,5 +1,14 @@
 # cvasi Development version
 
+* MODIFIED
+
+   * The effects calculated by `effect()` are no longer limited to a maximum
+     value of `1.0`. Instead, effects are calculated similarly to *relative errors*,
+     quantifying the relative difference of endpoints in control and treatment
+     scenarios.
+
+# cvasi 1.4.0
+
 * New `batch()` function to ease the creation of batch simulations based on a
   single scenario and multiple exposure series.
 * New overloads of `plot()` which can graphically depict the return values of
@@ -16,7 +25,7 @@
   (before, `ode45` was used).
 * Parameter list of `solver()` functions simplified; the following parameters
   no longer need to be accepted:
-   * `times`, output times are solely defined by the exposure scenario itself
+   * `times`, output times are solely defined by the scenario itself
    * `f`, `approx`, and `rule`: if default settings of *deSolve*'s interpolation of
       forcings series needs to be adapted, the `fcontrol` argument has to be
       provided by users

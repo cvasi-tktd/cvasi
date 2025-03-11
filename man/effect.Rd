@@ -47,6 +47,26 @@ By default, only the maximum effect in all moving exposure windows will
 be returned. If argument \code{max_only=FALSE} is set, the returned table will
 be converted to long-format and will contain effect levels for each
 assessed exposure window.
+\subsection{Calculation}{
+
+Effects are calculated similarly to \emph{relative errors}, i.e. the difference
+between control and treatment scenarios is divided by the absolute value
+of the control. Effects are usually in the interval \verb{[0,1]}, but values
+larger than one or smaller than zero can occur. As a special case, if the
+endpoint from the control scenario is zero, then the effect is either
+\itemize{
+\item zero, if also the treatment is zero
+\item positive infinity, if the treatment is smaller than zero
+\item negative infinity, if the treatment is greater than zero
+}
+
+As an example, a control scenario achieves a biomass of
+1.0 and the treatment scenario achieves a biomass of 0.9, the effect will
+be equal to 0.1 or 10\%. However, effects can take on any real value. If,
+for example, the biomass of the previously mentioned treatment scenario drops
+below zero, then an effect larger than 1.0 will be calculated If, instead,
+the biomass in the treatment scenario is greater than in the control, then the
+effect will be negative.
 \subsection{Output formatting}{
 
 Start and end time of exposure windows can be disabled by setting \code{ep_only=TRUE}.
@@ -62,5 +82,7 @@ control scenarios for each assessed time window. As control scenarios are
 by definition independent of any exposure multiplication factor, they can
 be reused for repeated calculations, e.g. to derive effect profiles or
 dose-response relationships.
+}
+
 }
 }

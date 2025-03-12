@@ -5,30 +5,36 @@
    * The effects calculated by `effect()` are no longer limited to a maximum
      value of `1.0`. Instead, effects are calculated similarly to *relative errors*,
      quantifying the relative difference of endpoints in control and treatment
-     scenarios.
+     scenarios. Values greater than one as well as less than zero can occur.
+   * Unused parameter `const_growth` removed from `Algae_Simple()` constructor.
+   * *Algae* models now check if all required parameters are present before
+     starting a simulation.
 
 # cvasi 1.4.0
 
-* New `batch()` function to ease the creation of batch simulations based on a
-  single scenario and multiple exposure series.
-* New overloads of `plot()` which can graphically depict the return values of
-  *cvasi* functions such as `simulate()` and `dose_response()`.
-* New parameter for `sequence()`: argument `breaks` can split the sequence
-  elements at the given time points to ease the creation of sequences.
-* Requirements relaxed for scenarios with simulated biomass transfers:
-  * Transfer time points no longer need to be part of the output times.
-  * Negative output times are now supported.
-* Example scenarios `minnow_it` and `minnow_sw` now feature a non-zero
-  background mortality rate.
-* Default solver of `Algae_Simple` and `Lemna_Schmitt` set to `lsoda`
-  to harmonize the numerical scheme used within a class of models
-  (before, `ode45` was used).
-* Parameter list of `solver()` functions simplified; the following parameters
-  no longer need to be accepted:
-   * `times`, output times are solely defined by the scenario itself
-   * `f`, `approx`, and `rule`: if default settings of *deSolve*'s interpolation of
-      forcings series needs to be adapted, the `fcontrol` argument has to be
-      provided by users
+* NEW
+   * New `batch()` function to ease the creation of batch simulations based on a
+     single scenario and multiple exposure series.
+   * New overloads of `plot()` which can graphically depict the return values of
+     *cvasi* functions such as `simulate()` and `dose_response()`.
+   * New parameter for `sequence()`: argument `breaks` can split the sequence
+     elements at the given time points to ease the creation of sequences.
+     
+* MODIFIED
+   * Requirements relaxed for scenarios with simulated biomass transfers:
+      * Transfer time points no longer need to be part of the output times.
+      * Negative output times are now supported.
+   * Example scenarios `minnow_it` and `minnow_sw` now feature a non-zero
+     background mortality rate.
+   * Default solver of `Algae_Simple` and `Lemna_Schmitt` set to `lsoda`
+     to harmonize the numerical scheme used within a class of models
+     (before, `ode45` was used).
+    * Parameter list of `solver()` functions simplified; the following parameters
+      no longer need to be accepted:
+      * `times`, output times are solely defined by the scenario itself
+      * `f`, `approx`, and `rule`: if default settings of *deSolve*'s interpolation of
+        forcings series needs to be adapted, the `fcontrol` argument has to be
+        provided by users
 
 # cvasi 1.3.1
 

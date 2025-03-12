@@ -173,6 +173,22 @@ Maximum step length in time suitable for most simulations.
 }
 }
 
+\section{Model history and changes}{
+
+\itemize{
+\item cvasi v1.0.0
+\itemize{
+\item Model and parameters as described by Klein et al. (2022) report version 1.1
+}
+\item cvasi v1.4.1
+\itemize{
+\item Default value of parameter \code{beta} modified due to typo in previous report
+versions, now conforms with Klein et al. (2025), report version 1.2
+\item New value: \code{beta=0.25}, old value: \code{beta=0.025}
+}
+}
+}
+
 \section{Biomass transfer}{
 
 Models supporting biomass transfer can be instructed to move a fixed amount

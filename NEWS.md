@@ -9,6 +9,10 @@
    * Unused parameter `const_growth` removed from `Algae_Simple()` constructor.
    * *Algae* models now check if all required parameters are present before
      starting a simulation.
+   * `Lemna_SETAC` model: The default value of parameter `beta` has been updated
+      from formerly `0.025` to now `0.25`. This reflects changes to the
+      SETAC working group's report in version 1.2. The old value originated from
+      typos in former report versions.
 
 # cvasi 1.4.0
 

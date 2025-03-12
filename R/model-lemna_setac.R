@@ -143,6 +143,14 @@ setClass("LemnaSetacScenario", contains="LemnaSetac")
 #'
 #' @inheritSection Transferable Biomass transfer
 #'
+#' @section Model history and changes:
+#' - cvasi v1.0.0
+#'   - Model and parameters as described by Klein et al. (2022) report version 1.1
+#' - cvasi v1.4.1
+#'   - Default value of parameter `beta` modified due to typo in previous report
+#'     versions, now conforms with Klein et al. (2025), report version 1.2
+#'   - New value: `beta=0.25`, old value: `beta=0.025`
+#'
 #' @references
 #' Klein J., Cedergreen N., Heine S., Reichenberger S., Rendal C.,
 #' Schmitt W., Hommen U., 2021: *Refined description of the Lemna TKTD growth model
@@ -179,7 +187,7 @@ Lemna_SETAC <- function() {
         Q10 = 2,        # temperature coefficient (-)
         T_ref = 25,     # ref temperature for response=1 (°C)
         alpha = 5e-5,   # slope of irradiance response of photosynthesis (m2 d kJ-1)
-        beta = 0.025,   # intercept of irradiance response of photosynthesis (-)
+        beta = 0.25,    # intercept of irradiance response of photosynthesis (-)
         N_50 = 0.034,   # half-saturation constant of Nitrogen response (mg N L-1)
         P_50 = 0.0043,  # half-saturation constant of Phosphorus response (mg P L-1)
         BM_L = 177,     # carrying capacity (g dw m-2)

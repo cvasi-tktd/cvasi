@@ -463,7 +463,7 @@ solver_algae_weber <- function(scenario, method = "lsoda", hmax = 0.1, ...) {
     stop(paste("parameter missing:", paste(params.missing, collapse=", ")))
 
   # reorder parameters for deSolve
-  params <- params[params.req]
+  params <- params[scenario@param.req]
   # check if any parameter has no value
   if(any(is.na(params) | is.nan(params)))
     stop(paste("parameter value missing:", paste(names(params)[which(is.na(params) | is.nan(params))], collapse=", ")))
@@ -498,7 +498,7 @@ setMethod("solver", "AlgaeWeber", solver_algae_weber)
 #' @importFrom deSolve ode
 solver_algae_tktd <- function(scenario, method = "lsoda", hmax = 0.1, ...) {
   # keep for backwards compatibility, older version used wrong list in constructor
-  params.req = c("mu_max", "m_max", "v_max", "k_s", "Q_min", "Q_max", "T_opt",
+  param.req = c("mu_max", "m_max", "v_max", "k_s", "Q_min", "Q_max", "T_opt",
                  "T_min", "T_max", "I_opt", "EC_50", "b", "kD", "dose_resp" )
 
   params <- scenario@param
@@ -506,12 +506,12 @@ solver_algae_tktd <- function(scenario, method = "lsoda", hmax = 0.1, ...) {
     params <- unlist(params)
 
   # check for missing parameters
-  params.missing <- setdiff(scenario@param.req, names(params))
+  params.missing <- setdiff(param.req, names(params))
   if(length(params.missing) > 0)
     stop(paste("parameter missing:", paste(params.missing, collapse=", ")))
 
   # reorder parameters for deSolve
-  params <- params[params.req]
+  params <- params[param.req]
   # check if any parameter has no value
   if(any(is.na(params) | is.nan(params)))
     stop(paste("parameter value missing:", paste(names(params)[which(is.na(params) | is.nan(params))], collapse=", ")))
@@ -553,15 +553,15 @@ solver_algae_simple <- function(scenario, method = "lsoda", hmax = 0.1, ...) {
   forcings <- list(scenario@exposure@series, scenario@forcings$f_growth)
 
   # keep for backwards compatibility, older version used wrong list in constructor
-  params.req = c("mu_max", "EC_50", "b", "kD", "scaled", "dose_response")
+  param.req = c("mu_max", "EC_50", "b", "kD", "scaled", "dose_response")
 
   # check for missing parameters
-  params.missing <- setdiff(scenario@param.req, names(params))
+  params.missing <- setdiff(param.req, names(params))
   if(length(params.missing) > 0)
     stop(paste("parameter missing:", paste(params.missing, collapse=", ")))
 
   # reorder parameters for deSolve
-  params <- params[params.req]
+  params <- params[param.req]
   # check if any parameter has no value
   if(any(is.na(params) | is.nan(params)))
     stop(paste("parameter value missing:", paste(names(params)[which(is.na(params) | is.nan(params))], collapse=", ")))

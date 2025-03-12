@@ -429,8 +429,7 @@ Algae_Simple <- function() {
       name = "Algae_Simple",
       param.req = c("mu_max", "EC_50", "b", "kD", "dose_response", "scaled"),
       # default values as defined by Weber et al. (2012)
-      param = list(mu_max = 1.7380, const_growth = TRUE, dose_response = 0,
-                   scaled = 0),
+      param = list(mu_max = 1.7380, dose_response = 0, scaled = 0),
       # boundary presets defined by expert judgement
       param.bounds = list(mu_max=c(0, 4), EC_50=c(0, 1e6), b=c(0.1, 20), kD=c(0, 10)),
       endpoints = c("A", "r"),

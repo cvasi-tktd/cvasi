@@ -27,7 +27,7 @@ basis of either external or internal concentrations (depending on user choice of
 The model has two state variables:
 \itemize{
 \item \code{A}, Biomass (ug fresh wt/mL, cells/mL *10^4)
-\item \code{Dw}, only used if scaled = 1
+\item \code{Dw}, scaled internal damage, only takes effect if parameter \code{scaled = 1}
 }
 }
 
@@ -46,8 +46,9 @@ The model has two state variables:
 }
 \item External concentration (Toxicokinetics)
 \itemize{
-\item \code{kD}, dominant rate constant of toxicant in aquatic environments (d-1)
-\item \code{scaled}, 0 = no internal scaled damage / 1 = yes (-)
+\item \code{scaled}, 1 = scaled internal damage, 0 = no internal damage / 1 = yes (-)
+\item \code{kD}, dominant rate constant of toxicant in aquatic environments (d-1), only
+takes effect if parameter \code{scaled = 1}
 }
 }
 }
@@ -116,7 +117,7 @@ and Ratte HT, 2012. Combination of a higher-tier flow-through system and
 population modeling to assess the effects of time-variable exposure of
 isoproturon on the green algae Desmodesmus subspictatus and
 Pseudokirchneriella subcapitata. Environmental Toxicology and
-Chemistry, 31, 899-908. \doi{10.1002/etc.1765}
+Chemistry, 31(4), 899-908. \doi{10.1002/etc.1765}
 }
 \seealso{
 \link{Scenarios}, \link{Transferable}

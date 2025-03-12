@@ -18,7 +18,7 @@
 #' population modeling to assess the effects of time-variable exposure of
 #' isoproturon on the green algae Desmodesmus subspictatus and
 #' Pseudokirchneriella subcapitata. Environmental Toxicology and
-#' Chemistry, 31, 899-908. \doi{10.1002/etc.1765}
+#' Chemistry, 31(4), 899-908. \doi{10.1002/etc.1765}
 #'
 #' EFSA Panel on Plant Protection Products and their Residues, 2018. Scientific
 #' opinion on the state of the art of Toxicokinetic/Toxicodynamic (TKTD) effect
@@ -167,7 +167,7 @@ setClass("AlgaeSimpleScenario", contains = "AlgaeSimple")
 #' population modeling to assess the effects of time-variable exposure of
 #' isoproturon on the green algae Desmodesmus subspictatus and
 #' Pseudokirchneriella subcapitata. Environmental Toxicology and
-#' Chemistry, 31, 899-908. \doi{10.1002/etc.1765}
+#' Chemistry, 31(4), 899-908. \doi{10.1002/etc.1765}
 #'
 #' EFSA PPR Panel (EFSA Panel on Plant Protection Products and their Residues),
 #' Ockleford C, Adriaanse P, Berny P, Brock T, Duquesne S, Grilli S,
@@ -299,7 +299,7 @@ Algae_Weber <- function() {
 #' population modeling to assess the effects of time-variable exposure of
 #' isoproturon on the green algae Desmodesmus subspictatus and
 #' Pseudokirchneriella subcapitata. Environmental Toxicology and
-#' Chemistry, 31, 899-908. \doi{10.1002/etc.1765}
+#' Chemistry, 31(4), 899-908. \doi{10.1002/etc.1765}
 #'
 #' @return an S4 object of type [AlgaeTKTD-class]
 #' @seealso [Scenarios], [Transferable]
@@ -309,11 +309,8 @@ Algae_Weber <- function() {
 Algae_TKTD <- function() {
   new("AlgaeTKTD",
       name = "Algae_TKTD",
-      param.req = c("mu_max", "m_max", "v_max", "k_s",
-                    "Q_min", "Q_max",
-                    "T_opt", "T_min", "T_max", "I_opt",
-                    "EC_50", "b", "k", "kD", "dose_resp"
-      ),
+      param.req = c("mu_max", "m_max", "v_max", "k_s", "Q_min", "Q_max", "T_opt",
+                    "T_min", "T_max", "I_opt", "EC_50", "b", "kD", "dose_resp"),
       # default values as defined by Weber et al. (2012)
       param = list(mu_max = 1.7380, m_max = 0.0500, v_max = 0.0520,
                    k_s = 0.0680,
@@ -349,7 +346,7 @@ Algae_TKTD <- function() {
 #' @section State variables:
 #' The model has two state variables:
 #' - `A`, Biomass (ug fresh wt/mL, cells/mL *10^4)
-#' - `Dw`, only used if scaled = 1
+#' - `Dw`, scaled internal damage, only takes effect if parameter `scaled = 1`
 #'
 #' @section Model parameters:
 #' - Growth model
@@ -361,8 +358,9 @@ Algae_TKTD <- function() {
 #'   - `dose_response`, shape of the dose response curve (0 = logit, 1 = probit)
 #'
 #' - External concentration (Toxicokinetics)
-#'   - `kD`, dominant rate constant of toxicant in aquatic environments (d-1)
-#'   - `scaled`, 0 = no internal scaled damage / 1 = yes (-)
+#'   - `scaled`, 1 = scaled internal damage, 0 = no internal damage / 1 = yes (-)
+#'   - `kD`, dominant rate constant of toxicant in aquatic environments (d-1), only
+#'      takes effect if parameter `scaled = 1`
 #'
 #' @section Forcings:
 #' Simplified model without additional forcings for e.g. irradiation or temperature
@@ -417,7 +415,7 @@ Algae_TKTD <- function() {
 #' population modeling to assess the effects of time-variable exposure of
 #' isoproturon on the green algae Desmodesmus subspictatus and
 #' Pseudokirchneriella subcapitata. Environmental Toxicology and
-#' Chemistry, 31, 899-908. \doi{10.1002/etc.1765}
+#' Chemistry, 31(4), 899-908. \doi{10.1002/etc.1765}
 #'
 #' @return an S4 object of type [AlgaeSimple-class]
 #' @seealso [Scenarios], [Transferable]
@@ -427,7 +425,7 @@ Algae_TKTD <- function() {
 Algae_Simple <- function() {
   new("AlgaeSimple",
       name = "Algae_Simple",
-      param.req = c("mu_max", "EC_50", "b", "kD", "dose_response", "scaled"),
+      param.req = c("mu_max", "EC_50", "b", "kD", "scaled", "dose_response"),
       # default values as defined by Weber et al. (2012)
       param = list(mu_max = 1.7380, dose_response = 0, scaled = 0),
       # boundary presets defined by expert judgement
@@ -455,16 +453,20 @@ Algae_Simple <- function() {
 # @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
 solver_algae_weber <- function(scenario, method = "lsoda", hmax = 0.1, ...) {
-  params.req = c("mu_max", "m_max", "v_max", "k_s", "Q_min", "Q_max", "R_0", "D",
-                 "T_opt", "T_min", "T_max", "I_opt", "EC_50", "b", "k"
-  )
-
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
 
+  # check for missing parameters
+  params.missing <- setdiff(scenario@param.req, names(params))
+  if(length(params.missing) > 0)
+    stop(paste("parameter missing:", paste(params.missing, collapse=", ")))
+
   # reorder parameters for deSolve
   params <- params[params.req]
+  # check if any parameter has no value
+  if(any(is.na(params) | is.nan(params)))
+    stop(paste("parameter value missing:", paste(names(params)[which(is.na(params) | is.nan(params))], collapse=", ")))
 
   # create forcings list
   forcings <- list(
@@ -495,18 +497,24 @@ setMethod("solver", "AlgaeWeber", solver_algae_weber)
 # @param ... additional arguments passed to [deSolve::ode()]
 #' @importFrom deSolve ode
 solver_algae_tktd <- function(scenario, method = "lsoda", hmax = 0.1, ...) {
-  params.req = c("mu_max", "m_max", "v_max", "k_s",
-                 "Q_min", "Q_max",
-                 "T_opt", "T_min", "T_max", "I_opt",
-                 "EC_50", "b", "kD", "dose_resp"
-  )
+  # keep for backwards compatibility, older version used wrong list in constructor
+  params.req = c("mu_max", "m_max", "v_max", "k_s", "Q_min", "Q_max", "T_opt",
+                 "T_min", "T_max", "I_opt", "EC_50", "b", "kD", "dose_resp" )
 
   params <- scenario@param
   if(is.list(params))
     params <- unlist(params)
 
+  # check for missing parameters
+  params.missing <- setdiff(scenario@param.req, names(params))
+  if(length(params.missing) > 0)
+    stop(paste("parameter missing:", paste(params.missing, collapse=", ")))
+
   # reorder parameters for deSolve
   params <- params[params.req]
+  # check if any parameter has no value
+  if(any(is.na(params) | is.nan(params)))
+    stop(paste("parameter value missing:", paste(names(params)[which(is.na(params) | is.nan(params))], collapse=", ")))
 
   # create forcings list
   forcings <- list(
@@ -544,10 +552,19 @@ solver_algae_simple <- function(scenario, method = "lsoda", hmax = 0.1, ...) {
   # create forcings list
   forcings <- list(scenario@exposure@series, scenario@forcings$f_growth)
 
-  #required for C code
+  # keep for backwards compatibility, older version used wrong list in constructor
   params.req = c("mu_max", "EC_50", "b", "kD", "scaled", "dose_response")
+
+  # check for missing parameters
+  params.missing <- setdiff(scenario@param.req, names(params))
+  if(length(params.missing) > 0)
+    stop(paste("parameter missing:", paste(params.missing, collapse=", ")))
+
   # reorder parameters for deSolve
   params <- params[params.req]
+  # check if any parameter has no value
+  if(any(is.na(params) | is.nan(params)))
+    stop(paste("parameter value missing:", paste(names(params)[which(is.na(params) | is.nan(params))], collapse=", ")))
 
   # set names of additional output variables
   outnames <- c("Cw", "f_growth", "dA", "dDw")
@@ -562,6 +579,7 @@ solver_algae_simple <- function(scenario, method = "lsoda", hmax = 0.1, ...) {
 
 #' @describeIn solver numerically integrates Algae_Simple models
 setMethod("solver", "AlgaeSimple", solver_algae_simple)
+#setMethod("solver", "AlgaeSimple", function(scenario, ...) solver_algae_simple(scenario, ...))
 
 
 ########################
@@ -586,4 +604,5 @@ fx_algae <- function(scenario, ...) {
 
 #' @include fx.R
 #' @describeIn fx Effect at end of simulation of [Algae-models]
-setMethod("fx", "Algae", function(scenario, ...) fx_algae(scenario, ...))
+setMethod("fx", "Algae", fx_algae)
+#setMethod("fx", "Algae", function(scenario, ...) fx_algae(scenario, ...))

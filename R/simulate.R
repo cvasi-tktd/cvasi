@@ -208,7 +208,7 @@ simulate_scenario <- function(x, times, .suppress=FALSE, ...) {
     }
     else if(has_error) {
       # find all error messages
-      err <- sapply(conds, function(lst) ifelse(lst[[1]] == "error", tail(lst, n=1), NA_character_))
+      err <- sapply(conds, function(lst) ifelse(lst[[1]] == "error", unlist(tail(lst, n=1)), NA_character_))
       abort(c("Simulation failed", err[!is.na(err)]), class="cvasi_error")
     }
     else if(has_warning) {

@@ -5,11 +5,11 @@
 num_error <- function(x) {
   #if(!is(x, "cvasi.simulate"))
   #  cli::cli_abort("argument {.field x} must be a simulation result")
-  msgs <- attr(x, "desolve_msgs")
-  if(is.null(msgs))
+  status <- attr(x, "cvasi_status")
+  if(is.null(status))
     return(FALSE)
 
-  return(any(sapply(msgs, function(lst) lst[[1]] == "error")))
+  return(status == "error")
 }
 
 # Check if simulation was aborted - only for internal use

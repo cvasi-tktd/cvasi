@@ -190,10 +190,10 @@ solver_gutsredsd <- function(scenario, method="lsoda", hmax=1, ...) {
   # make sure that parameters are present and in required order
   params <- params[c("kd", "hb", "z", "kk")]
 
-  df <- as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
-                          initfunc="gutsredsd_init", func="gutsredsd_func", initforc="gutsredsd_forc",
-                          forcings=scenario@exposure@series, outnames=c("Cw"),
-                          method=method, hmax=hmax, ...))
+  df <- ode2df(ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
+                    initfunc="gutsredsd_init", func="gutsredsd_func", initforc="gutsredsd_forc",
+                    forcings=scenario@exposure@series, outnames=c("Cw"),
+                    method=method, hmax=hmax, ...))
   # Derive survival probability, see EFSA Scientific Opinion on TKTD models, p. 33
   # doi:10.2903/j.efsa.2018.5377
   df$S <- exp(-df$H) # background hazard rate included in H (if enabled)
@@ -216,10 +216,11 @@ solver_gutsredit <- function(scenario, method="lsoda", hmax=1, ...) {
   # make sure that parameters are present and in required order
   odeparams <- params[c("kd","hb")]
 
-  df <- as.data.frame(ode(y=scenario@init, times=scenario@times, parms=odeparams, dllname="cvasi",
-                          initfunc="gutsredit_init", func="gutsredit_func", initforc="gutsredit_forc",
-                          forcings=scenario@exposure@series, outnames=c("Cw"),
-                          method=method, hmax=hmax, ...))
+  df <- ode2df(ode(y=scenario@init, times=scenario@times, parms=odeparams, dllname="cvasi",
+                initfunc="gutsredit_init", func="gutsredit_func", initforc="gutsredit_forc",
+                forcings=scenario@exposure@series, outnames=c("Cw"),
+                method=method, hmax=hmax, ...))
+
   # Derive survival probability, EFSA Scientific Opinion on TKTD models, p. 33
   # doi:10.2903/j.efsa.2018.5377
   FS <- (1 / (1 + (cummax(df$D) / params["alpha"])^(-params["beta"])))

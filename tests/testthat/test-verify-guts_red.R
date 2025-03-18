@@ -27,7 +27,7 @@ test_that("EFSA classical exposure scenario", {
   res_cvasi <- simulate(sd)
   res_morse <- morse_sd(sd)
   # test that results are equal using a sensible numerical precision
-  expect_equal(res_cvasi, res_morse, tolerance = 1e-3)
+  expect_equal(res_cvasi, res_morse, tolerance = 1e-3, ignore_attr=TRUE)
 
   # test GUST-RED-IT scenario
   GUTS_RED_IT() %>%
@@ -36,7 +36,7 @@ test_that("EFSA classical exposure scenario", {
   res_cvasi <- simulate(it)
   res_morse <- morse_it(it)
   # test that results are equal using a sensible numerical precision
-  expect_equal(res_cvasi, res_morse, tolerance = 1e-3)
+  expect_equal(res_cvasi, res_morse, tolerance = 1e-3, ignore_attr=TRUE)
 })
 
 # GUTS model verification as conducted in
@@ -66,7 +66,7 @@ test_that("EFSA pulsed scenarios", {
     res_cvasi <- simulate(sd)
     res_morse <- morse_sd(sd)
     # test that results are equal using a sensible numerical precision
-    expect_equal(res_cvasi, res_morse, tolerance = 1e-3)
+    expect_equal(res_cvasi, res_morse, tolerance = 1e-3, ignore_attr=TRUE)
 
     # test GUST-RED-IT scenario
     GUTS_RED_IT() %>%
@@ -75,7 +75,7 @@ test_that("EFSA pulsed scenarios", {
     res_cvasi <- simulate(it)
     res_morse <- morse_it(it)
     # test that results are equal using a sensible numerical precision
-    expect_equal(res_cvasi, res_morse, tolerance = 1e-3)
+    expect_equal(res_cvasi, res_morse, tolerance = 1e-3, ignore_attr=TRUE)
   }
 })
 
@@ -102,7 +102,7 @@ test_that("EFSA extreme scenarios: zero exposure, no background mortality", {
   sd_cvasi <- simulate(sd)
   sd_morse <- morse_sd(sd)
   # test that results are equal using a sensible numerical precision
-  expect_equal(sd_cvasi, sd_morse, tolerance = 1e-3)
+  expect_equal(sd_cvasi, sd_morse, tolerance = 1e-3, ignore_attr=TRUE)
 
   # test GUST-RED-IT scenario
   GUTS_RED_IT() %>%
@@ -111,10 +111,10 @@ test_that("EFSA extreme scenarios: zero exposure, no background mortality", {
   it_cvasi <- simulate(it)
   it_morse <- morse_it(it)
   # test that results are equal using a sensible numerical precision
-  expect_equal(it_cvasi, it_morse, tolerance = 1e-3)
+  expect_equal(it_cvasi, it_morse, tolerance = 1e-3, ignore_attr=TRUE)
 
   # internal concentrations must be identical in both models
-  expect_equal(sd_cvasi$D, it_cvasi$D, tolerance = 0.001)
+  expect_equal(sd_cvasi$D, it_cvasi$D, tolerance = 0.001, ignore_attr=TRUE)
 })
 
 # GUTS model verification as conducted in
@@ -141,7 +141,7 @@ test_that("EFSA extreme scenarios: high exposure over days 1-4", {
   sd_cvasi <- simulate(sd)
   sd_morse <- morse_sd(sd)
   # test that results are equal using a sensible numerical precision
-  expect_equal(sd_cvasi, sd_morse, tolerance = 1e-3)
+  expect_equal(sd_cvasi, sd_morse, tolerance = 1e-3, ignore_attr=TRUE)
 
   # test GUST-RED-IT scenario
   GUTS_RED_IT() %>%
@@ -150,10 +150,10 @@ test_that("EFSA extreme scenarios: high exposure over days 1-4", {
   it_cvasi <- simulate(it)
   it_morse <- morse_it(it)
   # test that results are equal using a sensible numerical precision
-  expect_equal(it_cvasi, it_morse, tolerance = 1e-3)
+  expect_equal(it_cvasi, it_morse, tolerance = 1e-3, ignore_attr=TRUE)
 
   # internal concentrations must be identical in both models
-  expect_equal(sd_cvasi$D, it_cvasi$D, tolerance = 0.001)
+  expect_equal(sd_cvasi$D, it_cvasi$D, tolerance = 0.001, ignore_attr=TRUE)
 })
 
 # GUTS model verification as conducted in
@@ -179,7 +179,7 @@ test_that("EFSA extreme scenarios: zero exposure with slight background mortalit
   sd_cvasi <- simulate(sd)
   sd_morse <- morse_sd(sd)
   # test that results are equal using a sensible numerical precision
-  expect_equal(sd_cvasi, sd_morse, tolerance = 1e-3)
+  expect_equal(sd_cvasi, sd_morse, tolerance = 1e-3, ignore_attr=TRUE)
 
   # test GUST-RED-IT scenario
   GUTS_RED_IT() %>%
@@ -194,10 +194,10 @@ test_that("EFSA extreme scenarios: zero exposure with slight background mortalit
   it_morse <- dplyr::select(it_morse, !H)
 
   # test that results are equal using a sensible numerical precision
-  expect_equal(it_cvasi, it_morse, tolerance = 1e-3)
+  expect_equal(it_cvasi, it_morse, tolerance = 1e-3, ignore_attr=TRUE)
 
   # internal concentrations must be identical in both models
-  expect_equal(sd_cvasi$D, it_cvasi$D, tolerance = 0.001)
+  expect_equal(sd_cvasi$D, it_cvasi$D, tolerance = 0.001, ignore_attr=TRUE)
 })
 
 ################
@@ -223,7 +223,7 @@ test_that("snapshot: zero exposure, no bg mortality", {
     simulate() -> res_sd
   #ggplot2::ggplot(res_sd) + ggplot2::geom_line(aes(time, D))
   #ggplot2::ggplot(res_sd) + ggplot2::geom_line(aes(time, S*100))
-  expect_snapshot_value(res_sd, style="json2", tolerance = 1e-3)
+  expect_snapshot_value(res_sd, style="json2", tolerance = 1e-3, ignore_attr=TRUE)
 
   # test GUST-RED-IT scenario
   GUTS_RED_IT() %>%
@@ -232,7 +232,7 @@ test_that("snapshot: zero exposure, no bg mortality", {
     simulate() -> res_it
   #ggplot2::ggplot(res_it) + ggplot2::geom_line(aes(time, D))
   #ggplot2::ggplot(res_it) + ggplot2::geom_line(aes(time, S*100))
-  expect_snapshot_value(res_it, style="json2", tolerance = 1e-3)
+  expect_snapshot_value(res_it, style="json2", tolerance = 1e-3, ignore_attr=TRUE)
 })
 
 test_that("snapshot: high exposure, no bg mortality", {
@@ -252,7 +252,7 @@ test_that("snapshot: high exposure, no bg mortality", {
     simulate() -> res_sd
   #ggplot2::ggplot(res_sd) + ggplot2::geom_line(aes(time, D))
   #ggplot2::ggplot(res_sd) + ggplot2::geom_line(aes(time, S*100))
-  expect_snapshot_value(res_sd, style="json2", tolerance = 1e-3)
+  expect_snapshot_value(res_sd, style="json2", tolerance = 1e-3, ignore_attr=TRUE)
 
   # test GUST-RED-IT scenario
   GUTS_RED_IT() %>%
@@ -261,7 +261,7 @@ test_that("snapshot: high exposure, no bg mortality", {
     simulate() -> res_it
   #ggplot2::ggplot(res_it) + ggplot2::geom_line(aes(time, D))
   #ggplot2::ggplot(res_it) + ggplot2::geom_line(aes(time, S*100))
-  expect_snapshot_value(res_it, style="json2", tolerance = 1e-3)
+  expect_snapshot_value(res_it, style="json2", tolerance = 1e-3, ignore_attr=TRUE)
 })
 
 test_that("snapshot: no exposure, slight bg mortality", {
@@ -280,7 +280,7 @@ test_that("snapshot: no exposure, slight bg mortality", {
     simulate() -> res_sd
   #ggplot2::ggplot(res_sd) + ggplot2::geom_line(aes(time, D))
   #ggplot2::ggplot(res_sd) + ggplot2::geom_line(aes(time, S*100))
-  expect_snapshot_value(res_sd, style="json2", tolerance = 1e-3)
+  expect_snapshot_value(res_sd, style="json2", tolerance = 1e-3, ignore_attr=TRUE)
 
   # test GUST-RED-IT scenario
   GUTS_RED_IT() %>%
@@ -289,7 +289,7 @@ test_that("snapshot: no exposure, slight bg mortality", {
     simulate() -> res_it
   #ggplot2::ggplot(res_it) + ggplot2::geom_line(aes(time, D))
   #ggplot2::ggplot(res_it) + ggplot2::geom_line(aes(time, S*100))
-  expect_snapshot_value(res_it, style="json2", tolerance = 1e-3)
+  expect_snapshot_value(res_it, style="json2", tolerance = 1e-3, ignore_attr=TRUE)
 })
 
 ################
@@ -317,7 +317,7 @@ test_that("EFSA sensitivity: GUTS-RED-IT", {
       # modify parameter value
       scenario <- scenario %>% set_param(setNames(scenario@param[[p]] * f, p))
       # simulate and compare
-      expect_equal(simulate(scenario), morse_it(scenario), tolerance=0.001)
+      expect_equal(simulate(scenario), morse_it(scenario), tolerance=0.001, ignore_attr=TRUE)
     }
   }
 })
@@ -336,7 +336,7 @@ test_that("EFSA sensitivity: GUTS-RED-SD", {
       # modify parameter value
       scenario <- scenario %>% set_param(setNames(scenario@param[[p]] * f, p))
       # simulate and compare
-      expect_equal(simulate(scenario), morse_sd(scenario), tolerance=0.001)
+      expect_equal(simulate(scenario), morse_sd(scenario), tolerance=0.001, ignore_attr=TRUE)
     }
   }
 })

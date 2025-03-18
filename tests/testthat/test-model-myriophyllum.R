@@ -15,17 +15,18 @@ test_that("Myrio simulation", {
     set_times(0:20) -> orig
 
   # equal results if all else is identical
-  expect_equal(solver(sc)$TSL, solver(orig)$FrondNo)
+  expect_equal(as.data.frame(solver(sc))$TSL, as.data.frame(solver(orig))$FrondNo)
   # check that TSL scales with r_DW_TSL
   r_DW_TSL <- focusd1@param$r_DW_FN * 10
   set_param(sc, c("r_DW_TSL"=r_DW_TSL)) -> sc
-  expect_equal(solver(sc)$TSL, solver(orig)$FrondNo/10)
+  expect_equal(as.data.frame(solver(sc))$TSL, as.data.frame(solver(orig))$FrondNo/10)
 
   # Myriophyllum  with logistic growth
   Myrio_log() %>%
     set_all(sc) %>%
     set_param(c("BM_L"=focusd1@param$BM_L,"r_DW_TSL"=focusd1@param$r_DW_FN)) %>%
-    solver(nout=7) -> out_log
+    solver(nout=7) %>%
+    as.data.frame() -> out_log
   # we should have almost reached the density limit
   expect_equal(tail(out_log$BM, 1), focusd1@param$BM_L, tolerance=0.1)
   # dBM should decrease continuously because initial state is above 50% of BM_L

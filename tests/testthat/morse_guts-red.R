@@ -21,7 +21,7 @@ morse_sd <- function(scenario) {
     hb=param[["hb"]]
   ) %>%
     dplyr::select(time, D, H, S=dtheo)
-  class(rs) <- c("cvasi.simulate", class(rs))
+  class(rs) <- c("cvasi.simulate", "data.frame")
   rs
 }
 
@@ -39,7 +39,7 @@ morse_it <- function(scenario) {
   ) %>%
     dplyr::mutate(H=0) %>%
     dplyr::select(time, D, H, S=dtheo)
-  class(rs) <- c("cvasi.simulate", class(rs))
+  class(rs) <- c("cvasi.simulate", "data.frame")
   rs
 }
 

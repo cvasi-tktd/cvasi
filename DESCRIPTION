@@ -81,6 +81,7 @@ Collate:
     'model-lemna_setac.R'
     'model-lemna_schmitt.R'
     'model-myriophyllum.R'
+    'numerics.R'
     'package.R'
     'pll.R'
     'plot.R'

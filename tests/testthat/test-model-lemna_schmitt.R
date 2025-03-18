@@ -83,16 +83,16 @@ test_that("Lemna_SchmittThold simulation", {
   out_orig <- simulate(metsulfuron, method="lsoda")
 
   # no threshold set, no influence on results
-  expect_equal(simulate(sc, method="lsoda")[-5], out_orig)
+  expect_equal(simulate(sc, method="lsoda")[-5], out_orig, ignore_attr=TRUE)
 
   # results should be identical for very large, i.e. irrelevant, thresholds
   sc %>% set_param(c(threshold=1e10)) %>% simulate(method="lsoda") -> out
-  expect_equal(out[-5], out_orig)
+  expect_equal(out[-5], out_orig, ignore_attr=TRUE)
 
   # plausibility of threshold dynamics
   sc %>% set_param(c(threshold=2)) %>% simulate(method="lsoda") -> out
-  expect_equal(out$AUC, c(0:6, rep(6.5, 8)), tolerance=1e-5) # AUC values
-  expect_equal(out[1:3,][-5], out_orig[1:3,], tolerance=1e-5) # unaffected growth until threshold
+  expect_equal(out$AUC, c(0:6, rep(6.5, 8)), tolerance=1e-5, ignore_attr=TRUE) # AUC values
+  expect_equal(out[1:3,][-5], out_orig[1:3,], tolerance=1e-5, ignore_attr=TRUE) # unaffected growth until threshold
   expect_true(all(diff(out$BM[-c(1,2)]) < 0)) # BM declines after threshold is exceeded
 
   # compare to values from Schmitt et al. implementation
@@ -325,7 +325,7 @@ test_that("Lemna simulation irregular transfers", {
 
 test_that("Lemna solver", {
   # Schmitt model
-  expect_equal(solver(metsulfuron)$time, metsulfuron@times)
+  expect_equal(as.data.frame(solver(metsulfuron))$time, metsulfuron@times)
 
   # Schmitt Threshold model
   Lemna_SchmittThold() %>%
@@ -334,9 +334,9 @@ test_that("Lemna solver", {
     set_param(c("threshold"=2)) %>%
     set_forcings(metsulfuron@forcings) %>%
     set_exposure(metsulfuron@exposure@series) -> sc
-  expect_equal(solver(sc)$time, sc@times)
+  expect_equal(as.data.frame(solver(sc))$time, sc@times)
 
   # SETAC model
   focusd1 %>% set_times(0:10) -> sc
-  expect_equal(solver(sc)$time, sc@times)
+  expect_equal(as.data.frame(solver(sc))$time, sc@times)
 })

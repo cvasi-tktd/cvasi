@@ -148,12 +148,75 @@ setMethod("simulate", "SimulationBatch", function(x, ...) simulate_batch2(batch=
 
 # Wrapper for solver function to enforce setting of a S3 class for all simulation
 # results.
-simulate_scenario <- function(x, times, ...) {
-  if(!missing(times))
+simulate_scenario <- function(x, times, .suppress=FALSE, ...) {
+  # set times vector, mostly for backwards compatibility
+  if(!missing(times)) {
     x <- set_times(x, times)
+  }
 
-  rs <- solver(scenario=x, ...)
-  class(rs) <- c("cvasi.simulate", class(rs))
+  # listof conditions raised by deSolve
+  has_error <- FALSE
+  has_warning <- FALSE
+  conds <- list()
+  out <- capture.output(
+           withCallingHandlers(
+             rs <- withRestarts(solver(scenario=x, ...), muffleStop=function(x) data.frame() ),
+             error=function(x) {
+               conds <<- append(conds, list(c("error", x$call, x$message)))
+               has_error <<- TRUE
+               invokeRestart("muffleStop")
+             },
+             warning=function(x) {
+               conds <<- append(conds, list(c("warning", x$call, x$message)))
+               has_warning <<- TRUE
+               tryInvokeRestart("muffleWarning")
+             })
+           )
+  # convert deSolve return type to an actual data.frame
+  if(is(rs, "deSolve")) {
+    rs <- ode2df(rs)
+  }
+  class(rs) <- c("cvasi.simulate", "data.frame")
+  was_aborted <- num_aborted(rs)
+  attr(rs, "cvasi_status") <- "success"
+
+  # suppress any conditions, this simplifies the calling code and also
+  # drastically reduces the time spent in this function
+  if(.suppress)
+  {
+    if(was_aborted)
+      attr(rs, "cvasi_status") <- "aborted"
+    else if(has_error)
+      attr(rs, "cvasi_status") <- "error"
+    else if(has_warning)
+      attr(rs, "cvasi_status") <- "warning"
+  }
+  else
+  {
+    # save any output messages from deSolve, i.e. error output
+    attr(rs, "desolve_output") <- out
+    attr(rs, "desolve_conds") <- conds
+    # set custom class for usability features such as plotting
+
+    attr(rs, "cvasi_status") <- "success"
+    if(was_aborted) {
+      attr(rs, "cvasi_status") <- "aborted"
+      warn1 <- which.min(sapply(conds, function(lst) lst[[1]] == "warning"))
+      warn(c("Simulation aborted.", conds[[warn1]][[3]]),
+           footer = "Please run `num_info()` on result to get help on numerical issues.")
+    }
+    else if(has_error) {
+      # find all error messages
+      err <- sapply(conds, function(lst) ifelse(lst[[1]] == "error", lst[[3]], NA_character_))
+      abort(c("Simulation failed", err[!is.na(err)]), class="cvasi_error")
+    }
+    else if(has_warning) {
+      attr(rs, "cvasi_status") <- "warning"
+      warn1 <- which.min(sapply(conds, function(lst) lst[[1]] == "warning"))
+      warn(c("Issues during simulation.", conds[[warn1]][[3]]),
+           footer = "Please run `num_info()` on result to get help on numerical issues.")
+    }
+  }
   rs
 }
 
@@ -227,7 +290,7 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
   {
     tr <- tr_points[i]
     period <- times[times >= t_start & times <= tr]
-    out <- solver(set_times(scenario, period), ...)
+    out <- simulate_scenario(set_times(scenario, period), ...)
 
     # select rows/time points:
     # 1) that do NOT occur directly after a transfer, i.e. the start of a simulation
@@ -260,7 +323,7 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
       attr(df, "next_init") <- tail(df, 1)[names(scenario@init)]
   }
   rownames(df) <- NULL
-  class(df) <- c("cvasi.simulate", class(df))
+  class(df) <- c("cvasi.simulate", "data.frame")
   df
 }
 
@@ -316,7 +379,7 @@ simulate_seq <- function(seq, times, ...) {
   }
   attr(df, "next_init") <- NULL
   rownames(df) <- NULL
-  class(df) <- c("cvasi.simulate", class(df))
+  class(df) <- c("cvasi.simulate", "data.frame")
   df
 }
 
@@ -437,6 +500,6 @@ simulate_batch <- function(model_base, treatments, param_sample=deprecated()) {
     ~ dplyr::mutate(.x, trial = .y)
   )
   df <- dplyr::bind_rows(simulated_results)
-  class(df) <- c("cvasi.simulate", class(df))
+  class(df) <- c("cvasi.simulate", "data.frame")
   return(df)
 }

@@ -276,10 +276,10 @@ solver_myrio <- function(scenario, nout=2, method="lsoda", hmax=0.1, ...) {
   # set names of additional output variables
   outnames <- c("C_int", "TSL", "f_photo", "C_int_unb", "C_ext", "dBM", "dM_int")
 
-  as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
-                    initfunc="myrio_init", func="myrio_func", initforc="myrio_forc",
-                    forcings=forcings, nout=nout, method=method, hmax=hmax,
-                    outnames=outnames, ...))
+  ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
+        initfunc="myrio_init", func="myrio_func", initforc="myrio_forc",
+        forcings=forcings, nout=nout, method=method, hmax=hmax,
+        outnames=outnames, ...)
 }
 
 

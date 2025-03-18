@@ -277,9 +277,9 @@ solver_lemna_setac <- function(scenario, nout=2, method="lsoda", hmax=0.1, ...) 
                 "fP_photo", "fN_photo", "fBM_photo", "fCint_photo", "C_int_unb",
                 "C_ext", "Tmp", "Irr", "Phs", "Ntr", "dBM", "dM_int")
   # run deSolve
-  as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
-                    initfunc="lemna_setac_init", func="lemna_setac_func", initforc="lemna_setac_forc",
-                    forcings=forcings, nout=nout, outnames=outnames, method=method, hmax=hmax, ...))
+  ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
+        initfunc="lemna_setac_init", func="lemna_setac_func", initforc="lemna_setac_forc",
+        forcings=forcings, nout=nout, outnames=outnames, method=method, hmax=hmax, ...)
 }
 #' @include solver.R
 #' @describeIn solver Numerically integrates Lemna_SETAC models

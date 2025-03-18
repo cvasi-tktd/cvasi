@@ -479,11 +479,10 @@ solver_algae_weber <- function(scenario, method = "lsoda", hmax = 0.1, ...) {
   outnames <- c("dA", "dQ", "dP", "dC")
 
   # run solver
-  as.data.frame(ode(y = scenario@init, times=scenario@times, initfunc = "algae_init",
-                    func = "algae_func", initforc = "algae_forc", parms = params,
-                    forcings = forcings,
-                    dllname = "cvasi", method = method, hmax = hmax, outnames = outnames,
-                    ...))
+  ode(y = scenario@init, times=scenario@times, initfunc = "algae_init",
+        func = "algae_func", initforc = "algae_forc", parms = params,
+        forcings = forcings,
+        dllname = "cvasi", method = method, hmax = hmax, outnames = outnames, ...)
 }
 
 #' @include solver.R
@@ -527,11 +526,10 @@ solver_algae_tktd <- function(scenario, method = "lsoda", hmax = 0.1, ...) {
   outnames <- c("dA", "dQ", "dP", "dDw")
 
   # run solver
-  as.data.frame(ode(y = scenario@init, times=scenario@times, initfunc = "algae_TKTD_init",
-                    func = "algae_TKTD_func", initforc = "algae_TKTD_forc",
-                    parms = params, forcings = forcings,
-                    dllname = "cvasi", method = method, hmax = hmax, outnames = outnames,
-                    ...))
+  ode(y = scenario@init, times=scenario@times, initfunc = "algae_TKTD_init",
+        func = "algae_TKTD_func", initforc = "algae_TKTD_forc",
+        parms = params, forcings = forcings,
+        dllname = "cvasi", method = method, hmax = hmax, outnames = outnames, ...)
 }
 
 #' @describeIn solver numerically integrates Algae_TKTD models
@@ -570,11 +568,11 @@ solver_algae_simple <- function(scenario, method = "lsoda", hmax = 0.1, ...) {
   outnames <- c("Cw", "f_growth", "dA", "dDw")
 
   # run solver
-  as.data.frame(ode(y = scenario@init, times=scenario@times, initfunc = "algae_simple_init",
-                    func = "algae_simple_func", initforc = "algae_simple_forc",
-                    parms = params, forcings = forcings,
-                    dllname = "cvasi", method = method, hmax = hmax, outnames = outnames,
-                    ...))
+  ode(y = scenario@init, times=scenario@times, initfunc = "algae_simple_init",
+        func = "algae_simple_func", initforc = "algae_simple_forc",
+        parms = params, forcings = forcings,
+        dllname = "cvasi", method = method, hmax = hmax, outnames = outnames,
+        ...)
 }
 
 #' @describeIn solver numerically integrates Algae_Simple models

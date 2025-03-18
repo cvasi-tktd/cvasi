@@ -164,9 +164,9 @@ solver_deb_abj <- function(scenario, method="lsoda", ...) {
   forcings <- list(scenario@exposure@series)
 
   # run solver
-  as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, method=method,
-                    dllname="cvasi", initfunc="deb_abj_init", func="deb_abj_func",
-                    initforc="deb_abj_forc", forcings=forcings, outnames=outnames, ...))
+  ode(y=scenario@init, times=scenario@times, parms=params, method=method,
+        dllname="cvasi", initfunc="deb_abj_init", func="deb_abj_func",
+        initforc="deb_abj_forc", forcings=forcings, outnames=outnames, ...)
 }
 #' @include solver.R
 #' @describeIn solver Numerically integrates DEB_abj models

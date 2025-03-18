@@ -282,10 +282,10 @@ solver_lemna_schmitt <- function(scenario, nout=2, method="lsoda", hmax=0.1, ...
   #  forcings <- list(exposure, data.frame(t=0,temp=-1), data.frame(t=0,rad=-1))
 
   # run solver
-  as.data.frame(ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
-                    initfunc="lemna_schmitt_init", func="lemna_schmitt_func", initforc="lemna_schmitt_forc",
-                    forcings=forcings, nout=nout, outnames=outnames, method=method,
-                    hmax=hmax, ...))
+  ode(y=scenario@init, times=scenario@times, parms=params, dllname="cvasi",
+        initfunc="lemna_schmitt_init", func="lemna_schmitt_func", initforc="lemna_schmitt_forc",
+        forcings=forcings, nout=nout, outnames=outnames, method=method,
+        hmax=hmax, ...)
 }
 #' @include solver.R
 #' @describeIn solver Numerically integrates Lemna_Schmitt models

@@ -259,10 +259,9 @@ solver_debtox <- function(scenario, method="ode45", ...) {
   }
 
   # run solver
-  out <- ode(y=scenario@init, times=times, parms=params[params_req], dllname="cvasi",
+  out <- ode2df(ode(y=scenario@init, times=times, parms=params[params_req], dllname="cvasi",
              initfunc="debtox_init", func="debtox_func", initforc="debtox_forc",
-             forcings=forcings, outnames=outnames, method=method, ...)
-  out <- as.data.frame(out)
+             forcings=forcings, outnames=outnames, method=method, ...))
 
   # When animal cannot shrink in length (but does on weight!)
   if(min(params[["len"]], na.rm=TRUE) == 2) {

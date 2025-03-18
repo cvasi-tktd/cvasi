@@ -16,11 +16,13 @@ num_info(obj)
 \item{obj}{Return value of \code{\link[=simulate]{simulate()}}}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+}
+\details{
 Prints information on the status of a return value from \code{\link[=simulate]{simulate()}}, e.g.
 if it was successful and what, if any, issues occurred. Also provides tips
 on solving frequently occurring issues.
-}
-\details{
+
 The function requires certain metadata which is created by \code{\link[deSolve:ode]{deSolve::ode()}}
 and is passed through to the result of \code{simulate()}. The metadata may be lost
 if the \code{data.frame} returned by \code{simulate()} is converted or cast to other types.

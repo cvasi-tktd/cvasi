@@ -31,6 +31,8 @@ ode2df <- function(x) {
 
 #' Print information about numerical solver result
 #'
+#' `r lifecycle::badge("experimental")`
+#'
 #' Prints information on the status of a return value from [simulate()], e.g.
 #' if it was successful and what, if any, issues occurred. Also provides tips
 #' on solving frequently occurring issues.
@@ -165,8 +167,9 @@ num_info.cvasi.simulate <- function(obj) {
 NULL
 
 #' @inherit deSolve::diagnostics
-#' @rdname diagnostics
-#' @export
+#' @name diagnostics
+#' @method diagnostics cvasi.simulate
+#' @export diagnostics
 diagnostics.cvasi.simulate <- function(obj, ...) {
   # translate our metadata to something that is compatible with deSolve's format
   diag <- attr(obj, "desolve_diagn")

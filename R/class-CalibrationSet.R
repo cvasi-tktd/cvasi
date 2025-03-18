@@ -106,7 +106,7 @@ caliset <- function(scenario, data, weight=1, tag=NULL) {
     cli::cli_abort("argument {.field data} must not be empty")
 
   # check that first column, time, is numerical and in ascending order
-  colnames <- names(df)
+  colnames <- names(data)
   if(any(is.na(data[, 1]) | is.nan(data[, 1]) | is.infinite(data[, 1])))
     cli::cli_abort("first data column ({.val {colnames[1]}}) contains invalid values such as {.val {c(Inf, NaN, NA)}}")
   if(any(!is.numeric(data[, 1])))

@@ -29,16 +29,41 @@ ode2df <- function(x) {
   df
 }
 
+#' Print information about numerical solver result
+#'
+#' Prints information on the status of a return value from [simulate()], e.g.
+#' if it was successful and what, if any, issues occurred. Also provides tips
+#' on solving frequently occurring issues.
+#'
+#' The function requires certain metadata which is created by [deSolve::ode()]
+#' and is passed through to the result of `simulate()`. The metadata may be lost
+#' if the `data.frame` returned by `simulate()` is converted or cast to other types.
+#'
+#' @param obj Return value of [simulate()]
+#' @seealso [diagnostics()]
 #' @export
+#' @examples
+#' # A simulation without any issues
+#' minnow_it %>% simulate() %>% num_info()
+#'
+#' # A simulation which terminated early due to the solver
+#' # taking too many numerical steps
+#' rs <- suppressWarnings(minnow_it %>% simulate(hmax=1e-80))
+#' num_info(rs)
+#'
+#' # Print deSolve diagnostics for additional information
+#' diagnostics(rs)
 num_info <- function(obj) {
   UseMethod("num_info")
 }
 
+#' @rdname num_info
 #' @export
 num_info.default <- function(obj) {
   cli::cli_abort("Type is not supported to provide numerical information.")
 }
 
+#' @rdname num_info
 #' @export
 num_info.cvasi.simulate <- function(obj) {
   diag <- attr(obj, "desolve_diagn")
@@ -51,7 +76,6 @@ num_info.cvasi.simulate <- function(obj) {
   }
 
   # TODO do state variables contain invalid values?
-  # TODO if rc<0, get error message from deSolve::diagnostics()
 
   if(is.null(diag)) {
     cli::cli_text(cli::col_grey("Object does not contain solver diagnostics info."))
@@ -134,14 +158,6 @@ num_info.cvasi.simulate <- function(obj) {
       cli::cli_end(l4)
     }
   }
-}
-
-#' @export
-num_info.cvasi_error <- function(obj) {
-  attr(obj, "cvasi_status") <- obj$cvasi_status
-  attr(obj, "desolve_output") <- obj$desolve_output
-  attr(obj, "desolve_conds") <- obj$desolve_conds
-  num_info.cvasi.simulate(obj)
 }
 
 #' @importFrom deSolve diagnostics diagnostics.default diagnostics.deSolve

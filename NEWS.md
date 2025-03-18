@@ -1,5 +1,12 @@
 # cvasi Development version
 
+* NEW
+
+   * *deSolve*'s solver `diagnostic()` function can now be used on the return
+      value of `simulate()`.
+   * `num_info()` can be used as a complement to `diagnostic()` and will also
+      provide tips on how to address common issues with numerics.
+
 * MODIFIED
 
    * The effects calculated by `effect()` are no longer limited to a maximum
@@ -13,6 +20,7 @@
       from formerly `0.025` to now `0.25`. This reflects changes to the
       SETAC working group's report in version 1.2. The old value originated from
       typos in former report versions.
+   * Extensive checks of arguments to `caliset()` added.
 
 # cvasi 1.4.0
 

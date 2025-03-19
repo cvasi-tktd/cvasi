@@ -169,7 +169,7 @@ NULL
 #' @inherit deSolve::diagnostics
 #' @name diagnostics
 #' @method diagnostics cvasi.simulate
-#' @export
+#' @export diagnostics
 diagnostics.cvasi.simulate <- function(obj, ...) {
   # translate our metadata to something that is compatible with deSolve's format
   diag <- attr(obj, "desolve_diagn")

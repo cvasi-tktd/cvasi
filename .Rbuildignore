@@ -17,5 +17,6 @@
 ^\.github$
 ^README\.html$
 ^README\.Rmd$
+^ROADMAP.md$
 ^LICENSE\.md$
 ^CONTRIBUTING.md$

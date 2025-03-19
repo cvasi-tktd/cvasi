@@ -54,21 +54,23 @@
 #' @include class-EffectScenario.R class-ExposureSeries.R
 #' @export
 #' @examples
-#' # set a data.frame as exposure series
-#' Lemna_Schmitt() %>% set_exposure(data.frame(time=c(0, 1, 2, 3), conc=c(1, 1, 0, 0)))
+#' # Set a data.frame as exposure series
+#' df <- data.frame(time=c(0, 1, 2, 3), conc=c(1, 1, 0, 0))
+#' Lemna_Schmitt() %>% set_exposure(df)
 #'
-#' # set one ExposureSeries
-#' es1 <- ExposureSeries(data.frame(time=0, conc=0))
+#' # Create and set an ExposureSeries object
+#' es1 <- ExposureSeries(df)
 #' Lemna_Schmitt() %>% set_exposure(es1)
 #'
-#' # set two ExposureSeries to create two scenarios
+#' # By default, the time points of the exposure series will also be used as
+#' # as output times. To avoid overriding existing output times, set reset_times=FALSE
+#' Lemna_Schmitt() %>%
+#'   set_times(0:10) %>%
+#'   set_exposure(es1, reset_times=FALSE)
+#'
+#' # Setting two series with one function call, creates two scenarios
 #' es2 <- ExposureSeries(data.frame(time=5:10, conc=1))
 #' Lemna_Schmitt() %>% set_exposure(c(es1, es2))
-#'
-#' # set one ExposureSeries without resetting existing output times
-#' Lemna_Schmitt() %>%
-#'   set_times(0:5) %>%
-#'   set_exposure(es1, reset_times=FALSE)
 setGeneric("set_exposure",
            function(scenarios, series, ...) standardGeneric("set_exposure"),
            signature = c("scenarios", "series")

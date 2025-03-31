@@ -133,7 +133,7 @@ setClass("MyrioLogScenario", contains="MyrioLog")
 #' Schmitt W., Hommen U., 2021: *Refined description of the Lemna TKTD growth model
 #' based on Schmitt et al. (2013) - equation system and default parameters*.
 #' Report of the working group *Lemna* of the SETAC Europe Interest Group Effect
-#' Modeling. Version 1, uploaded on 22. Sept. 2021.
+#' Modeling. Version 1.1, uploaded on 09 May 2022.
 #' https://www.setac.org/group/effect-modeling.html
 #'
 #' @return an S4 object of type [MyrioExpScenario-class]

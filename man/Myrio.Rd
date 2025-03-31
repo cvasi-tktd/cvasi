@@ -157,7 +157,7 @@ Klein J., Cedergreen N., Heine S., Reichenberger S., Rendal C.,
 Schmitt W., Hommen U., 2021: \emph{Refined description of the Lemna TKTD growth model
 based on Schmitt et al. (2013) - equation system and default parameters}.
 Report of the working group \emph{Lemna} of the SETAC Europe Interest Group Effect
-Modeling. Version 1, uploaded on 22. Sept. 2021.
+Modeling. Version 1.1, uploaded on 09 May 2022.
 https://www.setac.org/group/effect-modeling.html
 }
 \seealso{

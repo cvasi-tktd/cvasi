@@ -180,7 +180,7 @@ Maximum step length in time suitable for most simulations.
 \itemize{
 \item Model and parameters as described by Klein et al. (2022) report version 1.1
 }
-\item cvasi v1.4.1
+\item cvasi v1.5.0
 \itemize{
 \item Default value of parameter \code{beta} modified due to typo in previous report
 versions, now conforms with Klein et al. (2025), report version 1.2
@@ -218,7 +218,7 @@ Klein J., Cedergreen N., Heine S., Reichenberger S., Rendal C.,
 Schmitt W., Hommen U., 2021: \emph{Refined description of the Lemna TKTD growth model
 based on Schmitt et al. (2013) - equation system and default parameters}.
 Report of the working group \emph{Lemna} of the SETAC Europe Interest Group Effect
-Modeling. Version 1, uploaded on 22. Sept. 2021.
+Modeling. Version 1.1, uploaded on 09 May 2022.
 https://www.setac.org/group/effect-modeling.html
 
 Schmitt W., Bruns E., Dollinger M., and Sowig P., 2013:

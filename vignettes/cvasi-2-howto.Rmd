@@ -347,7 +347,7 @@ plot_sd(
 Option 2: Create a list of *calibration sets*  and then fit TK/TD model parameters
   on all datasets and exposure levels at the same time:
 
-```{r}
+```{r warning=FALSE}
 # get all the trials and exposure series from Schmitt et al. (2013) and create
 # a list of calibration sets
 Schmitt2013 %>%

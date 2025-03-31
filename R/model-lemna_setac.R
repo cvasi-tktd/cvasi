@@ -146,7 +146,7 @@ setClass("LemnaSetacScenario", contains="LemnaSetac")
 #' @section Model history and changes:
 #' - cvasi v1.0.0
 #'   - Model and parameters as described by Klein et al. (2022) report version 1.1
-#' - cvasi v1.4.1
+#' - cvasi v1.5.0
 #'   - Default value of parameter `beta` modified due to typo in previous report
 #'     versions, now conforms with Klein et al. (2025), report version 1.2
 #'   - New value: `beta=0.25`, old value: `beta=0.025`
@@ -156,7 +156,7 @@ setClass("LemnaSetacScenario", contains="LemnaSetac")
 #' Schmitt W., Hommen U., 2021: *Refined description of the Lemna TKTD growth model
 #' based on Schmitt et al. (2013) - equation system and default parameters*.
 #' Report of the working group *Lemna* of the SETAC Europe Interest Group Effect
-#' Modeling. Version 1, uploaded on 22. Sept. 2021.
+#' Modeling. Version 1.1, uploaded on 09 May 2022.
 #' https://www.setac.org/group/effect-modeling.html
 #'
 #'

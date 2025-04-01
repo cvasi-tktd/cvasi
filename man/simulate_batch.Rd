@@ -4,7 +4,7 @@
 \alias{simulate_batch}
 \title{Batch simulation using multiple exposure series}
 \usage{
-simulate_batch(model_base, treatments, param_sample = deprecated())
+simulate_batch(model_base, treatments, param_sample = deprecated(), ...)
 }
 \arguments{
 \item{model_base}{effect scenario object with mean parameters}
@@ -12,6 +12,8 @@ simulate_batch(model_base, treatments, param_sample = deprecated())
 \item{treatments}{treatments exposure levels as data frame (time, conc, trial)}
 
 \item{param_sample}{\emph{deprecated} parameter, no longer in use}
+
+\item{...}{additional parameters passed through to \code{\link[=simulate]{simulate()}}}
 }
 \value{
 a \code{data.frame} with simulation results

@@ -454,6 +454,7 @@ simulate_batch2 <- function(batch, times, ...) {
 #' @param model_base effect scenario object with mean parameters
 #' @param treatments treatments exposure levels as data frame (time, conc, trial)
 #' @param param_sample *deprecated* parameter, no longer in use
+#' @param ... additional parameters passed through to [simulate()]
 #' @return a `data.frame` with simulation results
 #' @export
 #' @examples
@@ -463,7 +464,7 @@ simulate_batch2 <- function(batch, times, ...) {
 #'
 #' metsulfuron %>%
 #'   simulate_batch(treatments)
-simulate_batch <- function(model_base, treatments, param_sample=deprecated()) {
+simulate_batch <- function(model_base, treatments, param_sample=deprecated(), ...) {
   #lifecycle::deprecate_soft("1.4.0", "simulate_batch()", details="Please use `simulate(batch())` instead")
   if(is_present(param_sample)) {
     if(!is.null(param_sample)) {
@@ -492,8 +493,7 @@ simulate_batch <- function(model_base, treatments, param_sample=deprecated()) {
   # simulate
   df <- data.frame()
   df_one_run <- data.frame()
-  simulated_results <- purrr::map(list_of_effect_sets, ~ .x %>%
-                                    simulate())
+  simulated_results <- purrr::map(list_of_effect_sets, ~ .x %>% simulate(), ...)
   # add trial name
   simulated_results <- purrr::map2(
     simulated_results,

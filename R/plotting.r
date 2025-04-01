@@ -469,7 +469,7 @@ plot_ppc_combi <- function(table, xy_lim = NULL) {
 #'
 #' @param EPx_ts the result of `epx_mtw`, ie. a tibble with window.start,
 #' window.end, endpoint, level and EPx
-#' @param exposure_ts an exposure time series with columns for time 't' and
+#' @param exposure_ts an exposure time series with columns for time 'time' and
 #' concentration 'conc'
 #' @param draw Should the whole plot be drawn? If FALSE the exposure plot and
 #' the EPx plot are returned as a list for later modification

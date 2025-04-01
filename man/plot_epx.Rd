@@ -18,7 +18,7 @@ plot_epx(
 \item{EPx_ts}{the result of \code{epx_mtw}, ie. a tibble with window.start,
 window.end, endpoint, level and EPx}
 
-\item{exposure_ts}{an exposure time series with columns for time 't' and
+\item{exposure_ts}{an exposure time series with columns for time 'time' and
 concentration 'conc'}
 
 \item{draw}{Should the whole plot be drawn? If FALSE the exposure plot and

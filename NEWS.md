@@ -4,7 +4,7 @@
 
    * *deSolve*'s solver `diagnostic()` function can now be used on the return
       value of `simulate()`.
-   * `num_info()` can be used as a complement to `diagnostic()` and will also
+   * `num_info()` can be used as a complement to `diagnostics()` and will also
       provide tips on how to address common issues with numerics.
 
 * MODIFIED
@@ -21,6 +21,11 @@
       SETAC working group's report in version 1.2. The old value originated from
       typos in former report versions.
    * Extensive checks of arguments to `caliset()` added.
+   * `simulate_batch()` now accepts additional parameters `...` which are passed
+     through to `simulate()`.
+   * Improved input checks by `set_exposure()` and `ExposureSeries()`.
+   * Scenario information on the console provided by `show()` now includes
+     settings of biomass transfers and moving windows.
 
 # cvasi 1.4.0
 

@@ -80,6 +80,16 @@ test_that("vectorized arguments", {
   expect_equal(rs[[4]]@name,  "b")
 })
 
+test_that("scenario sequence", {
+  sc <- minnow_it %>% set_noexposure()
+  suppressMessages(seq <- sequence(list(sc, sc), breaks=2))
+
+  df <- data.frame(foo=1, bar=2)
+  seq <- seq %>% set_exposure(df, reset_times=FALSE)
+  expect_equal(seq@scenarios[[1]]@exposure@series, df)
+  expect_equal(seq@scenarios[[2]]@exposure@series, df)
+})
+
 test_that("set_noexposure", {
   sc <- new("EffectScenario", name="a") %>%
     set_exposure(data.frame(time=1, conc=2), FALSE) %>%

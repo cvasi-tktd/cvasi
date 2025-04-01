@@ -77,7 +77,6 @@ setGeneric("set_exposure",
 )
 
 #' @rdname set_exposure
-#' @export
 setMethod("set_exposure", c("ANY","ANY"), function(scenarios, series, ...) {
   stop("argument types not supported")
 })
@@ -133,23 +132,28 @@ set_exposure_lst <- function(scenarios, series, ...) {
 }
 
 #' @rdname set_exposure
-#' @export
 setMethod("set_exposure", c("EffectScenario","data.frame"), set_exposure_dfr)
+
 #' @rdname set_exposure
-#' @export
 setMethod("set_exposure", c("EffectScenario","ExposureSeries"), set_exposure_exs)
+
 #' @rdname set_exposure
-#' @export
 setMethod("set_exposure", c("EffectScenario","list"), set_exposure_lst)
+
 #' @rdname set_exposure
-#' @export
 setMethod("set_exposure", c("list","list"), function(scenarios, series, ...) {
   unlist(lapply(scenarios, set_exposure, series=series, ...))
 })
+
 #' @rdname set_exposure
-#' @export
 setMethod("set_exposure", c("list","ANY"), function(scenarios, series, ...) {
   lapply(scenarios, set_exposure, series=series, ...)
+})
+
+#' @rdname set_exposure
+setMethod("set_exposure", c("ScenarioSequence","ANY"), function(scenarios, series, ...) {
+  scenarios@scenarios <- set_exposure(scenarios@scenarios, series, ...)
+  scenarios
 })
 
 #' Set zero exposure

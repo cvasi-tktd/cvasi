@@ -8,6 +8,7 @@
 \alias{set_exposure,EffectScenario,list-method}
 \alias{set_exposure,list,list-method}
 \alias{set_exposure,list,ANY-method}
+\alias{set_exposure,ScenarioSequence,ANY-method}
 \title{Set exposure time-series}
 \usage{
 set_exposure(scenarios, series, ...)
@@ -23,6 +24,8 @@ set_exposure(scenarios, series, ...)
 \S4method{set_exposure}{list,list}(scenarios, series, ...)
 
 \S4method{set_exposure}{list,ANY}(scenarios, series, ...)
+
+\S4method{set_exposure}{ScenarioSequence,ANY}(scenarios, series, ...)
 }
 \arguments{
 \item{scenarios}{\code{vector} of \link{scenarios}}

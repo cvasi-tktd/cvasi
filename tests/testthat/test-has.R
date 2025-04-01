@@ -100,10 +100,10 @@ test_that("has_regular_transfer", {
   expect_false(has_regular_transfer(Lemna_Schmitt() %>% set_transfer(interval=-1)))
   expect_false(has_regular_transfer(Lemna_Schmitt() %>% set_transfer(times=1)))
   # invalid arguments
-  expect_error(has_regular_transfer(NA))
-  expect_error(has_regular_transfer(NULL))
-  expect_error(has_regular_transfer(1))
-  expect_error(any(has_regular_transfer(1:5)))
+  expect_false(has_regular_transfer(NA))
+  expect_false(has_regular_transfer(NULL))
+  expect_false(has_regular_transfer(1))
+  expect_false(any(has_regular_transfer(1:5)))
 })
 
 test_that("has_irregular_transfer", {
@@ -113,10 +113,10 @@ test_that("has_irregular_transfer", {
   expect_false(has_irregular_transfer(Lemna_Schmitt() %>% set_transfer(interval=-1)))
   expect_false(has_irregular_transfer(Lemna_Schmitt() %>% set_transfer(interval=1)))
   # invalid arguments
-  expect_error(has_irregular_transfer(NA))
-  expect_error(has_irregular_transfer(NULL))
-  expect_error(has_irregular_transfer(1))
-  expect_error(any(has_irregular_transfer(1:5)))
+  expect_false(has_irregular_transfer(NA))
+  expect_false(has_irregular_transfer(NULL))
+  expect_false(has_irregular_transfer(1))
+  expect_false(any(has_irregular_transfer(1:5)))
 })
 
 test_that("has_units", {

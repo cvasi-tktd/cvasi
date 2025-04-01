@@ -11,12 +11,12 @@ show_scenario <- function(object, inline=FALSE, ...) {
     cli::cli_text(cli::col_blue("param: none"))
 
   if(length(object@init) > 0)
-    cli::cli_text(cli::col_blue(paste("init :", paste(names(object@init), unlist(object@init), sep="=", collapse=", "))))
+    cli::cli_text(cli::col_blue(paste("init:", paste(names(object@init), unlist(object@init), sep="=", collapse=", "))))
   else
-    cli::cli_text(cli::col_blue("init : none"))
+    cli::cli_text(cli::col_blue("init: none"))
 
   if(length(object@endpoints) > 0)
-    cli::cli_text(cli::col_blue(paste0("endpt: ", paste(object@endpoints, sep=",", collapse=", "))))
+    cli::cli_text(cli::col_blue(paste0("endpt:", paste(object@endpoints, sep=",", collapse=", "))))
   else
     cli::cli_text(cli::col_blue("endpt: none"))
 
@@ -26,7 +26,24 @@ show_scenario <- function(object, inline=FALSE, ...) {
   else
     cli::cli_text(cli::col_blue("times: none"))
 
-  cli::cli_text(cli::col_blue(paste("forcs:",ifelse(length(object@forcings) == 0, "none", paste0(names(object@forcings), collapse=", ")))))
+  # biomass transfers
+  if(has_transfer(object)) {
+    # regular transfers
+    if(has_regular_transfer(object)) {
+      desc <- paste0("regular, interval=", object@transfer.interval )
+    } else {
+      tps <- paste(sprintf("%g", head(object@transfer.times, n=6)), collapse=",")
+      desc <- paste0("custom, times=c(", tps, ifelse(length(object@transfer.times) > 6, ",...", ""), ")")
+    }
+    cli::cli_text(cli::col_br_magenta("transf: ", desc, ", ", object@transfer.comp.biomass, "=", sprintf("%g", object@transfer.biomass)))
+  }
+
+  # moving windows
+  if(has_windows(object)) {
+    cli::cli_text(cli::col_br_magenta("windws: length=", sprintf("%g", object@window.length), ", interval=", sprintf("%g", object@window.interval)))
+  }
+
+  cli::cli_text(cli::col_green(paste("forcs: ",ifelse(length(object@forcings) == 0, "none", paste0(names(object@forcings), collapse=", ")))))
   show_exposure(object@exposure, inline=TRUE, ...)
 }
 

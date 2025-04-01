@@ -118,3 +118,14 @@ test_that("has_irregular_transfer", {
   expect_error(has_irregular_transfer(1))
   expect_error(any(has_irregular_transfer(1:5)))
 })
+
+test_that("has_units", {
+  bar <- 1
+  foo <- units::set_units(1, sec)
+
+  expect_true(has_units(foo))
+  expect_true(all(has_units(list(foo, foo))))
+  expect_false(has_units(bar))
+  expect_false(any(has_units(list(bar, bar))))
+  expect_true(any(has_units(list(foo, bar))))
+})

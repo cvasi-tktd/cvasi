@@ -27,4 +27,4 @@ DEPRECATED
 
 BREAKING CHANGES
 
- * `simulate()`: default value of argument `reset_times` set to `reset_times=FALSE`
+ * `set_exposure()`: default value of argument `reset_times` set to `reset_times=FALSE`

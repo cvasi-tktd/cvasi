@@ -45,6 +45,8 @@ has_transfer <- function(x) {
   if(length(x) > 1)
     return(sapply(x, has_transfer))
 
+  if(!is(x, "Transferable"))
+    return(FALSE)
   if(has_regular_transfer(x))
     return(TRUE)
   has_irregular_transfer(x)
@@ -54,6 +56,8 @@ has_regular_transfer <- function(x) {
   if(length(x) > 1)
     return(sapply(x, has_regular_transfer))
 
+  if(!is(x, "Transferable"))
+    return(FALSE)
   x@transfer.interval > 0
 }
 
@@ -61,6 +65,8 @@ has_irregular_transfer <- function(x) {
   if(length(x) > 1)
     return(sapply(x, has_irregular_transfer))
 
+  if(!is(x, "Transferable"))
+    return(FALSE)
   length(x@transfer.times) > 0
 }
 

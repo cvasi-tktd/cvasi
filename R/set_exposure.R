@@ -91,27 +91,23 @@ set_exposure_dfr <- function(scenarios, series, ...) {
     if(all(is_exp_series(series[["series"]])))
       return(set_exposure(scenarios, series[["series"]], ...))
   }
-  # is it a data.frame containing a basic time-series?
-  if(length(series) == 2) {
-    # coerce to data.frame to avoid issues with data.frame-like types
-    series <- as.data.frame(series)
-    return(set_exposure(scenarios, ExposureSeries(series), ...))
-  }
-  stop("data.frame does not contain a valid time-series")
+  check_exposure(series)
+  # coerce to data.frame to avoid issues with data.frame-like types
+  series <- dplyr::select(as.data.frame(series), c(1, 2))
+  return(set_exposure(scenarios, ExposureSeries(series), ...))
 }
 
 # single ExposureSeries object
 #' @noRd
 set_exposure_exs <- function(scenarios, series, reset_times=TRUE) {
+  check_exposure(series)
+
   # coerce to data.frame to avoid issues with data.frame-like types
   df <- as.data.frame(series@series)
-  # check data.frame structure
-  if(length(df) != 2)
-    stop("exposure series must have exactly two columns")
-  if(!is.numeric(df[,1]) | !is.numeric(df[,2]))
-    stop("exposure series columns must be numeric")
-
-  # remove any `units` information to avoid issues
+  # remove any `units` information to avoid issues for now. this is not ideal but we
+  # would need to check and/or remove units in many places where the series
+  # is used.
+  # TODO check if we can keep units
   if(any(has_units(df[,1]) | has_units(df[,2])))
     df <- units::drop_units(df)
 
@@ -123,7 +119,7 @@ set_exposure_exs <- function(scenarios, series, reset_times=TRUE) {
     if(nrow(series@series) >= 2) {
       scenarios <- set_times(scenarios, series@series[,1])
     } else {
-      warning("exposure series is too short to be used as output times")
+      warning("Exposure series is too short to be used as output times.")
     }
   }
 
@@ -177,4 +173,65 @@ set_noexposure <- function(x) {
   }
 
   set_exposure(x, no_exposure(), reset_times=FALSE)
+}
+
+
+# Check if object represents a valid exposure series
+# @param series a data.frame or ExposureSeries object
+# @return none
+check_exposure <- function(series) {
+  # unbox
+  if(is(series, 'ExposureSeries')) {
+    series <- series@series
+  }
+  if(!is.data.frame(series)) {
+    stop("Argument `series` must be a `data.frame` or `ExposureSeries` object.")
+  }
+
+  warn <- c()
+  err <- c()
+  if(nrow(series) == 0) {
+    err <- c(err, "Exposure series must have at least one row.")
+  }
+  if(length(series) < 2) {
+    err <- c(err, "Exposure series must have at least two columns.")
+  }
+  else {
+    if(length(series) > 2)
+      warn <- c(warn, "Exposure series has more than two columns, additional columns are ignored.")
+
+    time <- dplyr::pull(series, 1)
+    if(!all(is.numeric(time)))
+      err <- c(err, "First column (time) must contain numeric values only.")
+    else
+    {
+      if(any(has_units(time)))
+        time <- units::drop_units(time)
+      # no missing, infinite, or NaN values
+      if(any(is.na(time) | is.nan(time) | is.infinite(time)))
+        err <- c(err, "First column (time) contains invalid values (e.g. NA, NaN, Inf).")
+      # time must be in ascending order
+      if(any(tidyr::replace_na(diff(time), 0) < 0))
+        err <- c(err, "First column (time) must be in ascending order.")
+    }
+
+    exp <- dplyr::pull(series, 2)
+    if(!all(is.numeric(exp)))
+      err <- c(err, "Second column (exposure) must contain numeric values only.")
+    else {
+      # no missing, infinite, or NaN values
+      if(any(is.na(exp) | is.nan(exp) | is.infinite(exp)))
+        err <- c(err, "Second column (exposure) contains invalid values (e.g. NA, NaN, Inf).")
+    }
+  }
+
+  if(length(warn) > 0) {
+    if(length(warn) > 1)
+      warn <- paste("*", warn)
+    warning(warn, call.=FALSE)
+  }
+  if(length(err) > 0) {
+    err <- c("Exposure series is malformed.", paste("*", err))
+    stop(err, call.=FALSE)
+  }
 }

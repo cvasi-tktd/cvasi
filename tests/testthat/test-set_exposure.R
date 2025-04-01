@@ -26,6 +26,11 @@ test_that("basic arguments", {
   expect_true(all(is_scenario(rs)))
   expect_equal(rs[[1]]@exposure@series, es@series)
   expect_equal(rs[[1]]@times, 1:3)
+
+  # drop additional columns
+  expect_warning(rs <- set_exposure(sc, data.frame(a=0, b=1, c=2), reset_times=FALSE))
+  expect_equal(length(rs@exposure@series), 2)
+  expect_equal(names(rs@exposure@series), c("a", "b"))
 })
 
 test_that("vectorized arguments", {
@@ -119,4 +124,63 @@ test_that("invalid arguments", {
   expect_error(set_exposure(1, data.frame(time=1)))
   expect_error(set_exposure(1, data.frame(time="1")))
   expect_error(set_exposure(1, data.frame(time=1, conc="a")))
+})
+
+test_that("check_exposure", {
+  # no series
+  expect_error(check_exposure())
+  expect_error(check_exposure(foo))
+  expect_error(check_exposure(1))
+  expect_error(check_exposure(NULL))
+  # too few columns
+  expect_error(check_exposure(data.frame()), "two columns")
+  expect_error(check_exposure(data.frame(a=0)), "two columns")
+  # empty series
+  expect_error(check_exposure(data.frame(t=numeric(0), e=numeric(0))), "least one row")
+  # non-numeric columns
+  expect_error(check_exposure(data.frame(t="foo", e=0)), "numeric values")
+  expect_error(check_exposure(data.frame(t=0, e="bar")), "numeric values")
+  expect_error(check_exposure(data.frame(t="foo", e="bar")), "numeric values")
+  # missing/invalid values
+  expect_error(check_exposure(data.frame(t=NA_real_, e=0)), "invalid values")
+  expect_error(check_exposure(data.frame(t=Inf, e=0)), "invalid values")
+  expect_error(check_exposure(data.frame(t=NaN, e=0)), "invalid values")
+  expect_error(check_exposure(data.frame(t=0, e=NA_real_)), "invalid values")
+  expect_error(check_exposure(data.frame(t=0, e=Inf)), "invalid values")
+  expect_error(check_exposure(data.frame(t=0, e=NaN)), "invalid values")
+  # time not sorted
+  expect_error(check_exposure(data.frame(t=c(0,1,0), e=0)), "ascending order")
+
+  # additional columns
+  expect_warning(check_exposure(data.frame(t=0, e=0, f=0)), "additional columns")
+
+  # valid argument
+  check_exposure(data.frame(t=0:3, e=0))
+  # valid arguments with units
+  foo <- units::set_units(1, sec)
+  check_exposure(data.frame(t=c(foo, foo), e=0))
+  check_exposure(data.frame(t=0, e=c(foo, foo)))
+})
+
+test_that("ExposureSeries constructor", {
+  # shortened test set
+  expect_error(ExposureSeries())
+  expect_error(ExposureSeries(1))
+  expect_error(ExposureSeries(data.frame()), "two columns")
+  expect_error(ExposureSeries(data.frame(t=numeric(0), e=numeric(0))), "least one row")
+  expect_error(ExposureSeries(data.frame(t="foo", e=0)), "numeric values")
+  expect_error(ExposureSeries(data.frame(t=NA_real_, e=0)), "invalid values")
+  expect_warning(es <- ExposureSeries(data.frame(t=0, e=0, f=0)), "additional columns")
+  # where additional columns dropped?
+  expect_equal(length(es@series), 2)
+
+  # valid arguments
+  df <- data.frame(t=0:3, e=0)
+  es <- ExposureSeries(df)
+  expect_equal(es@series, df)
+  # valid arguments with units
+  foo <- units::set_units(1, sec)
+  df <- data.frame(t=c(foo, foo), e=0)
+  es <- ExposureSeries(df)
+  expect_equal(es@series, df)
 })

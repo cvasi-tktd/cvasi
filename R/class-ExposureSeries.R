@@ -34,14 +34,10 @@ setClass("ExposureSeries",
 #' @aliases ExposureSeries-class
 #' @export
 ExposureSeries <- function(series, dates, file, meta, context) {
-  if(!is.data.frame(series))
-    stop("time-series is not a data.frame")
+  check_exposure(series)
   # coerce to data.frame to avoid issues with data.frame-like types
-  series <- as.data.frame(series)
-  if(ncol(series)!=2)
-    stop("time-series must have two columns")
-  if(any(!is.numeric(series[,1])) | any(!is.numeric(series[,2])))
-    stop("time-series contains non-numeric entries")
+  series <- dplyr::select(as.data.frame(series), c(1, 2))
+
   if(missing(file))
     file <- "unknown"
   if(missing(meta))

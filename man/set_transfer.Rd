@@ -35,9 +35,8 @@ Modified \link{scenario} objects
 \description{
 A \emph{transfer} refers to an event where a certain amount of biomass
 is moved to a new medium after a period of time. Effectively, this resets
-the scenario's state variable representing biomass and scales all state
-variables which are correlated with biomass, such as adsorbed chemical mass,
-accordingly.
+the scenario's state variable representing biomass and re-scales all state
+variables which are correlated with biomass, such as adsorbed chemical mass.
 This feature replicates a procedure occurring e.g. in \emph{Lemna} effect studies
 and may be necessary to recreate study results.
 }

@@ -1,31 +1,3 @@
-test_that("set_init", {
-  # basics
-  expect_equal(set_init(GUTS_RED_IT(),c(D=23))@init, c(D=23,H=0))
-  expect_equal(set_init(GUTS_RED_IT(),c(D=23,H=42))@init, c(D=23,H=42))
-
-  # auto-convert lists to vectors
-  expect_equal(set_init(GUTS_RED_IT(),list(D=23))@init, c(D=23,H=0))
-  # do not accept non-numeric init values
-  expect_error(set_init(GUTS_RED_IT(),c(D="23")))
-  # prints a warning when invalid/unused parameters are supplied
-  expect_warning(set_init(GUTS_RED_IT(),c(XX=0)))
-  # prints a warning when unnamed values are supplied
-  expect_warning(set_init(GUTS_RED_IT(),c(0)))
-  # apply to vector of scenarios
-  set_init(c(GUTS_RED_IT(),GUTS_RED_SD()), c(D=23)) -> lst
-  expect_equal(lst[[1]]@init, c(D=23,H=0))
-  expect_equal(lst[[2]]@init, c(D=23,H=0))
-
-  # error if no argument provided
-  expect_error(set_init(GUTS_RED_IT()))
-
-  # gracefully accept any parameter if init is empty
-  expect_equal(set_init(new("EffectScenario"), list(a=1,b=2))@init, c(a=1,b=2))
-  # ... but reject additional values on the second call
-  expect_warning(new("EffectScenario") %>% set_init(c(a=1)) %>% set_init(c(b=2)),
-                 regexp="unused init variables: b")
-})
-
 test_that("set_window", {
   # set both arguments at once
   Lemna_Schmitt() %>%

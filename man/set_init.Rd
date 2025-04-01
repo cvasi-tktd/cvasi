@@ -2,15 +2,18 @@
 % Please edit documentation in R/set_init.R
 \name{set_init}
 \alias{set_init}
-\alias{set_init,vector-method}
 \alias{set_init,EffectScenario-method}
+\alias{set_init,ScenarioSequence-method}
+\alias{set_init,vector-method}
 \title{Set initial state}
 \usage{
 set_init(x, init)
 
-\S4method{set_init}{vector}(x, init)
-
 \S4method{set_init}{EffectScenario}(x, init)
+
+\S4method{set_init}{ScenarioSequence}(x, init)
+
+\S4method{set_init}{vector}(x, init)
 }
 \arguments{
 \item{x}{vector of \code{EffectScenario} objects}

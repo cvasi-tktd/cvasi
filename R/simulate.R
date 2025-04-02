@@ -284,8 +284,11 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
   df <- data.frame()
   t_start <- t_min
   # add last time point to also simulate the remainder of the scenario, if it exists
-  if(!ends_on_transfer)
+  if(!ends_on_transfer) {
     tr_points <- c(tr_points, t_max)
+    # repeat the last value, although it will never be used
+    tr_biomass <- c(tr_biomass, tail(tr_biomass, n=1))
+  }
   # simulate population until next transfer to new medium
   for(i in seq_along(tr_points))
   {

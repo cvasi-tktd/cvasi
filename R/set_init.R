@@ -20,7 +20,7 @@
 #' # Set initial biomass to 1.0
 #' metsulfuron %>% set_init(c(BM=1.0)) %>% simulate()
 setGeneric("set_init",
-           function(x,init) standardGeneric("set_init"),
+           function(x, init) standardGeneric("set_init"),
            signature = "x"
 )
 

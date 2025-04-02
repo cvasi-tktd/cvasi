@@ -2,10 +2,10 @@
 
 utils::globalVariables(c(
   "endpoint", # <dose_response>
-  ".data", # <effect>
-  "window.start", # <effect>
-  "window.end", # <effect>
-  "scenario", # <effect>
+  ".data", # <effect_scenario>
+  "window.start", # <effect_scenario>
+  "window.end", # <effect_scenario>
+  "scenario", # <effect_scenario>
   "endpoint", # <epx_min_win>
   "level", # <epx_min_win>
   "EPx", # <epx_min_win>

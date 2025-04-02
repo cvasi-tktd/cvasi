@@ -2,12 +2,20 @@
 % Please edit documentation in R/effect.R
 \name{effect}
 \alias{effect}
+\alias{effect,EffectScenario-method}
+\alias{effect,ScenarioSequence-method}
 \title{Effect level}
 \usage{
-effect(x, factor = 1, max_only = TRUE, ep_only = FALSE, marginal_effect, ...)
+effect(x, ...)
+
+\S4method{effect}{EffectScenario}(x, factor = 1, max_only = TRUE, ep_only = FALSE, marginal_effect, ...)
+
+\S4method{effect}{ScenarioSequence}(x, ...)
 }
 \arguments{
-\item{x}{vector of \code{EffectScenario} objects}
+\item{x}{a \link{scenario} objects}
+
+\item{...}{additional parameters passed on to \code{\link[=simulate]{simulate()}}}
 
 \item{factor}{optional numeric value which scales the exposure time-series}
 
@@ -19,8 +27,6 @@ results for all effect windows are reported}
 \item{marginal_effect}{\code{numeric}, if set, any effect smaller than this threshold will
 be reported as zero to exclude pseudo-effects originating from small numerical
 errors}
-
-\item{...}{additional parameters passed on to \code{\link[=simulate]{simulate()}}}
 }
 \value{
 a \code{tibble}, by default containing scenarios, effect levels, and the
@@ -86,3 +92,10 @@ dose-response relationships.
 
 }
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{effect(EffectScenario)}: Default for all generic \link{scenarios}
+
+\item \code{effect(ScenarioSequence)}: For scenario \link[=sequence]{sequences}
+
+}}

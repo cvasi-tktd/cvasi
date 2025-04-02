@@ -42,7 +42,7 @@
 #' be reused for repeated calculations, e.g. to derive effect profiles or
 #' dose-response relationships.
 #'
-#' @param x vector of `EffectScenario` objects
+#' @param x a [scenario] objects
 #' @param factor optional numeric value which scales the exposure time-series
 #' @param ep_only logical, if TRUE only effect endpoints are returned as a vector
 #' @param max_only `logical`, if `TRUE` only the maximum effect is returned, else
@@ -65,8 +65,11 @@
 #' endpoint, start and end time will additionally have the suffixes `.dat.start`
 #' and `.dat.end`, respectively.
 #' @export
+setGeneric("effect", function(x, ...) standardGeneric("effect"), signature="x")
+
+
 #' @autoglobal
-effect <- function(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_effect, ...) {
+effect_scenario <- function(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_effect, ...) {
   if(is.vector(x))
     stop("vectors of scenarios not supported")
   if(length(x@endpoints) == 0)
@@ -134,6 +137,23 @@ effect <- function(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_effect, .
   efx$scenario <- list(x)
   dplyr::relocate(efx, scenario)
 }
+
+effect_sequence <- function(x, ...) {
+  stop("Sequences are not supported, yet.")
+}
+
+
+#' @describeIn effect Default for all generic [scenarios]
+#' @include class-EffectScenario.R
+#' @export
+#setMethod("effect", "EffectScenario", function(x, ...) effect_scenario(x, ...))
+setMethod("effect", "EffectScenario", effect_scenario)
+
+#' @describeIn effect For scenario [sequences][sequence]
+#' @include sequence.R
+#' @export
+setMethod("effect", "ScenarioSequence", function(x, ...) effect_sequence(x, ...))
+
 
 # Calculates the effect based on simulation and control. Takes into
 # account some edge cases where sim/control are zero which would otherwise

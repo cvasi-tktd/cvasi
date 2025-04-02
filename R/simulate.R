@@ -128,7 +128,7 @@
 #' minnow_long %>% simulate(hmax=0.001, maxsteps=10^5)
 setGeneric("simulate", function(x, ...) standardGeneric("simulate"), signature="x")
 
-#' default for all models using sliding exposure windows
+#' Default for all models using moving exposure windows
 #' @rdname simulate
 #' @include class-EffectScenario.R
 setMethod("simulate", "EffectScenario", function(x, ...) simulate_scenario(x, ...))

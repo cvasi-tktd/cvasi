@@ -5,11 +5,11 @@ setClass("ScenarioSequence", slots=list(scenarios="list"))
 
 #' Sequence of scenarios
 #'
+#' Scenario sequences can be used to e.g. implement changes in model parameters
+#' over time, which otherwise would remain constant for the duration of a simulation.
 #' A sequence of scenarios is treated as a single scenario and each scenario
 #' is simulated one after the other. If scenario `n` in a sequence was simulated,
-#' scenario `n+1` will start off in the model state where `n` has ended.
-#' Scenario sequences can be used to e.g. implement changes in model parameters
-#' over time.
+#' scenario `n+1` will start off in the model state where `n` had ended.
 #'
 #' ### Requirements
 #' All scenarios in a sequence must fulfill the following requirements:
@@ -18,7 +18,7 @@ setClass("ScenarioSequence", slots=list(scenarios="list"))
 #' * The *output times* of all scenarios must represent a continuous time series
 #'   without gaps or overlaps
 #'
-#' Using the `breaks` parameter, the function can split up the scenarios'
+#' Using the `breaks` argument, the function can split up the scenarios'
 #' output times at the given break points. The break points must be within
 #' the interval defined by the superset of all output times in the sequence.
 #'
@@ -51,6 +51,7 @@ setClass("ScenarioSequence", slots=list(scenarios="list"))
 #'
 #' @name sequence
 #' @aliases ScenarioSequence-class
+#' @seealso [sequence.extract]
 #' @export
 sequence <- function(seq, breaks=NULL) {
   if(missing(seq))
@@ -71,7 +72,7 @@ sequence <- function(seq, breaks=NULL) {
   }
 
   obj <- new("ScenarioSequence", scenarios=sequence_init(seq, breaks))
-  sequence_check(obj)
+  check_sequence(obj)
   obj
 }
 
@@ -108,9 +109,84 @@ sequence_init <- function(seq, breaks) {
   unname(seq)
 }
 
+#' Extract and replace elements of a sequence
+#'
+#' The array accessor generics allow extracting and replacing scenarios within
+#' am existing sequence. `[` and `[[` work identical to
+#'
+#' @param x [sequence]
+#' @param i index of elements to extract or replace
+#' @param j *not used*
+#' @param value new scenario
+#' @name sequence.extract
+#' @rdname sequence.extract
+#' @return various
+#' @examples
+#' # create a sequence
+#' seq <- sequence(list(minnow_it, minnow_it), breaks=3)
+#'
+#' seq[1]       # first element, as a list of scenarios
+#' seq[c(1)]    # the same
+#' seq[c(1, 2)] # both elements as a list of scenarios
+#' seq[[1]]     # first element as a scenario
+#'
+#' # replacing single elements
+#' seq[[1]] <- minnow_sd %>% set_times(1:3)
+NULL
+
+
+#' @export
+#' @describeIn sequence.extract Returns a list of scenarios from the sequence.
+setMethod("[", c("ScenarioSequence","numeric","missing","missing"), function(x, i) {
+  if(missing(i))
+    stop("Argument `i` is missing.")
+  if(any(i < 1 | i > length(x@scenarios)))
+    stop("Index is out of bounds.")
+
+  x@scenarios[i]
+})
+
+#' @export
+#' @describeIn sequence.extract Returns a single scenario from the sequence.
+setMethod("[[", c("ScenarioSequence", "numeric"), function(x, i) {
+  if(missing(i))
+    stop("Argument `i` is missing.")
+  if(length(i) != 1)
+    stop("Index must be of length one.")
+  if(any(i < 1 | i > length(x@scenarios)))
+    stop("Index is out of bounds.")
+
+  x@scenarios[[i]]
+})
+
+#' @export
+#' @describeIn sequence.extract Returns the number of scenarios in the sequence.
+setMethod("length", "ScenarioSequence", function(x) {
+  length(x@scenarios)
+})
+
+#' @export
+#' @describeIn sequence.extract Replaces a single scenario in the sequence.
+setMethod("[[<-", c("ScenarioSequence","numeric","missing","EffectScenario"), function(x, i, j, value) {
+  if(missing(i))
+    stop("Argument `i` is missing.")
+
+  if(length(i) != 1)
+    stop("Index must be of length one.")
+  if(any(i < 1 | i > length(x@scenarios)))
+    stop("Index is out of bounds.")
+  if(!all(is_scenario(value)))
+    stop("New value must be a scenario.")
+  if(length(value) != 1)
+    stop("New value must be of length one.")
+
+  x@scenarios[[i]] <- value
+  check_sequence(x)
+  x
+})
 
 # check validity of sequence elements
-sequence_check <- function(seq) {
+check_sequence <- function(seq) {
   lst <- seq@scenarios
   if(!is.list(lst)) {
     stop("sequence does not contain a list of effect scenarios")

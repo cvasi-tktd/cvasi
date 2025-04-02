@@ -6,7 +6,7 @@ show_scenario <- function(object, inline=FALSE, ...) {
     cli::cli_text("tag: {object@tag}")
 
   if(length(object@param) > 0)
-    cli::cli_text(cli::col_blue(paste0("param: ", paste(names(object@param), unlist(object@param), sep="=", collapse=", "))))
+    cli::cli_text(cli::col_blue(paste("param:", paste(names(object@param), unlist(object@param), sep="=", collapse=", "))))
   else
     cli::cli_text(cli::col_blue("param: none"))
 
@@ -16,7 +16,7 @@ show_scenario <- function(object, inline=FALSE, ...) {
     cli::cli_text(cli::col_blue("init: none"))
 
   if(length(object@endpoints) > 0)
-    cli::cli_text(cli::col_blue(paste0("endpt:", paste(object@endpoints, sep=",", collapse=", "))))
+    cli::cli_text(cli::col_blue(paste("endpt:", paste(object@endpoints, sep=",", collapse=", "))))
   else
     cli::cli_text(cli::col_blue("endpt: none"))
 

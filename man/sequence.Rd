@@ -17,11 +17,11 @@ be modified so that one scenario ends at the break and the next one begins}
 an S4 object of type \linkS4class{ScenarioSequence}
 }
 \description{
+Scenario sequences can be used to e.g. implement changes in model parameters
+over time, which otherwise would remain constant for the duration of a simulation.
 A sequence of scenarios is treated as a single scenario and each scenario
 is simulated one after the other. If scenario \code{n} in a sequence was simulated,
-scenario \code{n+1} will start off in the model state where \code{n} has ended.
-Scenario sequences can be used to e.g. implement changes in model parameters
-over time.
+scenario \code{n+1} will start off in the model state where \code{n} had ended.
 }
 \details{
 \subsection{Requirements}{
@@ -33,7 +33,7 @@ All scenarios in a sequence must fulfill the following requirements:
 without gaps or overlaps
 }
 
-Using the \code{breaks} parameter, the function can split up the scenarios'
+Using the \code{breaks} argument, the function can split up the scenarios'
 output times at the given break points. The break points must be within
 the interval defined by the superset of all output times in the sequence.
 }
@@ -60,4 +60,7 @@ sq <- sequence(list(scen1, scen2), breaks=c(4))
 # being simulated after t=4.0, which disabled the background mortality
 simulate(sq)
 
+}
+\seealso{
+\link{sequence.extract}
 }

@@ -67,7 +67,7 @@ num_info.default <- function(obj) {
 
 #' @rdname num_info
 #' @export
-num_info.cvasi.simulate <- function(obj) {
+num_info.cvasi_simulate <- function(obj) {
   diag <- attr(obj, "desolve_diagn")
   status <- attr(obj, "cvasi_status")
 
@@ -89,7 +89,7 @@ num_info.cvasi.simulate <- function(obj) {
 
     # get issue description
     if(rc < 0) {
-      tx <- capture.output(diagnostics.cvasi.simulate(obj))
+      tx <- capture.output(diagnostics.cvasi_simulate(obj))
       idesc <- trimws(tx[which(startsWith(tx, "  return code")) + 1])
     }
 
@@ -166,18 +166,37 @@ num_info.cvasi.simulate <- function(obj) {
 #' @export
 NULL
 
-#' @inherit deSolve::diagnostics
-#' @name diagnostics
-#' @method diagnostics cvasi.simulate
-#' @export diagnostics
-diagnostics.cvasi.simulate <- function(obj, ...) {
+#' Diagnostics of solvers
+#'
+#' Prints several diagnostics of the simulation to the console, e.g. number of
+#' steps taken, the last step size, etc. The information is provided by
+#' [deSolve::diagnostics()].
+#'
+#' @seealso [deSolve::diagnostics()]
+#' @param obj return value of a simulation
+#' @param ... unused parameters
+#' @rdname diagnostics
+#' @export
+diagnostics <- function(obj, ...) {
+  UseMethod("diagnostics")
+}
+
+#' @rdname diagnostics
+#' @export
+diagnostics.default <- function(obj, ...) {
+  deSolve::diagnostics.deSolve(obj)
+}
+
+#' @rdname diagnostics
+#' @export
+diagnostics.cvasi_simulate <- function(obj, ...) {
   # translate our metadata to something that is compatible with deSolve's format
   diag <- attr(obj, "desolve_diagn")
   if(is.null(diag))
     stop("Object does not contain solver diagnostics info.")
-
   attr(obj, "istate") <- diag$istate
   attr(obj, "rstate") <- diag$rstate
   attr(obj, "type") <- diag$type
+  class(obj) <- "deSolve"
   deSolve::diagnostics.deSolve(obj)
 }

@@ -2,13 +2,13 @@
 % Please edit documentation in R/plot.R
 \name{plot}
 \alias{plot}
-\alias{plot.cvasi.drc}
-\alias{plot.cvasi.simulate}
+\alias{plot.cvasi_drc}
+\alias{plot.cvasi_simulate}
 \title{S3 plotting functions}
 \usage{
-\method{plot}{cvasi.drc}(x, y, scale_x = c("auto", "log10", "none"), ...)
+\method{plot}{cvasi_drc}(x, y, scale_x = c("auto", "log10", "none"), ...)
 
-\method{plot}{cvasi.simulate}(x, y, ...)
+\method{plot}{cvasi_simulate}(x, y, ...)
 }
 \arguments{
 \item{x}{object to plot}
@@ -29,8 +29,8 @@ routines to display various time-series and scenario objects.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{plot(cvasi.drc)}: Plot dose response curves
+\item \code{plot(cvasi_drc)}: Plot dose response curves
 
-\item \code{plot(cvasi.simulate)}: Plot return value of \code{\link[=simulate]{simulate()}}
+\item \code{plot(cvasi_simulate)}: Plot return value of \code{\link[=simulate]{simulate()}}
 
 }}

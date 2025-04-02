@@ -3,14 +3,14 @@
 \name{num_info}
 \alias{num_info}
 \alias{num_info.default}
-\alias{num_info.cvasi.simulate}
+\alias{num_info.cvasi_simulate}
 \title{Print information about numerical solver result}
 \usage{
 num_info(obj)
 
 \method{num_info}{default}(obj)
 
-\method{num_info}{cvasi.simulate}(obj)
+\method{num_info}{cvasi_simulate}(obj)
 }
 \arguments{
 \item{obj}{Return value of \code{\link[=simulate]{simulate()}}}

@@ -147,7 +147,7 @@ dose_response <- function(scenario, range=c(1, 99), n=20, strategy=c("exponentia
   drc <- drc %>%
     dplyr::arrange(endpoint, mf) %>%
     as.data.frame()
-  class(drc) <- c("cvasi.drc", class(drc))
+  class(drc) <- c("cvasi_drc", class(drc))
   attr(drc, "scenario") <- scenario
 
   drc

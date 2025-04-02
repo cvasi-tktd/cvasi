@@ -16,7 +16,7 @@ NULL
 #'   a log10-scaled axis, `none` for no scaling, and `auto` for automatic selection
 #' @describeIn plot Plot dose response curves
 #' @export
-plot.cvasi.drc <- function(x, y, scale_x=c("auto", "log10", "none"), ...) {
+plot.cvasi_drc <- function(x, y, scale_x=c("auto", "log10", "none"), ...) {
   if(!missing(y))
     warning("Parameter `y` is unused, ignoring argument")
   if(!missing(...))
@@ -63,7 +63,7 @@ plot.cvasi.drc <- function(x, y, scale_x=c("auto", "log10", "none"), ...) {
 
 #' @describeIn plot Plot return value of [simulate()]
 #' @export
-plot.cvasi.simulate <- function(x, y, ...) {
+plot.cvasi_simulate <- function(x, y, ...) {
   if(!missing(y))
     warning("Parameter `y` is unsused, ignoring argument")
   if(!missing(...))

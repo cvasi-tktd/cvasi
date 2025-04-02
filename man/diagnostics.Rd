@@ -2,35 +2,26 @@
 % Please edit documentation in R/numerics.R
 \name{diagnostics}
 \alias{diagnostics}
-\alias{diagnostics.cvasi.simulate}
-\title{Print Diagnostic Characteristics of Solvers}
+\alias{diagnostics.default}
+\alias{diagnostics.cvasi_simulate}
+\title{Diagnostics of solvers}
 \usage{
-\method{diagnostics}{cvasi.simulate}(obj, ...)
+diagnostics(obj, ...)
+
+\method{diagnostics}{default}(obj, ...)
+
+\method{diagnostics}{cvasi_simulate}(obj, ...)
 }
 \arguments{
-\item{obj}{is an output data structure produced by one of the
-    solver routines.
-  }
+\item{obj}{return value of a simulation}
 
-\item{...}{optional arguments allowing to extend \code{diagnostics}
-    as a generic function.
-  }
+\item{...}{unused parameters}
 }
 \description{
-Prints several diagnostics of the simulation to the screen, e.g.
-  number of steps taken, the last step size, ...
-}
-\details{
-Detailed information obout the success of a simulation is printed,
-  if a \code{diagnostics} function exists for a specific solver routine.
-  A warning is printed, if no class-specific diagnostics exists.
-
-  Please consult the class-specific help page for details.
+Prints several diagnostics of the simulation to the console, e.g. number of
+steps taken, the last step size, etc. The information is provided by
+\code{\link[deSolve:diagnostics]{deSolve::diagnostics()}}.
 }
 \seealso{
-\code{\link[deSolve]{diagnostics.deSolve}} for diagnostics of differential
-  equaton solvers.
-%% enable this when bvpSolve is on CRAN
-%  \code{\link[bvpSolve:diagnostics]{diagnostics.bvpSolve}} for
-%  diagnostics of boundary value problem solvers.
+\code{\link[deSolve:diagnostics]{deSolve::diagnostics()}}
 }

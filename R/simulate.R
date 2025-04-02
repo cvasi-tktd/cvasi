@@ -177,7 +177,7 @@ simulate_scenario <- function(x, times, .suppress=FALSE, ...) {
   if(is(rs, "deSolve")) {
     rs <- ode2df(rs)
   }
-  class(rs) <- c("cvasi.simulate", "data.frame")
+  class(rs) <- c("cvasi_simulate", "data.frame")
   was_aborted <- num_aborted(rs)
   attr(rs, "cvasi_status") <- "success"
 
@@ -327,7 +327,7 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
       attr(df, "next_init") <- tail(df, 1)[names(scenario@init)]
   }
   rownames(df) <- NULL
-  class(df) <- c("cvasi.simulate", "data.frame")
+  class(df) <- c("cvasi_simulate", "data.frame")
   df
 }
 
@@ -383,7 +383,7 @@ simulate_seq <- function(seq, times, ...) {
   }
   attr(df, "next_init") <- NULL
   rownames(df) <- NULL
-  class(df) <- c("cvasi.simulate", "data.frame")
+  class(df) <- c("cvasi_simulate", "data.frame")
   df
 }
 
@@ -504,6 +504,6 @@ simulate_batch <- function(model_base, treatments, param_sample=deprecated(), ..
     ~ dplyr::mutate(.x, trial = .y)
   )
   df <- dplyr::bind_rows(simulated_results)
-  class(df) <- c("cvasi.simulate", "data.frame")
+  class(df) <- c("cvasi_simulate", "data.frame")
   return(df)
 }

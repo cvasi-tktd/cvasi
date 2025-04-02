@@ -395,6 +395,10 @@ optim_set <- function(par, sets, par_names, output, err_fun, verbose=verbose,
       is_issue <- TRUE
       msg <- "output column contains NAs"
     }
+    else if(num_error(out)) {
+      is_issue <- TRUE
+      msg <- "simulation failed"
+    }
 
     if(is_issue | is_error) {
       if(verbose) {
@@ -409,7 +413,13 @@ optim_set <- function(par, sets, par_names, output, err_fun, verbose=verbose,
     obs <- c(obs, data[, output])
     pred <- c(pred, out[, output])
     # if only one weight defined, then apply the same weight to all data points
-    wgts <- c(wgts, ifelse(length(set@weight) == 1, rep(set@weight, times=nrow(out)), set@weight))
+    if(length(set@weight) == 1) {
+      wgts <- c(wgts, rep(set@weight, times=nrow(out)))
+    } else if(length(set@weight) == nrow(out))  {
+      wgts <- c(wgts, set@weight)
+    } else {
+      stop("Length mismatch of weights and predicted data, caliset #", i)
+    }
     # tags can also be non-atomic types, so we put them in a list
     tags <- append(tags, rep(list(set@tag), times=nrow(out)))
   }
@@ -431,5 +441,9 @@ optim_set <- function(par, sets, par_names, output, err_fun, verbose=verbose,
 # @param weights weighting factor for each data point
 # @param tags optional study tag, e.g. to identify where data originates from
 sse <- function(obs, pred, weights=1, tags=NULL) {
+  if(length(obs) != length(pred))
+    stop("Length mismatch of observed and predicted data.")
+  if(length(weights) != 1 & length(weights) != length(obs))
+    stop("Length mismatch of weights and observed data.")
   sum((obs - pred)^2 * weights, na.rm = TRUE)
 }

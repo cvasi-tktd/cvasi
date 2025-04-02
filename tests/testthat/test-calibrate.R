@@ -215,3 +215,34 @@ test_that("failed simulations during fitting", {
   )
 
 })
+
+test_that("fit with weights", {
+  # synthetic dataset #1, should be irrelevant due to small weights
+  minnow_it %>%
+    simulate() %>%
+    dplyr::select(time, D) -> rs1
+  # synthetic dataset #2, the only relevant one due to large weights
+  minnow_it %>%
+    set_param(c(kd=0.5)) %>%
+    simulate() %>%
+    dplyr::select(time, D) -> rs2
+
+  # create list containing calibration sets
+  cs <- list(
+    caliset(minnow_it, rs1, weight=0.0001),
+    caliset(minnow_it, rs2, weight=1000)
+  )
+
+  calibrate(cs,
+            par=c(kd=minnow_it@param$kd),
+            output="D",
+            method="Brent",
+            lower=0.001,
+            upper=10,
+            verbose=FALSE) -> calib
+
+  expect_equal(calib$par[["kd"]],
+               0.5,
+               tolerance=1e-5)
+
+})

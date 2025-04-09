@@ -176,11 +176,6 @@ minnow_it %>%
   set_exposure(exposure_profile) %>%  # set a specific exposure scenario
   epx()  # run EPx calculations
 #> Warning: package 'purrr' was built under R version 4.3.3
-#> 
-#> Attaching package: 'purrr'
-#> The following object is masked from 'package:testthat':
-#> 
-#>     is_null
 #> # A tibble: 1 × 3
 #>   scenario   L.EP10 L.EP50
 #>   <list>      <dbl>  <dbl>
@@ -205,16 +200,16 @@ metsulfuron %>%
   set_window(length=7, interval=1) %>%
   effect(max_only=FALSE)
 #> # A tibble: 8 × 5
-#>   scenario          BM         r dat.start dat.end
-#>   <list>         <dbl>     <dbl>     <dbl>   <dbl>
-#> 1 <LmnSchmS>  2.68e- 1  9.06e- 1         0       7
-#> 2 <LmnSchmS>  2.65e- 1  8.95e- 1         1       8
-#> 3 <LmnSchmS>  2.48e- 1  8.29e- 1         2       9
-#> 4 <LmnSchmS>  2.05e- 1  6.69e- 1         3      10
-#> 5 <LmnSchmS>  1.47e- 1  4.63e- 1         4      11
-#> 6 <LmnSchmS>  7.39e- 2  2.23e- 1         5      12
-#> 7 <LmnSchmS>  3.15e- 3  9.18e- 3         6      13
-#> 8 <LmnSchmS> -6.66e-16 -1.78e-15         7      14
+#>   scenario              BM            r dat.start dat.end
+#>   <list>             <dbl>        <dbl>     <dbl>   <dbl>
+#> 1 <LmnSchmS>  0.268         0.906               0       7
+#> 2 <LmnSchmS>  0.265         0.895               1       8
+#> 3 <LmnSchmS>  0.248         0.829               2       9
+#> 4 <LmnSchmS>  0.205         0.669               3      10
+#> 5 <LmnSchmS>  0.147         0.463               4      11
+#> 6 <LmnSchmS>  0.0739        0.223               5      12
+#> 7 <LmnSchmS>  0.00315       0.00918             6      13
+#> 8 <LmnSchmS> -0.0000000571 -0.000000166         7      14
 ```
 
 The resulting table describes how effect levels change when the exposure
@@ -262,9 +257,9 @@ results
 #> 1 <LmnSchmS> 0.000113  0.000327         0       7
 #> 2 <LmnSchmS> 0.000115  0.000333         1       8
 #> 3 <LmnSchmS> 0.000109  0.000317         2       9
-#> 4 <LmnSchmS> 0.0000971 0.000283         3      10
+#> 4 <LmnSchmS> 0.0000971 0.000282         3      10
 #> 5 <LmnSchmS> 0.000104  0.000302         4      11
-#> 6 <LmnSchmS> 0.000119  0.000346         5      12
+#> 6 <LmnSchmS> 0.000119  0.000345         5      12
 #> 7 <LmnSchmS> 0.000136  0.000394         6      13
 #> 8 <LmnSchmS> 0.000116  0.000337         7      14
 
@@ -304,20 +299,20 @@ metsulfuron %>%
 result
 #>    time       BM E M_int C_int  FrondNo
 #> 1     0 1.000000 1     0     0 10000.00
-#> 2     1 1.088182 1     0     0 10881.82
+#> 2     1 1.088183 1     0     0 10881.83
 #> 3     2 1.184076 1     0     0 11840.76
 #> 4     3 1.288342 1     0     0 12883.42
-#> 5     4 1.088182 1     0     0 10881.82
+#> 5     4 1.088183 1     0     0 10881.83
 #> 6     5 1.184076 1     0     0 11840.76
 #> 7     6 1.288342 1     0     0 12883.42
-#> 8     7 1.088182 1     0     0 10881.82
+#> 8     7 1.088183 1     0     0 10881.83
 #> 9     8 1.184076 1     0     0 11840.76
-#> 10    9 1.288342 1     0     0 12883.42
-#> 11   10 1.088182 1     0     0 10881.82
-#> 12   11 1.184076 1     0     0 11840.76
-#> 13   12 1.288342 1     0     0 12883.42
-#> 14   13 1.088182 1     0     0 10881.82
-#> 15   14 1.184076 1     0     0 11840.76
+#> 10    9 1.288343 1     0     0 12883.43
+#> 11   10 1.088183 1     0     0 10881.83
+#> 12   11 1.184077 1     0     0 11840.77
+#> 13   12 1.288343 1     0     0 12883.43
+#> 14   13 1.088184 1     0     0 10881.84
+#> 15   14 1.184077 1     0     0 11840.77
 
 library(ggplot2)
 ggplot(result) +
@@ -418,25 +413,25 @@ fit1 <- calibrate(
 #> Fitted parameter: k_phot_max
 #> Output variable: BM
 #> Error function: Sum of squared errors
-#> Testing: k_phot_max=0.190983005625053, Error: 7773063.37078419
-#> Testing: k_phot_max=0.309016994374947, Error: 3773478.40651822
-#> Testing: k_phot_max=0.381966011250105, Error: 32463.0450211169
-#> Testing: k_phot_max=0.427050983124842, Error: 5007518.67666603
-#> Testing: k_phot_max=0.364216527777377, Error: 595120.655295876
-#> Testing: k_phot_max=0.399186938124422, Error: 350364.561310557
-#> Testing: k_phot_max=0.384141480406814, Error: 12409.3333143064
-#> Testing: k_phot_max=0.385559150655713, Error: 7053.80696240271
-#> Testing: k_phot_max=0.386097811329519, Error: 6707.77702709609
-#> Testing: k_phot_max=0.386028896259684, Error: 6698.81329814015
-#> Testing: k_phot_max=0.386023805114469, Error: 6698.7746084863
-#> Testing: k_phot_max=0.386024054599214, Error: 6698.77450749263
-#> Testing: k_phot_max=0.386024043879953, Error: 6698.77450760104
-#> Testing: k_phot_max=0.386024065318474, Error: 6698.77450776412
-#> Testing: k_phot_max=0.386024054599214, Error: 6698.77450749263
-#> Best fit: k_phot_max=0.386024054599214
+#> Testing: k_phot_max=0.190983005625053, Error: 7773061.85714245
+#> Testing: k_phot_max=0.309016994374947, Error: 3773473.58358374
+#> Testing: k_phot_max=0.381966011250105, Error: 32461.9856839336
+#> Testing: k_phot_max=0.427050983124842, Error: 5007544.56542049
+#> Testing: k_phot_max=0.364216445670702, Error: 595120.560314554
+#> Testing: k_phot_max=0.399186938124422, Error: 350369.19391166
+#> Testing: k_phot_max=0.384141380642181, Error: 12409.3968167213
+#> Testing: k_phot_max=0.385559070535404, Error: 7053.7631866681
+#> Testing: k_phot_max=0.38609772804005, Error: 6707.7364490696
+#> Testing: k_phot_max=0.386028813940768, Error: 6698.77294988308
+#> Testing: k_phot_max=0.386023722764822, Error: 6698.734259672
+#> Testing: k_phot_max=0.386023972245524, Error: 6698.73415868153
+#> Testing: k_phot_max=0.386023961526265, Error: 6698.73415878995
+#> Testing: k_phot_max=0.386023982964783, Error: 6698.73415895307
+#> Testing: k_phot_max=0.386023972245524, Error: 6698.73415868153
+#> Best fit: k_phot_max=0.386023972245524
 fit1$par
 #> k_phot_max 
-#>  0.3860241
+#>   0.386024
 
 # Update the scenario with fitted parameter and simulate it
 fitted_growth <- control %>% 
@@ -490,7 +485,7 @@ fit2 <- calibrate(
 )
 fit2$par
 #>       EC50          b       P_up 
-#> 0.50704017 4.16140566 0.01367997
+#> 0.52090177 4.69630443 0.01708181
 
 # Update the scenario with fitted parameter and simulate all trials
 fitted_tktd <- fitted_growth %>%
@@ -542,15 +537,14 @@ res <- lik_profile(x = cs, # the calibration set
                                  b = list(1, 5),
                                  P = list(0.0001, 0.2)))
 #> Profiling: EC50
-#> start param value: 0.507LL:-244.118
+#> start param value: 0.521LL:-237.245
 #> hit 95% Conf Region, changing direction
 #> hit 95% Conf Region, end of profiling
 #> Profiling: b
-#> start param value: 4.161LL:-244.118
+#> start param value: 4.696LL:-237.245
 #> hit 95% Conf Region, changing direction
-#> hit 95% Conf Region, end of profiling
 #> Profiling: P_up
-#> start param value: 0.014LL:-244.118
+#> start param value: 0.017LL:-237.245
 #> hit 95% Conf Region, changing direction
 #> hit 95% Conf Region, end of profiling
 # visualise profiling results
@@ -563,9 +557,9 @@ plot_lik_profile(res)
 
 # access 95% confidence intervals of profiled parameters
 res$EC50$confidence_interval
-#> [1] 0.4970885 0.5156808
+#> [1] 0.5145915 0.5272611
 res$b$confidence_interval
-#> [1] 3.541113 4.730779
+#> [1] 4.383194 5.000000
 ```
 
 Finally, relations between estimates of the calibrated parameters can be
@@ -580,7 +574,7 @@ model with the new, randomly draw set.
 
 First, the parameter space exploration is conducted using the
 `explore_space()` function. Then, the space can be visualized using
-`plot_lik_profile()`.
+`plot_param_space()`.
 
 ``` r
 # Call the help page for more information about the parameter space explorer
@@ -595,6 +589,7 @@ res_space <- explore_space(
   par = fit2$par,
   res = res, # output of the likelihood profiling function
   output = "BM")
+#> resampling parameter space, iteration: 1
 #> better optimum found in space explorer
 
 # visualize the parameter space
@@ -634,20 +629,20 @@ sq <- sequence(list(sc1, sc2), breaks=7)
 simulate(sq)
 #>    time       BM E      M_int      C_int  FrondNo
 #> 1     0 50.00000 1   0.000000 0.00000000 500000.0
-#> 2     1 52.15858 1 223.074470 0.25609887 521585.8
-#> 3     2 52.43495 1 369.634402 0.42211917 524349.5
-#> 4     3 52.33917 1 463.026054 0.52973924 523391.7
-#> 5     4 52.17923 1 521.892686 0.59891761 521792.3
-#> 6     5 52.00016 1 558.626807 0.64328081 520001.6
-#> 7     6 51.81403 1 581.218666 0.67170059 518140.3
-#> 8     7 51.63740 1 474.071576 0.54974731 516374.0
-#> 9     8 46.72570 1 273.120825 0.35001169 467257.0
-#> 10    9 42.94600 1 157.349626 0.21939489 429460.0
-#> 11   10 40.59758 1  90.651838 0.13370880 405975.8
-#> 12   11 38.94561 1  52.226090 0.08029945 389456.1
-#> 13   12 37.48893 1  30.088353 0.04805946 374889.3
-#> 14   13 36.12872 1  17.334420 0.02873031 361287.2
-#> 15   14 34.84676 1   9.986659 0.01716095 348467.6
+#> 2     1 52.15860 1 223.074635 0.25609895 521586.0
+#> 3     2 52.43488 1 369.634276 0.42211960 524348.8
+#> 4     3 52.33910 1 463.025680 0.52973949 523391.0
+#> 5     4 52.17916 1 521.892161 0.59891777 521791.6
+#> 6     5 52.00010 1 558.626187 0.64328091 520001.0
+#> 7     6 51.81396 1 581.216718 0.67169918 518139.6
+#> 8     7 51.63733 1 474.070752 0.54974702 516373.3
+#> 9     8 46.72564 1 273.120886 0.35001217 467256.4
+#> 10    9 42.94595 1 157.349663 0.21939521 429459.5
+#> 11   10 40.59753 1  90.651859 0.13370900 405975.3
+#> 12   11 38.94556 1  52.226102 0.08029957 389455.6
+#> 13   12 37.48888 1  30.088360 0.04805953 374888.8
+#> 14   13 36.12868 1  17.334424 0.02873035 361286.8
+#> 15   14 34.84672 1   9.986661 0.01716098 348467.2
 ```
 
 For more information:
@@ -674,13 +669,13 @@ metsulfuron %>%
   simulate(hmax=0.1)
 #>   time       BM E    M_int     C_int  FrondNo
 #> 1    0 50.00000 1   0.0000 0.0000000 500000.0
-#> 2    1 52.15858 1 223.0745 0.2560989 521585.8
-#> 3    2 52.43495 1 369.6344 0.4221192 524349.5
-#> 4    3 52.33917 1 463.0261 0.5297392 523391.7
-#> 5    4 52.17923 1 521.8927 0.5989176 521792.3
-#> 6    5 52.00016 1 558.6268 0.6432808 520001.6
-#> 7    6 51.81403 1 581.2187 0.6717006 518140.3
-#> 8    7 51.63740 1 474.0716 0.5497473 516374.0
+#> 2    1 52.15860 1 223.0746 0.2560990 521586.0
+#> 3    2 52.43488 1 369.6343 0.4221196 524348.8
+#> 4    3 52.33910 1 463.0257 0.5297395 523391.0
+#> 5    4 52.17916 1 521.8922 0.5989178 521791.6
+#> 6    5 52.00010 1 558.6262 0.6432809 520001.0
+#> 7    6 51.81396 1 581.2167 0.6716992 518139.6
+#> 8    7 51.63733 1 474.0708 0.5497470 516373.3
 ```
 
 The calculation of *EPx* values may take a lot of time if one or more of

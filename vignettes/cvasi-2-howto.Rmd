@@ -437,7 +437,7 @@ the fit (likelihood) of each of these parameter sets by comparing the model with
 the original parameter set against the model with the new, randomly draw set.
  
 First, the parameter space exploration is conducted using the `explore_space()` 
-function. Then, the space can be visualized using `plot_lik_profile()`.
+function. Then, the space can be visualized using `plot_param_space()`.
 
 ```{r, eval=FALSE}
 # Call the help page for more information about the parameter space explorer

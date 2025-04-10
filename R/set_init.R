@@ -19,21 +19,20 @@
 #' @examples
 #' # Set initial biomass to 1.0
 #' metsulfuron %>% set_init(c(BM=1.0)) %>% simulate()
-setGeneric("set_init",
-           function(x, init) standardGeneric("set_init"),
-           signature = "x"
-)
+setGeneric("set_init", function(x, init) standardGeneric("set_init"), signature = "x")
 
-## TODO support non-standard evaluation
+## TODO support non-standard evaluation?
 #' @rdname set_init
 setMethod("set_init","EffectScenario", function(x, init) {
   if(missing(init))
-    stop("init argument missing")
+    stop("Argument `init` is missing")
 
-  if(length(init) == 0)
+  if(length(init) == 0) {
     return(x)
-  if(is.list(init))
+  }
+  if(is.list(init)) {
     init <- unlist(init)
+  }
 
   # if state vars were defined before, check if these conform to the provided values
   if(length(get_vars(x)) > 0)

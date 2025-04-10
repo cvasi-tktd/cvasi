@@ -75,7 +75,7 @@ sequence <- function(seq, breaks=NULL) {
   obj <- new("ScenarioSequence", scenarios=seq)
   if(!is.null(breaks)) {
     obj@breaks <- breaks
-    obj <- split_sequence(obj, .messages=TRUE)
+    obj <- split_sequence(obj, .messages=FALSE)
   } else {
     obj@breaks <- breaks_from_sequence(obj)
   }
@@ -94,6 +94,7 @@ sequence <- function(seq, breaks=NULL) {
 #' @param value new scenario
 #' @name sequence.extract
 #' @rdname sequence.extract
+#' @aliases [[<-,ScenarioSequence,numeric,ANY,ANY-method
 #' @return various
 #' @examples
 #' # create a sequence
@@ -112,8 +113,8 @@ NULL
 #' @export
 #' @describeIn sequence.extract Returns a list of scenarios from the sequence.
 setMethod("[", c("ScenarioSequence","numeric","missing","missing"), function(x, i) {
-  if(missing(i))
-    stop("Argument `i` is missing.")
+  if(any(is.na(i)))
+    stop("Argument `i` must not contain NAs")
   if(any(i < 1 | i > length(x@scenarios)))
     stop("Index is out of bounds.")
 
@@ -123,8 +124,6 @@ setMethod("[", c("ScenarioSequence","numeric","missing","missing"), function(x, 
 #' @export
 #' @describeIn sequence.extract Returns a single scenario from the sequence.
 setMethod("[[", c("ScenarioSequence", "numeric"), function(x, i) {
-  if(missing(i))
-    stop("Argument `i` is missing.")
   if(length(i) != 1)
     stop("Index must be of length one.")
   if(any(i < 1 | i > length(x@scenarios)))
@@ -134,29 +133,31 @@ setMethod("[[", c("ScenarioSequence", "numeric"), function(x, i) {
 })
 
 #' @export
-#' @describeIn sequence.extract Returns the number of scenarios in the sequence.
-setMethod("length", "ScenarioSequence", function(x) {
-  length(x@scenarios)
-})
-
-#' @export
 #' @describeIn sequence.extract Replaces a single scenario in the sequence.
 setMethod("[[<-", c("ScenarioSequence","numeric","missing","EffectScenario"), function(x, i, j, value) {
-  if(missing(i))
-    stop("Argument `i` is missing.")
+  if(any(is.na(i)))
+    stop("Argument `i` must not contain NAs")
 
   if(length(i) != 1)
-    stop("Index must be of length one.")
+    stop("Index must be of length one")
   if(any(i < 1 | i > length(x@scenarios)))
-    stop("Index is out of bounds.")
-  if(!all(is_scenario(value)))
-    stop("New value must be a scenario.")
-  if(length(value) != 1)
-    stop("New value must be of length one.")
+    stop("Index is out of bounds")
 
   x@scenarios[[i]] <- value
   check_sequence(x)
   x
+})
+
+#' @export
+#' @describeIn sequence.extract Replaces a single scenario in the sequence.
+setMethod("[[<-", c("ScenarioSequence","numeric","ANY","ANY"), function(x, i, j, value) {
+  stop("Assigned type not supported")
+})
+
+#' @export
+#' @describeIn sequence.extract Returns the number of scenarios in the sequence.
+setMethod("length", "ScenarioSequence", function(x) {
+  length(x@scenarios)
 })
 
 breaks_from_sequence <- function(seq) {

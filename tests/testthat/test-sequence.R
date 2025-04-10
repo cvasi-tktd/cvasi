@@ -115,3 +115,36 @@ test_that("sequence_check", {
   expect_error(sequence(list(sc1, sc2)), "time overlap")
   expect_error(sequence(list(sc, sc1)), "no output times")
 })
+
+test_that("array access", {
+  sc1 <- new("EffectScenario") %>% set_times(0:3)
+  sc2 <- new("EffectScenario") %>% set_times(3:6)
+  sc3 <- new("EffectScenario") %>% set_times(3:9)
+  sq <- sequence(list(sc1, sc2))
+
+  # multiple elements
+  expect_equal(sq[1], list(sc1))
+  expect_equal(sq[2], list(sc2))
+  expect_equal(sq[c(1, 2)], list(sc1, sc2))
+
+  # single elements
+  expect_equal(sq[[1]], sc1)
+  expect_equal(sq[[2]], sc2)
+
+  # assignments
+  sq[[2]] <- sc3
+  expect_equal(sq[[2]], sc3)
+
+  # invalid arguments
+  expect_error(sq[0], "out of bounds")
+  expect_error(sq[10], "out of bounds")
+  expect_error(sq[c(0, 42)], "out of bounds")
+
+  expect_error(sq[[0]], "out of bounds")
+  expect_error(sq[[10]], "out of bounds")
+  expect_error(sq[[c(1, 2)]], "length one")
+
+  expect_error(sq[[c(1, 2)]] <- sc3, "length one")
+  expect_error(sq[[0]] <- sc3, "out of bounds")
+  expect_error(sq[[10]] <- sc3, "out of bounds")
+})

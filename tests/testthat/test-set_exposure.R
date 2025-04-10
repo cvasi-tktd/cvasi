@@ -100,6 +100,11 @@ test_that("set_noexposure", {
   expect_equal(rs@times, sc@times)
   # exposure set to zero
   expect_true(all(rs@exposure@series[,2] == 0))
+
+  # multiple scenarios at once
+  rs <- list(sc, sc) %>% set_noexposure()
+  expect_true(all(rs[[1]]@exposure@series[,2] == 0))
+  expect_true(all(rs[[2]]@exposure@series[,2] == 0))
 })
 
 test_that("non-standard argument types", {

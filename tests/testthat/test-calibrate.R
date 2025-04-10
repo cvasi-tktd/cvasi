@@ -205,12 +205,8 @@ test_that("failed simulations during fitting", {
   fail@param.req <- c("foo")
   # simulation fails completely
   suppressWarnings( # suppress any additional warnings
-    expect_warning(
-      calibrate(fail,
-      par=c("foo"=0),
-      data=data.frame("t"=0, "a"=0),
-      output="a",
-      verbose=FALSE)
+    expect_error(
+      calibrate(fail, par=c("foo"=0), data=data.frame("t"=0:2, "a"=0), output="a", verbose=FALSE)
     )
   )
 
@@ -245,4 +241,46 @@ test_that("fit with weights", {
                0.5,
                tolerance=1e-5)
 
+})
+test_that("invalid inputs: scenario", {
+  sc <- new("EffectScenario")
+  # data not a data.frame
+  expect_error(calibrate(sc, data=1), "must be a data.frame")
+  # data empty
+  expect_error(calibrate(sc, data=data.frame()), "is empty")
+  # output not in data
+  df <- data.frame(t=0:3, foo=1, bar=2)
+  expect_error(calibrate(sc, data=df, output="baz"), "not a column")
+  # group by not a single character
+  expect_error(calibrate(sc, data=df, output="foo", by=c("t", "foo")), "length one")
+  expect_error(calibrate(sc, data=df, output="foo", by=c(1)), "must be a character")
+  # ... not in data
+  expect_error(calibrate(sc, data=df, output="foo", by="baz"), "not a column")
+})
+
+test_that("invalid inputs: calisets", {
+  sc <- new("EffectScenario") %>% set_times(0:5) %>% set_param(c(foo=1, bar=2))
+  cs <- caliset(sc, data.frame(t=0:5, bar=1))
+
+  # data supplied
+  expect_error(calibrate(cs, data=data.frame()), "cannot be used in combination")
+  # not all elements are calisets
+  expect_error(calibrate(list(cs, 1)), "only contain calibration set")
+  # par is non-numeric
+  expect_error(calibrate(cs, par=sc), "must be a list")
+  expect_error(calibrate(cs, par=c("foo"="b")), "numerical values only")
+  # not all elements in par are named
+  expect_error(calibrate(cs, par=c(1)), "must be named")
+  expect_error(calibrate(cs, par=c(foo=1, 2)), "must be named")
+  # ... are actual parameters of the scenario
+  expect_error(calibrate(cs, par=c(baz=0)), "not scenario parameters")
+  # output missing
+  expect_error(calibrate(cs, par=c(foo=0)), "output. is missing")
+  # output invalid length
+  expect_error(calibrate(cs, par=c(foo=0), output=character(0)), "output. must be of length one")
+  expect_error(calibrate(cs, par=c(foo=0), output=c("a","b")), "output. must be of length one")
+  # output not a string
+  expect_error(calibrate(cs, par=c(foo=0), output=1), "output. must be a string")
+  # output var missing from datasets
+  suppressMessages(expect_error(calibrate(cs, par=c(foo=0), output="baz"), "missing from dataset"))
 })

@@ -5,38 +5,28 @@
 \alias{calibrate,EffectScenario-method}
 \alias{calibrate,CalibrationSet-method}
 \alias{calibrate,list-method}
+\alias{calibrate,ScenarioSequence-method}
 \title{Fit model parameters to experimental data}
 \usage{
 calibrate(x, ...)
 
-\S4method{calibrate}{EffectScenario}(
-  x,
-  par,
-  data,
-  endpoint = deprecated(),
-  output,
-  by,
-  metric_fun = deprecated(),
-  err_fun,
-  as_tibble = deprecated(),
-  catch_errors = deprecated(),
-  verbose = TRUE,
-  ...
-)
+\S4method{calibrate}{ScenarioSequence}(x, par, output, data, by, err_fun, verbose = TRUE, ...)
+
+\S4method{calibrate}{EffectScenario}(x, par, output, data, by, err_fun, verbose = TRUE, ...)
 
 \S4method{calibrate}{CalibrationSet}(x, par, output, err_fun, verbose = TRUE, ...)
 
 \S4method{calibrate}{list}(
   x,
   par,
-  endpoint = deprecated(),
   output,
+  err_fun,
+  verbose = TRUE,
+  endpoint = deprecated(),
   metric_fun = deprecated(),
   metric_total = deprecated(),
-  err_fun,
   as_tibble = deprecated(),
   catch_errors = deprecated(),
-  verbose = TRUE,
   ...
 )
 }
@@ -47,32 +37,32 @@ calibrate(x, ...)
 
 \item{par}{named numeric vector with parameters to fit and their start values}
 
+\item{output}{\code{character}, name of a single output column of \code{\link[=simulate]{simulate()}} to
+optimize on}
+
 \item{data}{\code{data.frame} with two or more columns with experimental data,
 1st column must contain time points, the following columns may values
 which the scenario is fitted to.}
 
-\item{endpoint}{\emph{deprecated} \code{character}, please use \code{output} instead}
-
-\item{output}{\code{character}, name of a single output column of \code{\link[=simulate]{simulate()}} to
-optimize on}
-
 \item{by}{optional \code{character}, groups and splits the experimental data
 into multiple distinct trials and datasets before fitting}
-
-\item{metric_fun}{\emph{deprecated}, please use \code{err_fun} instead}
 
 \item{err_fun}{vectorized error function to calculate an error term that is
 minimized during optimization, must accept exactly four vectorized
 arguments, defaults to sum of squared errors}
 
-\item{as_tibble}{\emph{deprecated}, result can no longer be returned as a tibble}
-
-\item{catch_errors}{\emph{deprecated}, simulation errors are always caught}
-
 \item{verbose}{\code{logical}, if \code{TRUE} then debug outputs are displayed during
 optimization}
 
+\item{endpoint}{\emph{deprecated} \code{character}, please use \code{output} instead}
+
+\item{metric_fun}{\emph{deprecated}, please use \code{err_fun} instead}
+
 \item{metric_total}{\emph{deprecated}}
+
+\item{as_tibble}{\emph{deprecated}, result can no longer be returned as a tibble}
+
+\item{catch_errors}{\emph{deprecated}, simulation errors are always caught}
 }
 \value{
 A list of fitted parameters (as produced by \code{\link[stats:optim]{stats::optim()}})
@@ -143,7 +133,9 @@ accordingly.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{calibrate(EffectScenario)}: Fit single scenario using a dataset
+\item \code{calibrate(ScenarioSequence)}: Fit single scenario \link{sequence} using a dataset
+
+\item \code{calibrate(EffectScenario)}: Fit single \link{scenario} using a dataset
 
 \item \code{calibrate(CalibrationSet)}: Fit using a \link{CalibrationSet}
 

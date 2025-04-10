@@ -59,15 +59,11 @@
 #'
 #' @param x either a single [scenario] or a list of [caliset] objects to be fitted
 #' @param par named numeric vector with parameters to fit and their start values
-#' @param endpoint *deprecated* `character`, please use `output` instead
 #' @param output `character`, name of a single output column of [simulate()] to
 #'   optimize on
-#' @param metric_fun *deprecated*, please use `err_fun` instead
 #' @param err_fun  vectorized error function to calculate an error term that is
 #'   minimized during optimization, must accept exactly four vectorized
 #'   arguments, defaults to sum of squared errors
-#' @param as_tibble *deprecated*, result can no longer be returned as a tibble
-#' @param catch_errors *deprecated*, simulation errors are always caught
 #' @param verbose `logical`, if `TRUE` then debug outputs are displayed during
 #'   optimization
 #' @param data `data.frame` with two or more columns with experimental data,
@@ -75,7 +71,11 @@
 #' which the scenario is fitted to.
 #' @param by optional `character`, groups and splits the experimental data
 #'   into multiple distinct trials and datasets before fitting
+#' @param endpoint *deprecated* `character`, please use `output` instead
+#' @param metric_fun *deprecated*, please use `err_fun` instead
 #' @param metric_total *deprecated*
+#' @param as_tibble *deprecated*, result can no longer be returned as a tibble
+#' @param catch_errors *deprecated*, simulation errors are always caught
 #' @param ... additional parameters passed on to [stats::optim()] and [simulate()]
 #'
 #' @return A list of fitted parameters (as produced by [stats::optim()])
@@ -113,64 +113,62 @@
 setGeneric("calibrate", function(x,...) standardGeneric("calibrate"), signature="x")
 
 #' @export
-#' @describeIn calibrate Fit single scenario using a dataset
-#' @importFrom lifecycle deprecated
-#' @include class-EffectScenario.R
-setMethod("calibrate", "EffectScenario",
-  function(x,
-           par,
-           data,
-           endpoint=deprecated(),
-           output,
-           by,
-           metric_fun=deprecated(),
-           err_fun,
-           as_tibble=deprecated(),
-           catch_errors=deprecated(),
-           verbose=TRUE,
-           ...) {
-    calibrate_scenario(x=x,
-                       par=par,
-                       data=data,
-                       endpoint=endpoint,
-                       output=output,
-                       by=by,
-                       metric_fun=metric_fun,
-                       err_fun=err_fun,
-                       as_tibble=as_tibble,
-                       catch_errors=catch_errors,
-                       verbose=verbose,
-                       ...)
+#' @describeIn calibrate Fit single scenario [sequence] using a dataset
+#' @include sequence.R
+setMethod("calibrate", "ScenarioSequence", function(x, par, output, data, by, err_fun, verbose=TRUE, ...) {
+    calibrate_scenario(x=x, par=par, data=data, output=output, by=by, err_fun=err_fun, verbose=verbose, ...)
   }
 )
 
-calibrate_scenario <- function(x, data, endpoint, output, by, ...)
+#' @export
+#' @describeIn calibrate Fit single [scenario] using a dataset
+#' @include class-EffectScenario.R
+setMethod("calibrate", "EffectScenario", function(x, par, output, data, by, err_fun, verbose=TRUE, ...) {
+    calibrate_scenario(x=x, par=par, data=data, output=output, by=by, err_fun=err_fun, verbose=verbose, ...)
+  }
+)
+
+calibrate_scenario <- function(x, data, endpoint=deprecated(), output, by, ...)
 {
-  if(lifecycle::is_present(endpoint)) { # for backwards compatability
+  if(lifecycle::is_present(endpoint)) { # for backwards compatibility
+    lifecycle::deprecate_warn("1.1.0", "calibrate(endpoint)", "calibrate(output)")
     output <- endpoint
   }
 
-  if(!is_scenario(x)) {
-    stop("parameter 'x' must be a scenario")
+  if(length(x) != 1) {
+    stop("Argument `x` must be of length one")
+  }
+  if(!(is_scenario(x) | is_sequence(x))) {
+    stop("Argument 'x' must be a scenario")
   }
   if(is.matrix(data)) { # coerce matrix to data.frame
     data <- as.data.frame(data)
   }
   if(!is.data.frame(data)) {
-    stop("parameter 'data' must be a data.frame")
+    stop("Argument 'data' must be a data.frame")
   }
   if(nrow(data) == 0) {
-    stop("parameter 'data' is empty")
+    stop("Argument 'data' is empty")
   }
   # make sure we have a real data.frame and not something else that behaves differently
   data <- as.data.frame(data)
   # is output column contained in data?
   if(!all(output %in% names(data))) {
-    stop("Output variable missing from dataset")
+    stop("Output variable is not a column in argument `data`")
   }
 
   # group data first?
-  if(!missing(by)) {
+  if(!missing(by))
+  {
+    if(length(by) != 1) {
+      stop("Argument `by` must be of length one")
+    }
+    if(!is.character(by)) {
+      stop("Argument `by` must be a character string")
+    }
+    if(!(by %in% names(data))) {
+      stop("Argument `by` is not a column in argument `data`")
+    }
     data <- data %>% dplyr::group_by(.data[[by]])
   }
 
@@ -184,65 +182,55 @@ calibrate_scenario <- function(x, data, endpoint, output, by, ...)
     caliset(x, df)
   })
 
-  calibrate(x=cs, endpoint=endpoint, output=output, ...)
+  calibrate(x=cs, output=output, ...)
 }
 
 #' @export
 #' @describeIn calibrate Fit using a [CalibrationSet]
 #' @include class-CalibrationSet.R
-setMethod("calibrate", "CalibrationSet",
-          function(x, par, output, err_fun, verbose=TRUE, ...) {
-            calibrate_set(x=list(x), par=par, output=output, err_fun=err_fun,
-                          verbose=verbose, ...)
-          }
+setMethod("calibrate", "CalibrationSet", function(x, par, output, err_fun, verbose=TRUE, ...) {
+    calibrate_set(x=list(x), par=par, output=output, err_fun=err_fun, verbose=verbose, ...)
+  }
 )
 
 #' @export
+#' @importFrom lifecycle deprecated
 #' @describeIn calibrate Fit using a list of [caliset] objects
-setMethod("calibrate", "list",
-          function(x,
-                   par,
-                   endpoint=deprecated(),
-                   output,
-                   metric_fun=deprecated(),
-                   metric_total=deprecated(),
-                   err_fun,
-                   as_tibble=deprecated(),
-                   catch_errors=deprecated(),
-                   verbose=TRUE,
-                   ...)
-            calibrate_set(x=x,
-                          par=par,
-                          endpoint=endpoint,
-                          output=output,
-                          metric_fun=metric_fun,
-                          metric_total=metric_total,
-                          err_fun=err_fun,
-                          as_tibble=as_tibble,
-                          catch_errors=catch_errors,
-                          verbose=verbose,
-                          ...)
+setMethod("calibrate", "list", function(x, par, output, err_fun, verbose=TRUE,
+      endpoint=deprecated(), metric_fun=deprecated(), metric_total=deprecated(), as_tibble=deprecated(),
+      catch_errors=deprecated(), ...) {
+    calibrate_set(x=x, par=par, output=output, err_fun=err_fun, verbose=verbose,
+      endpoint=endpoint, metric_fun=metric_fun, metric_total=metric_total, as_tibble=as_tibble,
+      catch_errors=catch_errors, ...)
+  }
 )
 
-calibrate_set <- function(x, par, endpoint, output, metric_fun, metric_total,
-                          err_fun, as_tibble, catch_errors, verbose, data, ...) {
+calibrate_set <- function(x, par, endpoint=deprecated(), output, metric_fun=deprecated(), metric_total=deprecated(),
+                          err_fun, as_tibble=deprecated(), catch_errors=deprecated(), verbose, data, ...) {
   if(!missing(data)) {
-    stop("parameter 'data' cannot be used in combination with calibration sets")
+    stop("Argument 'data' cannot be used in combination with calibration sets")
   }
   if(!all(sapply(x, function(y) is(y, "CalibrationSet")))) {
-    stop("parameter 'x' must only contain calibration set objects")
+    stop("Argument 'x' must only contain calibration set objects")
   }
 
   # parameters to fit
-  if(!is.numeric(par) | !is.vector(par)) {
-    stop("parameter 'par' must be a numeric vector")
+  if(!is.vector(par)) {
+    stop("Argument `par` must be a list or vector")
   }
-  if(length(names(par)) < length(par)) {
-    stop("all elements in 'par' must be named")
+  par <- unlist(par)
+  if(!is.numeric(par)) {
+    stop("Argument 'par' must contain numerical values only")
   }
-  unused <- setdiff(names(par), x[[1]]@scenario@param.req)
+  nms <- names(par)
+  nms <- nms[nms != ""]
+  if(length(nms) < length(par)) {
+    stop("All elements of argument `par` must be named")
+  }
+
+  unused <- setdiff(nms, names(unlist(get_param(x[[1]]@scenario))))
   if(length(unused) > 0) {
-    stop(paste("invalid parameters, can not fit: ", paste(unused, sep=",")))
+    stop(paste("Argument `par` contains elements which are not scenario parameters: ", paste(unused, collapse=", ")))
   }
 
   # output variable
@@ -250,11 +238,14 @@ calibrate_set <- function(x, par, endpoint, output, metric_fun, metric_total,
     lifecycle::deprecate_warn("1.1.0", "calibrate(endpoint)", "calibrate(output)")
     output <- endpoint
   }
-  if(length(output) > 1) {
-    stop("parameter 'output' must be of length one")
+  if(missing(output)) {
+    stop("Argument `output` is missing")
+  }
+  if(length(output) != 1) {
+    stop("Argument 'output' must be of length one")
   }
   if(!is.character(output)) {
-    stop("parameter 'output' must be a string")
+    stop("Argument 'output' must be a string")
   }
 
   # error function
@@ -270,7 +261,7 @@ calibrate_set <- function(x, par, endpoint, output, metric_fun, metric_total,
     err_fun <- sse
     err_desc <- "Sum of squared errors"
   } else if(!is.function(err_fun)) {
-    stop("parameter 'err_fun' must be a function")
+    stop("Argument 'err_fun' must be a function")
   }
 
   # deprecated and removed parameters
@@ -292,7 +283,7 @@ calibrate_set <- function(x, par, endpoint, output, metric_fun, metric_total,
     message("Error function: ", err_desc)
   }
 
-  # check that output variable is present in all datasets
+  # check that the output variable is present in all datasets
   for(i in seq_along(x)) {
     data <- x[[i]]@data
     if(!all(output %in% names(data))) {
@@ -301,20 +292,14 @@ calibrate_set <- function(x, par, endpoint, output, metric_fun, metric_total,
   }
 
   # start optimization
-  stats::optim(par=par,
-               fn=optim_set,
-               sets=x,
-               par_names=par_names,
-               output=output,
-               err_fun=err_fun,
-               verbose=verbose,
-               ...) -> fit
+  stats::optim(par=par, fn=optim_set, sets=x, par_names=par_names, output=output,
+               err_fun=err_fun, verbose=verbose, ...) -> fit
 
   # re-set names in case method 'Brent' dropped them
   names(fit$par) <- par_names
   # optimization successful?
   if(fit$convergence > 0) {
-    warning(paste("  possible convergence problem during optimization: optim gave code =",
+    warning(paste("  Possible convergence problem during optimization: optim gave code =",
                   fit$convergence, ifelse(is.null(fit$message), "", paste("\n  ", fit$message))))
   }
 
@@ -331,7 +316,7 @@ calibrate_set <- function(x, par, endpoint, output, metric_fun, metric_total,
 optim_set <- function(par, sets, par_names, output, err_fun, verbose=verbose,
                       ode_method, ...) {
   if(verbose) {
-    message(paste("Testing:", paste(par_names, par, sep="=", collapse=",")), appendLF=FALSE)
+    message(paste("Testing:", paste(par_names, par, sep="=", collapse=", ")), appendLF=FALSE)
   }
   # check if parameter names got lost, happens sometimes
   if(is.null(names(par))) {
@@ -356,19 +341,9 @@ optim_set <- function(par, sets, par_names, output, err_fun, verbose=verbose,
 
     # run simulation
     if(missing(ode_method)) {
-      out <- try(
-        scenario %>%
-          set_times(data[, 1]) %>%
-          simulate(...),
-        silent=TRUE
-      )
+      out <- try(scenario %>% set_times(data[, 1]) %>% simulate(...), silent=TRUE)
     } else {
-      out <- try(
-        scenario %>%
-          set_times(data[, 1]) %>%
-          simulate(method=ode_method, ...),
-        silent=TRUE
-      )
+      out <- try(scenario %>% set_times(data[, 1]) %>% simulate(method=ode_method, ...), silent=TRUE)
     }
 
     # check if simulation result contains errors
@@ -402,12 +377,12 @@ optim_set <- function(par, sets, par_names, output, err_fun, verbose=verbose,
 
     if(is_issue | is_error) {
       if(verbose) {
-        message(" failed, Error: 1e15")
+        message(" failed")
         message("  ", msg)
       } else if(is_error) {
         warning(msg)
       }
-      return(1e15) # penalize parameters causing issues, requires a finite value for 'L-BFGS-B' to work
+      return(Inf) # penalize parameters causing issues, requires a finite value for 'L-BFGS-B' to work
     }
 
     obs <- c(obs, data[, output])

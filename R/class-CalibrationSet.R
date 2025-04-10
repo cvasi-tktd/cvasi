@@ -84,54 +84,54 @@ caliset <- function(scenario, data, weight=1, tag=NULL) {
   # check scenario object
   #
   if(missing(scenario))
-    cli::cli_abort("argument {.field scenario} is missing")
+    stop("Argument `scenario` is missing")
   if(length(scenario) != 1)
-    cli::cli_abort("argument {.field scenario} must be of length 1")
-  if(any(!is_scenario(scenario)))
-    cli::cli_abort("argument {.field scenario} must be a scenario object")
+    stop("Argument `scenario`  must be of length 1")
+  if(!all(is_scenario(scenario) | is_sequence(scenario)))
+    stop("Argument `scenario`  must be a scenario object")
 
   #
   # check data
   #
   if(missing(data))
-    cli::cli_abort("argument {.field data} is missing")
+    stop("Argument `data` is missing")
   if(!is.data.frame(data))
-    cli::cli_abort("argument {.field data} must be a {.code data.frame}")
+    stop("Argument `data` must be a data.frame")
   if(length(data) < 2)
-    cli::cli_abort("argument {.field data} must have at least two columns")
+    stop("Argument `data` must have at least two columns")
   # get rid of tibbles and other tabular data structures which differ from
   # data.frame in subtle ways when selecting subsets with base R
   data <- as.data.frame(data)
   if(nrow(data) == 0)
-    cli::cli_abort("argument {.field data} must not be empty")
+    stop("Argument `data` must not be empty")
 
   # check that first column, time, is numerical and in ascending order
   colnames <- names(data)
   if(any(is.na(data[, 1]) | is.nan(data[, 1]) | is.infinite(data[, 1])))
-    cli::cli_abort("first data column ({.val {colnames[1]}}) contains invalid values such as {.val {c(Inf, NaN, NA)}}")
+    stop("First data column (", colnames[1], ") contains invalid values such as Inf, NaN, or NA")
   if(any(!is.numeric(data[, 1])))
-    cli::cli_abort("first data column ({.val {colnames[1]}}) must be numerical")
+    stop("First data column (", colnames[1], ") must be numerical")
   if(any(diff(data[, 1]) < 0))
-    cli::cli_abort("first data column ({.val {colnames[1]}}) must be in ascending order")
+    stop("First data column (", colnames[1], ") must be in ascending order")
 
   # check that second column is numerical, but NAs are allowed
   if(any(is.nan(data[, 2]) | is.infinite(data[, 2])))
-    cli::cli_abort("second data column ({.val {colnames[2]}}) contains invalid values such as {.val {c(Inf, NaN)}}")
+    stop("Second data column (", colnames[2], ") contains invalid values such as Inf or NaN")
   if(any(!is.numeric(data[, 2])))
-    cli::cli_abort("second data column ({.val {colnames[2]}}) must be numerical")
+    stop("Second data column (", colnames[2], " must be numerical")
 
   #
   # check weight
   #
   if(any(is.infinite(weight) | is.na(weight) | is.nan(weight) | !is.numeric(weight)))
-    cli::cli_abort("argument {.field weight} must only contain finite numeric values")
+    stop("Argument `weight` must only contain finite numeric values")
   # apply the same weight to all data points in dataset
   if(length(weight) == 1) {
     weight <- rep(weight, times=nrow(data))
   }
   # else: length of weight vector must match the dataset
   if(length(weight) != nrow(data)) {
-    cli::cli_abort("argument {.field weight} must have the same length as {.field data}")
+    stop("Argument `weight` must have the same length as `data`")
   }
 
   ### create object

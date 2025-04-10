@@ -1,6 +1,6 @@
-#' Set model parameters
+#' Set scenario parameters
 #'
-#' Modifies the parameters of one or more `EffectScenario` objects.
+#' Modifies the parameters of one or more [scenario] objects.
 #'
 #' Most parameters are represented by numerical types but other types
 #' are possible depending on model. Please refer to the model description

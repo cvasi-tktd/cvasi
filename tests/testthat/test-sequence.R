@@ -54,6 +54,24 @@ test_that("breaks", {
   expect_equal(l[[2]]@times, c(6.5, 7:10))
 })
 
+test_that("set new times", {
+  sc1 <- new("EffectScenario") %>% set_times(0:3)
+  sc2 <- new("EffectScenario") %>% set_times(3:6)
+
+  # no breaks
+  suppressWarnings(sq <- sequence(list(sc1)) %>% set_times(1:5))
+  expect_equal(sq[[1]]@times, 1:5)
+
+  # some breaks
+  suppressMessages(sq <- sequence(list(sc1, sc2)) %>% set_times(1:5))
+  expect_equal(sq[[1]]@times, 1:3)
+  expect_equal(sq[[2]]@times, 3:5)
+
+  expect_error(suppressMessages(sq %>% set_times(3:5)), "too few output times")
+  expect_error(suppressMessages(sq %>% set_times(1:3)), "too few output times")
+  expect_error(suppressMessages(sq %>% set_times(10:13)), "too few output times")}
+)
+
 test_that("invalid arguments", {
   sc <- new("EffectScenario") %>% set_times(0:10)
 
@@ -66,6 +84,20 @@ test_that("invalid arguments", {
   expect_error(sequence(list(sc, sc), breaks=c(1, 2)))
   suppressMessages(expect_error(sequence(list(sc, sc), breaks=c(0)), "too few"))
   suppressMessages(expect_error(sequence(list(sc, sc), breaks=c(20)), "too few"))
+})
+
+test_that("breaks_from_sequence", {
+  sc1 <- new("EffectScenario") %>% set_times(0:5)
+
+  # no breaks
+  suppressWarnings(sq <- sequence(list(sc1)))
+  expect_equal(breaks_from_sequence(sq), numeric(0))
+  # one break
+  suppressMessages(sq <- sequence(list(sc1, sc1), breaks=3))
+  expect_equal(breaks_from_sequence(sq), 3)
+  # multiple breaks
+  suppressMessages(sq <- sequence(list(sc1, sc1, sc1), breaks=c(2,3.1)))
+  expect_equal(breaks_from_sequence(sq), c(2, 3.1))
 })
 
 test_that("sequence_check", {

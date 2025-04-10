@@ -7,16 +7,22 @@
 set_tag(x, tag)
 }
 \arguments{
-\item{x}{(vector of) \code{EffectScenario} objects}
+\item{x}{(vector of) \link{scenario} objects}
 
-\item{tag}{vector of \code{character}}
+\item{tag}{(vector of) \code{character} or any other object}
 }
 \value{
-(vector of) modified \code{EffectScenario} objects
+(vector of) modified \link{scenarios}
 }
 \description{
 Sets the user-defined, custom tag of a scenario. Tags
-can be helpful to quickly distinguish scenarios of the same model type.
+can be helpful to quickly distinguish scenarios by e.g. a user-specified
+string.
+}
+\details{
+The function supports vectorized inputs.
+If arguments \code{x} and \code{tag} are vectors, then tags are assigned to scenarios
+on a 1:1 basis. If the length of both vectors do not match, an error is raised.
 }
 \examples{
 # set a custom tag

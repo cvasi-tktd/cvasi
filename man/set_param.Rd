@@ -8,7 +8,7 @@
 \alias{set_param,list,vector-method}
 \alias{set_param,ScenarioSequence,vector-method}
 \alias{set_param,ScenarioSequence,ParameterSet-method}
-\title{Set model parameters}
+\title{Set scenario parameters}
 \usage{
 set_param(x, param)
 
@@ -34,7 +34,7 @@ list of \linkS4class{parameter_set} objects}
 Vector of modified objects
 }
 \description{
-Modifies the parameters of one or more \code{EffectScenario} objects.
+Modifies the parameters of one or more \link{scenario} objects.
 }
 \details{
 Most parameters are represented by numerical types but other types

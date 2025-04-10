@@ -34,43 +34,6 @@ set_endpoints <- function(x, endpoints) {
   x
 }
 
-
-#' Set output times
-#'
-#' Minimum and maximum output times define the simulated period for a scenario.
-#' Simulation results will be returned for each output time, see [simulate()].
-#'
-#' Be aware that output times may be modified by [set_exposure()]. Precision of
-#' simulation results may be influenced by chosen output times, see [simulate()]
-#' for more information.
-#'
-#' @seealso [simulate()]
-#' @param x vector of [scenarios]
-#' @param times `numerical` vector
-#' @return Vector of modified [scenarios]
-#' @export
-#' @examples
-#' # Set simulated period to [2,4] with output intervals of length 1
-#' minnow_it %>% set_times(c(2,3,4))
-#'
-#' # Decrease output interval length to 0.1
-#' minnow_it %>% set_times(seq(2, 4, 0.1))
-set_times <- function(x, times) {
-  if(is.vector(x)) {
-    return(sapply(x, function(sc) set_times(sc,times)))
-  }
-  # convert `units` objects to base numericals to avoid issues
-  if(any(has_units(times)))
-    times <- units::drop_units(times)
-  if(!is.vector(times) | !is.numeric(times))
-    stop("invalid type")
-  if(length(times) < 2)
-    stop("too few output times")
-
-  x@times <- times
-  x
-}
-
 #' Set mode of action
 #'
 #' Updates the model parameter `MoA` to a certain value
@@ -145,12 +108,17 @@ set_all <- function(x, tmpl) {
 #' Set a tag
 #'
 #' Sets the user-defined, custom tag of a scenario. Tags
-#' can be helpful to quickly distinguish scenarios of the same model type.
+#' can be helpful to quickly distinguish scenarios by e.g. a user-specified
+#' string.
 #'
-#' @param x (vector of) `EffectScenario` objects
-#' @param tag vector of `character`
+#' The function supports vectorized inputs.
+#' If arguments `x` and `tag` are vectors, then tags are assigned to scenarios
+#' on a 1:1 basis. If the length of both vectors do not match, an error is raised.
 #'
-#' @return (vector of) modified `EffectScenario` objects
+#' @param x (vector of) [scenario] objects
+#' @param tag (vector of) `character` or any other object
+#'
+#' @return (vector of) modified [scenarios]
 #' @seealso [get_tag()]
 #' @export
 #'
@@ -170,13 +138,13 @@ set_tag <- function(x, tag) {
     else if(length(tag) == length(x))
       return(purrr::map2(x, tag, set_tag))
     else
-      stop("mismatch of number of scenarios and tags", call.=FALSE)
+      stop("Argument `x` and `tag` must have the same length", call.=FALSE)
   }
 
   if(!is_scenario(x))
-    stop("argument is not an effect scenario", call.=FALSE)
+    stop("Argument `x` is not a scenario", call.=FALSE)
   if(length(tag) > 1)
-    stop("mismatch of number of scenarios and tags", call.=FALSE)
+    stop("Argument `x` and `tag` must have the same length", call.=FALSE)
 
   x@tag <- tag
   x

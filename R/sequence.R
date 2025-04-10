@@ -1,7 +1,8 @@
 # Scenario sequence class
 #' @export
 #' @aliases sequence
-setClass("ScenarioSequence", slots=list(scenarios="list"))
+#' @include sequence.R
+setClass("ScenarioSequence", slots=list(scenarios="list", breaks="numeric"))
 
 #' Sequence of scenarios
 #'
@@ -55,58 +56,31 @@ setClass("ScenarioSequence", slots=list(scenarios="list"))
 #' @export
 sequence <- function(seq, breaks=NULL) {
   if(missing(seq))
-    stop("argument 'seq' is missing")
+    stop("Argument 'seq' is missing")
   if(!is.list(seq))
-    stop("argument 'seq' must be of type list")
+    stop("Argument 'seq' must be of type list")
   if(length(seq) == 0)
-    stop("sequence is empty")
+    stop("Argument `seq` is empty")
   if(length(seq) == 1)
-    warning("sequence has ony a single element")
+    warning("Argument `seq` has ony a single element")
   if(any(!is_scenario(seq)))
-     stop("sequence must only contain scenario objects")
+     stop("Argument `seq` must contain scenario objects only")
   if(!is.null(breaks)) {
     if(any(!is.numeric(breaks)))
-      stop("argument 'breaks' must be vector of numerics")
+      stop("Argument 'breaks' must be vector of numerics")
     if(length(breaks) + 1 != length(seq))
-      stop("length of 'breaks' does not fit to length of sequence")
+      stop("Length of argument 'breaks' does not fit to length of sequence")
   }
 
-  obj <- new("ScenarioSequence", scenarios=sequence_init(seq, breaks))
+  obj <- new("ScenarioSequence", scenarios=seq)
+  if(!is.null(breaks)) {
+    obj@breaks <- breaks
+    obj <- split_sequence(obj, .messages=TRUE)
+  } else {
+    obj@breaks <- breaks_from_sequence(obj)
+  }
   check_sequence(obj)
   obj
-}
-
-# initialize the list of a scenario sequence with a number of elements
-sequence_init <- function(seq, breaks) {
-  if(!is.null(breaks))
-  {
-    message("Modifying sequence to consider breaks ...")
-    for(i in seq(1, length(seq) - 1)) {
-      cur <- seq[[i]]
-      nxt <- seq[[i + 1]]
-      br <- breaks[[i]]
-      last <- i == length(seq) - 1
-
-      # current scenario ends at break
-      times <- c(cur@times[cur@times < br], br)
-      if(length(times) < 2)
-        stop(paste0("  Scenario #", i, " has too few output times for t<", br))
-      cur <- set_times(cur, times)
-      # next scenario starts at break
-      times <- c(br, nxt@times[nxt@times > br])
-      if(last & length(times) < 2)
-        stop(paste0("  Scenario #", i+1, " has too few output times for t>", br))
-      nxt <- set_times(nxt, times)
-
-      message(paste0("  Scenario #", i, ": simulated period [", min(cur@times), ", ", max(cur@times), "]"))
-      if(last)
-        message(paste0("  Scenario #", i+1, ": simulated period [", min(nxt@times), ", ", max(nxt@times), "]"))
-
-      seq[[i]] <- cur
-      seq[[i + 1]] <- nxt
-    }
-  }
-  unname(seq)
 }
 
 #' Extract and replace elements of a sequence
@@ -184,6 +158,69 @@ setMethod("[[<-", c("ScenarioSequence","numeric","missing","EffectScenario"), fu
   check_sequence(x)
   x
 })
+
+breaks_from_sequence <- function(seq) {
+  if(any(!is_sequence(seq))) {
+    stop("Argument `seq` must be a sequence")
+  }
+
+  brks <- numeric(0)
+  for(i in seq_along(seq@scenarios)) {
+    brks <- c(brks, tail(get_times(seq@scenarios[[i]]), n=1))
+  }
+  # drop last item
+  head(brks, n=-1)
+}
+
+split_sequence <- function(x, .messages=FALSE) {
+  # check for backwards compatibility
+  if(!methods::.hasSlot(x, "breaks")) {
+    stop("Sequence has outdated format, please create a new sequence object")
+  }
+
+  breaks <- x@breaks
+  n <- length(breaks)
+
+  # no breaks, nothing to do
+  if(n == 0) {
+    return(x)
+  }
+
+  if(.messages) {
+    cli::cli_text("Splitting sequence at {n} break{?s} ...")
+  }
+  for(i in seq(1, length(x) - 1)) {
+    cur <- x[[i]]
+    nxt <- x[[i + 1]]
+    br <- breaks[[i]]
+    last <- i == length(x) - 1
+
+    # current scenario ends at break
+    times <- get_times(cur)
+    times <- c(times[times < br], br)
+    if(length(times) < 2)
+      stop("Scenario #", i, " has too few output times for t < ", br)
+    cur <- set_times(cur, times)
+    # next scenario starts at break
+    ntimes <- get_times(nxt)
+    ntimes <- c(br, ntimes[ntimes > br])
+    if(last & length(ntimes) < 2)
+      stop("Scenario #", i+1, " has too few output times for t > ", br)
+    nxt <- set_times(nxt, ntimes)
+
+    if(.messages)
+    {
+      cli::cli_text(" Scenario #", i, ": simulated period [", min(times), ", ", max(times), "]")
+      if(last)
+        cli::cli_text("  Scenario #", i+1, ": simulated period [", min(ntimes), ", ", max(ntimes), "]")
+    }
+
+    x@scenarios[[i]] <- cur
+    x@scenarios[[i + 1]] <- nxt
+  }
+
+  x
+}
 
 # check validity of sequence elements
 check_sequence <- function(seq) {

@@ -49,34 +49,3 @@ get_model_name <- function(x) {
   return(get_model(x))
 }
 
-#' Get scenario tag
-#'
-#' Returns the user-defined, custom tag of a scenario, if available. Tags
-#' can be helpful to quickly distinguish scenarios of the same model type.
-#' The function supports vectorized inputs.
-#'
-#' @param x (vector of) [scenarios] or [`parameter_set`] objects
-#'
-#' @return vector of `character`
-#' @aliases get_tag,ANY-method get_tag,list-method get_tag,EffectScenario-method
-#'   get_tag,ParameterSet-method
-#' @seealso [set_tag()]
-#' @export
-#'
-#' @examples
-#' # returns `fathead minnow`
-#' get_tag(minnow_it)
-#'
-#' # update or set a tag
-#' myscenario <- minnow_it %>% set_tag("My Custom Tag")
-#' # returns `My Custom Tag`
-#' get_tag(myscenario)
-setGeneric("get_tag", function(x) standardGeneric("get_tag"))
-#' @export
-setMethod("get_tag", "ANY", function(x) stop("scenario tag not supported for given object type"))
-#' @export
-setMethod("get_tag", "list", function(x) sapply(x, get_tag))
-#' @export
-setMethod("get_tag", "EffectScenario", function(x) return(x@tag))
-#' @export
-setMethod("get_tag", "ParameterSet", function(x) return(x@tag))

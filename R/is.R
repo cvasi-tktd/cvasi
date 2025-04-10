@@ -49,6 +49,15 @@ is_scenario <- function(x) {
   is(x, "EffectScenario")
 }
 
+is_sequence <- function(x) {
+  if(is.list(x)) {
+    if(length(x) > 0)
+      return(sapply(x, is_sequence))
+  }
+
+  is(x, "ScenarioSequence")
+}
+
 is_exp_series <- function(x) {
   if(is.list(x))
     return(sapply(x, is_exp_series))

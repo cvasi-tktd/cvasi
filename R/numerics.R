@@ -4,7 +4,7 @@
 # @return logical, `TRUE` means an error occurred during integration, else `FALSE`
 num_error <- function(x) {
   #if(!is(x, "cvasi.simulate"))
-  #  cli::cli_abort("argument {.field x} must be a simulation result")
+  #  stop("Argument `x` must be a simulation result")
   status <- attr(x, "cvasi_status")
   if(is.null(status))
     return(FALSE)
@@ -62,7 +62,7 @@ num_info <- function(obj) {
 #' @rdname num_info
 #' @export
 num_info.default <- function(obj) {
-  cli::cli_abort("Type is not supported to provide numerical information.")
+  stop("Type is not supported to provide numerical information.")
 }
 
 #' @rdname num_info

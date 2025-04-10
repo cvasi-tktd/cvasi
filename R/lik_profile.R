@@ -167,7 +167,8 @@ lik_profile <- function(x,
   # check that each parameter to profile has boundaries set
   missing <- setdiff(names(par), names(pfree$bounds))
   if(length(missing) > 0) {
-    cli::cli_abort("parameter boundaries missing for parameter{?s} {missing}")
+    stop("Parameter boundaries missing for parameter", ifelse(length(missing)>1, "s", ""), ": ",
+         paste(missing, collapse=", "))
   }
 
   # Settings for profiling

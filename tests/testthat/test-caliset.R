@@ -1,11 +1,11 @@
 test_that("invalid scenario argument", {
   sc <- minnow_it
 
-  expect_error(caliset())
-  expect_error(caliset(scenario=NULL))
-  expect_error(caliset(scenario=list()))
-  expect_error(caliset(scenario=list(sc, sc)))
-  expect_error(caliset(scenario=1))
+  expect_error(caliset(), "scenario. is missing")
+  expect_error(caliset(scenario=NULL), "must be a scenario")
+  expect_error(caliset(scenario=list()), "must be a scenario")
+  expect_error(caliset(scenario=list(sc, sc)), "must be a scenario")
+  expect_error(caliset(scenario=1), "must be a scenario")
 })
 
 test_that("invalid data argument", {
@@ -59,4 +59,12 @@ test_that("caliset creation", {
   cs <- caliset(sc, df, wgtn)
   expect_equal(cs@weight, wgtn)
   expect_null(cs@tag)
+})
+
+test_that("caliset with sequences", {
+  sc <- new("EffectScenario") %>% set_times(0:6)
+  sq <- sequence(list(sc, sc), breaks=3)
+  cs <- caliset(sq, data.frame(t=0:10, n=0))
+
+  expect_equal(cs@scenario, sq)
 })

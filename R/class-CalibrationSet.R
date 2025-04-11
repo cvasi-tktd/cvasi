@@ -81,14 +81,12 @@ setClass("CalibrationSet",
 #' @export
 caliset <- function(scenario, data, weight=1, tag=NULL) {
   #
-  # check scenario object
+  # check scenario argument
   #
   if(missing(scenario))
     stop("Argument `scenario` is missing")
-  if(length(scenario) != 1)
-    stop("Argument `scenario`  must be of length 1")
-  if(!all(is_scenario(scenario) | is_sequence(scenario)))
-    stop("Argument `scenario`  must be a scenario object")
+  if(is.vector(scenario) | any(!is_scenario(scenario) & !is_sequence(scenario)))
+    stop("Argument `scenario`  must be a scenario or sequence object")
 
   #
   # check data

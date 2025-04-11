@@ -1,3 +1,7 @@
+# TODO test calibrate with method L-BFGS-B for a problem which is not computable
+#   this way the optim_set will return the error value which needs to be finite
+#   for L-BFGS-B to complete
+
 test_that("fit to simple dataset", {
   tol <- 1e-5
 
@@ -197,6 +201,8 @@ test_that("fit to calibration set", {
                tolerance=0.01)
 })
 
+# TODO optim raises one warning about the selected method and then additional
+#   ones originating from the dummy scenario, the test does not account for the former
 test_that("failed simulations during fitting", {
   source(test_path("class-DummyScenario.R"), local=TRUE)
 
@@ -205,7 +211,7 @@ test_that("failed simulations during fitting", {
   fail@param.req <- c("foo")
   # simulation fails completely
   suppressWarnings( # suppress any additional warnings
-    expect_error(
+    expect_warning(
       calibrate(fail, par=c("foo"=0), data=data.frame("t"=0:2, "a"=0), output="a", verbose=FALSE)
     )
   )

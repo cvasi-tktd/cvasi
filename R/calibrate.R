@@ -382,7 +382,9 @@ optim_set <- function(par, sets, par_names, output, err_fun, verbose=verbose,
       } else if(is_error) {
         warning(msg)
       }
-      return(Inf) # penalize parameters causing issues, requires a finite value for 'L-BFGS-B' to work
+      # penalize parameters causing issues, requires a finite value for method
+      # 'L-BFGS-B' to work, therefore returning `Inf` or `NA` is not an option
+      return(1e100)
     }
 
     obs <- c(obs, data[, output])

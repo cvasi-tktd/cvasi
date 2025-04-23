@@ -16,17 +16,9 @@ of your scenario as the zero exposure series contains only a single time point.
 See the examples.
 }
 \examples{
-# this will reset the output times of the sample scenario,
-# simulate() will quit with an error
-try(
-  minnow_it \%>\%
-    set_exposure(no_exposure()) \%>\%
-    simulate()
-)
-
-# set zero exposure, but keep original output times
+# Set exposure to zero, but keep the original output times
 minnow_it \%>\%
-  set_exposure(no_exposure(), reset_times=FALSE) \%>\%
+  set_noexposure() \%>\%
   simulate()
 }
 \seealso{

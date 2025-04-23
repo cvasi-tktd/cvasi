@@ -5,6 +5,7 @@
 \alias{set_exposure,ANY,ANY-method}
 \alias{set_exposure,EffectScenario,data.frame-method}
 \alias{set_exposure,EffectScenario,ExposureSeries-method}
+\alias{set_exposure,EffectScenario,NoExposureSeries-method}
 \alias{set_exposure,EffectScenario,list-method}
 \alias{set_exposure,list,list-method}
 \alias{set_exposure,list,ANY-method}
@@ -18,6 +19,8 @@ set_exposure(scenarios, series, ...)
 \S4method{set_exposure}{EffectScenario,data.frame}(scenarios, series, ...)
 
 \S4method{set_exposure}{EffectScenario,ExposureSeries}(scenarios, series, reset_times = TRUE)
+
+\S4method{set_exposure}{EffectScenario,NoExposureSeries}(scenarios, series, ...)
 
 \S4method{set_exposure}{EffectScenario,list}(scenarios, series, ...)
 

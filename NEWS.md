@@ -8,6 +8,10 @@
 
 * MODIFIED
 
+   * `Lemna_SETAC` model: The default value of parameter `beta` has been updated
+      from formerly `0.025` to now `0.25`. This reflects changes to the
+      SETAC working group's report in version 1.2. The old value originated from
+      typos in former report versions.
    * The effects calculated by `effect()` are no longer limited to a maximum
      value of `1.0`. Instead, effects are calculated similarly to *relative errors*,
      quantifying the relative difference of endpoints in control and treatment
@@ -15,14 +19,16 @@
    * Unused parameter `const_growth` removed from `Algae_Simple()` constructor.
    * *Algae* models now check if all required parameters are present before
      starting a simulation.
-   * `Lemna_SETAC` model: The default value of parameter `beta` has been updated
-      from formerly `0.025` to now `0.25`. This reflects changes to the
-      SETAC working group's report in version 1.2. The old value originated from
-      typos in former report versions.
    * `simulate_batch()` now accepts additional parameters `...` which are passed
      through to `simulate()`.
    * Scenario information on the console provided by `show()` now includes
      settings of biomass transfers and moving windows.
+   * Scenario sequences are now supported by `effect()` and `epx()`.
+
+* DEPRECATED
+
+  * Caching of results of control scenarios is fully handled by the package.
+    Calls to `cache_controls()` will raise an error.
 
 # cvasi 1.4.0
 

@@ -1,4 +1,5 @@
 #' @export
+#' @aliases NoExposureSeries-class
 setClass("ExposureSeries",
          slots=list(
            series="data.frame",
@@ -8,6 +9,9 @@ setClass("ExposureSeries",
            file="character"
          )
 )
+
+#' @export
+setClass("NoExposureSeries", contains="ExposureSeries")
 
 
 
@@ -68,18 +72,10 @@ ExposureSeries <- function(series, dates, file, meta, context) {
 #' @seealso [set_noexposure()]
 #' @export
 #' @examples
-#' # this will reset the output times of the sample scenario,
-#' # simulate() will quit with an error
-#' try(
-#'   minnow_it %>%
-#'     set_exposure(no_exposure()) %>%
-#'     simulate()
-#' )
-#'
-#' # set zero exposure, but keep original output times
+#' # Set exposure to zero, but keep the original output times
 #' minnow_it %>%
-#'   set_exposure(no_exposure(), reset_times=FALSE) %>%
+#'   set_noexposure() %>%
 #'   simulate()
 no_exposure <- function() {
-  ExposureSeries(data.frame(time=0, conc=0), file="no exposure")
+  new("NoExposureSeries", series=data.frame(time=0, conc=0), file="no exposure")
 }

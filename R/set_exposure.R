@@ -118,6 +118,13 @@ set_exposure_exs <- function(scenarios, series, reset_times=TRUE) {
   scenarios
 }
 
+# "No exposure series" object, make sure that we do not try to reset the
+# output times while updating the scenario's series.
+#' @noRd
+set_exposure_noexs <- function(scenarios, series, ...) {
+  set_exposure_exs(scenarios, series, reset_times=FALSE)
+}
+
 # list of exposure series
 #' @noRd
 set_exposure_lst <- function(scenarios, series, ...) {
@@ -129,6 +136,9 @@ setMethod("set_exposure", c("EffectScenario","data.frame"), function(scenarios, 
 
 #' @rdname set_exposure
 setMethod("set_exposure", c("EffectScenario","ExposureSeries"), set_exposure_exs)
+
+#' @rdname set_exposure
+setMethod("set_exposure", c("EffectScenario","NoExposureSeries"), set_exposure_noexs)
 
 #' @rdname set_exposure
 setMethod("set_exposure", c("EffectScenario","list"), set_exposure_lst)

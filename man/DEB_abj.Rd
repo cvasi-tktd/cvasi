@@ -125,7 +125,7 @@ DEB_abj() \%>\%
   set_param(c(p_M=3000,v=0.02,k_J=0.6,p_Am=300,kap=0.9,E_G=4000,f=1,
               E_Hj=0.05,E_Hp=0.3,kap_R=0.9,ke=1,c0=0,cT=1,L_b=0.02,
               L_j=0.04,MoA=0)) \%>\%
-  set_exposure(no_exposure()) \%>\%
+  set_noexposure() \%>\%
   set_times(0:10) \%>\%
   simulate()
 

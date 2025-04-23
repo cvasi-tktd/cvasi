@@ -2,7 +2,6 @@
 
 utils::globalVariables(c(
   "endpoint", # <dose_response>
-  ".data", # <effect_scenario>
   "window.start", # <effect_scenario>
   "window.end", # <effect_scenario>
   "scenario", # <effect_scenario>

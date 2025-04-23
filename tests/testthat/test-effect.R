@@ -19,6 +19,26 @@ window_IT <- function(df,window=-1,interval=-1) {
   c(tib[[1,"dat.start"]],tib[[1,"dat.end"]])
 }
 
+test_that("return types", {
+  sc <- minnow_it
+
+  expect_true(is.numeric(effect(sc, max_only=TRUE, ep_only=TRUE)))
+  expect_true(tibble::is_tibble(effect(sc, max_only=TRUE, ep_only=FALSE)))
+  expect_true(tibble::is_tibble(effect(sc, max_only=FALSE, ep_only=TRUE)))
+  expect_true(tibble::is_tibble(effect(sc, max_only=FALSE, ep_only=FALSE)))
+})
+
+test_that("factor argument", {
+  sc <- minnow_it
+  sc0 <- sc %>% set_noexposure()
+  sc10 <- sc %>% set_exposure(data.frame(t=0, c=10), reset_times=FALSE)
+  sc20 <- sc %>% set_exposure(data.frame(t=0, c=20), reset_times=FALSE)
+
+  expect_equal(effect(sc, factor=0, ep_only=TRUE), effect(sc0, ep_only=TRUE))
+  expect_equal(effect(sc, factor=10, ep_only=TRUE), effect(sc10, ep_only=TRUE))
+  expect_equal(effect(sc, factor=20, ep_only=TRUE), effect(sc20, ep_only=TRUE))
+})
+
 test_that("generic effect calculation", {
   # no effect
   expect_equal(calc_effect(1, 1), 0)

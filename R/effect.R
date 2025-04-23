@@ -51,6 +51,7 @@
 #' be reported as zero to exclude pseudo-effects originating from small numerical
 #' errors
 #' @param ... additional parameters passed on to [simulate()]
+#' @usage effect(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_effect, ...)
 #'
 #' @return a `tibble`, by default containing scenarios, effect levels, and the
 #' exposure window where the maximum effect level occurred. The number of columns
@@ -149,8 +150,8 @@ effect_scenario <- function(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_
 #' @describeIn effect Default for all generic [scenarios]
 #' @include class-EffectScenario.R
 #' @export
-#setMethod("effect", "EffectScenario", function(x, ...) effect_scenario(x, ...))
-setMethod("effect", "EffectScenario", effect_scenario)
+setMethod("effect", "EffectScenario", function(x, ...) effect_scenario(x, ...))
+#setMethod("effect", "EffectScenario", effect_scenario)
 
 #' @describeIn effect For scenario [sequences][sequence]
 #' @include sequence.R

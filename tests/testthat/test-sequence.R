@@ -9,9 +9,35 @@ test_that("sequence creation", {
   expect_equal(sequence(list(sc, sc2))@scenarios, list(sc, sc2))
 })
 
-test_that("breaks", {
+test_that("split_sequence", {
   # scenarios overlap
   sc <- new("EffectScenario") %>% set_times(0:10)
+
+  # single scenario, no changes
+  suppressWarnings(sq <- sequence(list(sc)))
+  expect_equal(sq[[1]]@times, 0:10)
+
+  # two scenarios, both scenarios include the break
+  sq <- sequence(list(sc, sc), breaks=5)
+  expect_equal(sq[[1]]@times, 0:5)
+  expect_equal(sq[[2]]@times, 5:10)
+  expect_equal(sq@inc_start, c(TRUE, FALSE))
+  expect_equal(sq@inc_end, c(TRUE, TRUE))
+
+  # break before the first scenario
+  sq <- sequence(list(sc, sc), breaks=-1)
+  expect_equal(sq[[1]]@times, integer(0))
+  expect_equal(sq[[2]]@times, 0:10)
+  expect_equal(sq@inc_start, c(FALSE, TRUE))
+  expect_equal(sq@inc_end, c(FALSE, TRUE))
+
+  # break after the second scenario
+  sq <- sequence(list(sc, sc), breaks=11)
+  expect_equal(sq[[1]]@times, 0:10)
+  expect_equal(sq[[2]]@times, integer(0))
+  expect_equal(sq@inc_start, c(TRUE, FALSE))
+  expect_equal(sq@inc_end, c(TRUE, FALSE))
+
 
   suppressMessages(l <- sequence(list(sc, sc), breaks=1)@scenarios)
   expect_equal(l[[1]]@times, c(0, 1))
@@ -63,14 +89,20 @@ test_that("set new times", {
   expect_equal(sq[[1]]@times, 1:5)
 
   # some breaks
-  suppressMessages(sq <- sequence(list(sc1, sc2)) %>% set_times(1:5))
+  sq <- sequence(list(sc1, sc2)) %>% set_times(1:5)
   expect_equal(sq[[1]]@times, 1:3)
   expect_equal(sq[[2]]@times, 3:5)
 
-  expect_error(suppressMessages(sq %>% set_times(3:5)), "too few output times")
-  expect_error(suppressMessages(sq %>% set_times(1:3)), "too few output times")
-  expect_error(suppressMessages(sq %>% set_times(10:13)), "too few output times")}
-)
+  # no output for 1st scenario in sequence
+  sq <- sequence(list(sc1, sc2)) %>% set_times(5:7)
+  expect_equal(sq[[1]]@times, numeric(0))
+  expect_equal(sq[[2]]@times, 5:7)
+
+  # no output for 2nd scenario in sequence
+  sq <- sequence(list(sc1, sc2)) %>% set_times(1:3)
+  expect_equal(sq[[1]]@times, 1:3)
+  expect_equal(sq[[2]]@times, numeric(0))
+})
 
 test_that("invalid arguments", {
   sc <- new("EffectScenario") %>% set_times(0:10)
@@ -82,8 +114,6 @@ test_that("invalid arguments", {
   expect_error(sequence(list(sc, "foo")))
   expect_error(sequence(list(sc, sc), breaks="foo"))
   expect_error(sequence(list(sc, sc), breaks=c(1, 2)))
-  suppressMessages(expect_error(sequence(list(sc, sc), breaks=c(0)), "too few"))
-  suppressMessages(expect_error(sequence(list(sc, sc), breaks=c(20)), "too few"))
 })
 
 test_that("breaks_from_sequence", {
@@ -100,11 +130,31 @@ test_that("breaks_from_sequence", {
   expect_equal(breaks_from_sequence(sq), c(2, 3.1))
 })
 
+test_that("included outputs", {
+  # include breaks if scenarios were split by user
+  sc1 <- minnow_it %>% set_times(0:3)
+  sc2 <- minnow_it %>% set_times(3:6)
+  sq <- sequence(list(sc1, sc2))
+  expect_equal(sq@inc_start, c(TRUE, FALSE))
+  expect_equal(sq@inc_end, c(TRUE, TRUE))
+
+  # remove breaks from output if it was automatically split
+  sc1 <- minnow_it %>% set_times(0:2)
+  sc2 <- minnow_it %>% set_times(3:6)
+  sq <- sequence(list(sc1, sc2), breaks=3)
+  expect_equal(sq@inc_start, c(TRUE, FALSE))
+  expect_equal(sq@inc_end, c(FALSE, TRUE))
+
+  # multiple breaks
+  sc <- minnow_it %>% set_times(0:6)
+  sq <- sequence(list(sc, sc, sc), breaks=c(2.1, 4))
+  expect_equal(sq@inc_start, c(TRUE, FALSE, FALSE))
+  expect_equal(sq@inc_end, c(FALSE, TRUE, TRUE))
+})
+
 test_that("sequence_check", {
   sc <- new("EffectScenario")
 
-  # no output times
-  expect_error(sequence(list(sc, sc)), "no output times")
   # gap in output times
   sc1 <- sc %>% set_times(1:2)
   sc2 <- sc %>% set_times(4:5)
@@ -113,7 +163,6 @@ test_that("sequence_check", {
   sc1 <- sc %>% set_times(1:2)
   sc2 <- sc %>% set_times(1:3)
   expect_error(sequence(list(sc1, sc2)), "time overlap")
-  expect_error(sequence(list(sc, sc1)), "no output times")
 })
 
 test_that("array access", {
@@ -148,3 +197,117 @@ test_that("array access", {
   expect_error(sq[[0]] <- sc3, "out of bounds")
   expect_error(sq[[10]] <- sc3, "out of bounds")
 })
+
+test_that("mocking scenarios", {
+  sq <- new("ScenarioSequence")
+  sc <- new("EffectScenario", tag="foo", exposure=no_exposure()) %>% set_times(0:5)
+
+  # slot not emulated yet -> fail
+  expect_error(sq@tag)
+
+  # mock from supplied scenario
+  mock <- mock_as_scenario(sq, sc)
+  expect_equal(mock@tag, sc@tag)
+
+  # writing should fail
+  expect_error(mock@tag <- "bar")
+  # some slot should never be mocked
+  expect_equal(mock@exposure, NA)
+
+  # mock from first scenario in sequence
+  sc1 <- sc %>% set_tag("baz")
+  sq <- sequence(list(sc1, sc), breaks=3)
+  mock <- mock_as_scenario(sq)
+  expect_equal(mock@tag, sc1@tag)
+  expect_equal(mock@times, sc@times)
+})
+
+test_that("mocked slots", {
+  # newly created
+  sc1 <- new("EffectScenario", tag="foo", times=0:5)
+  sc2 <- sc1 %>% set_tag("bar")
+  sq <- sequence(list(sc1, sc2), breaks=3)
+  expect_equal(sq@tag, sc1@tag)
+
+  # first scenario updated
+  sq[[1]] <- sq[[1]] %>% set_tag("baz")
+  expect_equal(sq[[1]]@tag, "baz")
+  expect_equal(sq@tag, "baz")
+})
+
+test_that("with simulate()", {
+  tol <- 1e-5
+
+  # guts red it
+  sc <- minnow_it
+  suppressWarnings(sq <- sequence(list(sc)))
+  expect_equal(simulate(sq), simulate(sc), tolerance=tol)
+
+  # lemna
+  sc <- metsulfuron
+  suppressWarnings(sq <- sequence(list(sc)))
+  expect_equal(simulate(sq), simulate(sc), tolerance=tol)
+
+  # multiple elements in sequence
+  suppressWarnings(sq <- sequence(list(sc, sc), breaks=3.1))
+  expect_equal(simulate(sq), simulate(sc), ignore_attr=TRUE, tolerance=tol)
+})
+
+test_that("with fx()", {
+  tol <- 1e-5
+
+  # guts red it
+  sc <- minnow_it
+  suppressWarnings(sq <- sequence(list(sc)))
+  expect_equal(fx(sq), fx(sc), tolerance=tol)
+
+  # lemna
+  sc <- metsulfuron
+  suppressWarnings(sq <- sequence(list(sc)))
+  expect_equal(fx(sq), fx(sc), tolerance=tol)
+})
+
+test_that("with effect()", {
+  tol <- 1e-5
+
+  # no moving windows
+  sc <- minnow_it
+  suppressWarnings(sq <- sequence(list(sc)))
+  expect_equal(effect(sq, ep_only=TRUE), effect(sc, ep_only=TRUE), ignore_attr=TRUE, tolerance=tol)
+
+  # with moving windows
+  sc <- minnow_it %>% set_window(length=2, interval=2)
+  suppressWarnings(sq <- sequence(list(sc)))
+  expect_equal(effect(sq, ep_only=TRUE, max_only=FALSE),
+               effect(sc, ep_only=TRUE, max_only=FALSE),
+               ignore_attr=TRUE, tolerance=tol)
+
+  sc <- minnow_it %>%
+    set_exposure(data.frame(t=0:4, c=c(0, 0, 0, 1, 1))) %>%
+    set_window(length=2, interval=2)
+  sq <- sequence(list(sc, sc), breaks=2)
+  expect_equal(effect(sq, ep_only=TRUE, max_only=FALSE),
+               effect(sc, ep_only=TRUE, max_only=FALSE),
+               ignore_attr=TRUE, tolerance=tol)
+})
+
+test_that("with epx()", {
+  tol <- 1e-5
+
+  # no moving windows
+  sc <- minnow_it
+  suppressWarnings(sq <- sequence(list(sc)))
+  expect_equal(epx(sc, ep_only=TRUE),
+               epx(sq, ep_only=TRUE),
+               tolerance=tol, ignore_attr=TRUE)
+
+  # with moving windows
+  sc <- sc %>%
+    set_exposure(data.frame(t=0:4, c=c(0, 0, 0, 1, 1))) %>%
+    set_window(length=2, interval=1)
+  suppressWarnings(sq <- sequence(list(sc)))
+  expect_equal(epx(sc, ep_only=TRUE),
+               epx(sq, ep_only=TRUE),
+               tolerance=tol, ignore_attr=TRUE)
+})
+

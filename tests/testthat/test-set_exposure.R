@@ -18,15 +18,6 @@ test_that("basic arguments", {
   expect_equal(rs@exposure@series, es@series)
   expect_equal(rs@times, 1:3)
 
-  # single scenario, data.frame containing column with exposure series
-  df <- tibble::tibble(foo="bar", baz=1, series=c(es))
-  rs <- set_exposure(sc, df, reset_times=FALSE)
-  expect_type(rs, "list")
-  expect_equal(length(rs), 1)
-  expect_true(all(is_scenario(rs)))
-  expect_equal(rs[[1]]@exposure@series, es@series)
-  expect_equal(rs[[1]]@times, 1:3)
-
   # drop additional columns
   expect_warning(rs <- set_exposure(sc, data.frame(a=0, b=1, c=2), reset_times=FALSE))
   expect_equal(length(rs@exposure@series), 2)
@@ -119,17 +110,15 @@ test_that("non-standard argument types", {
   units(df$conc) <- units::as_units("ug/L")
   sc <- set_exposure(new("EffectScenario", name="a"), df)
   # units must not be present afterwards
-  expect_false(any(has_units(sc@exposure@series[,1])))
-  expect_false(any(has_units(sc@exposure@series[,2])))
+  expect_false(any(has_units(sc@exposure@series[, 1])))
+  expect_false(any(has_units(sc@exposure@series[, 2])))
 })
 
 test_that("invalid arguments", {
   sc <- minnow_it
   es <- sc@exposure
   # exposure series too short
-  expect_warning(set_exposure(sc, data.frame(t=0, c=0)))
-  suppressWarnings(sc2 <- set_exposure(sc, data.frame(t=0, c=0)))
-  expect_equal(sc2@times, sc@times)
+  expect_error(set_exposure(sc, data.frame(t=0, c=0)))
 
   # nonsense
   expect_error(set_exposure(sc, 1))

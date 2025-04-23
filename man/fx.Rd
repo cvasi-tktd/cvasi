@@ -4,6 +4,7 @@
 \name{fx}
 \alias{fx}
 \alias{fx,ANY-method}
+\alias{fx,ScenarioSequence-method}
 \alias{fx,Algae-method}
 \alias{fx,GutsRedSd-method}
 \alias{fx,GutsRedIt-method}
@@ -14,6 +15,8 @@
 fx(scenario, ...)
 
 \S4method{fx}{ANY}(scenario, ...)
+
+\S4method{fx}{ScenarioSequence}(scenario, ...)
 
 \S4method{fx}{Algae}(scenario, ...)
 
@@ -39,6 +42,8 @@ Generic to calculate effects for a particular scenario
 \section{Methods (by class)}{
 \itemize{
 \item \code{fx(ANY)}: Use state variables at end of simulation
+
+\item \code{fx(ScenarioSequence)}: Wrapper for \link[=sequence]{sequences}
 
 \item \code{fx(Algae)}: Effect at end of simulation of \link{Algae-models}
 

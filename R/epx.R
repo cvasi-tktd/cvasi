@@ -179,7 +179,7 @@ epx <- function(scenarios, level=c(10,50), effect_tolerance=0.001, factor_cutoff
     stop("epx: requested effect levels out of range")
 
   # gracious argument handling if single object or vector was supplied
-  if(is(scenarios,"EffectScenario"))
+  if(!is.vector(scenarios))
     scenarios <- tibble::tibble(scenario=c(scenarios))
   else
     scenarios <- tibble::tibble(scenario=scenarios)
@@ -241,7 +241,7 @@ epx <- function(scenarios, level=c(10,50), effect_tolerance=0.001, factor_cutoff
 # - and it automatically covers the whole range of multiplication factors if necessary
 #' @global ep level mf
 epx_binary_search <- function(scenario, level, effect_tolerance, factor_cutoff, verbose,
-                              min_factor, max_factor, ...)
+                              min_factor, max_factor, .cache, ...)
 {
   # init result vector before anything else can fail
   result <- expand.grid(ep=scenario@endpoints, level=level) %>%
@@ -251,8 +251,9 @@ epx_binary_search <- function(scenario, level, effect_tolerance, factor_cutoff, 
 
   tryCatch({
     # control scenarios?
-    if(!has_controls(scenario))
-      scenario <- cache_controls(scenario, ...)
+    if(missing(.cache)) {
+      .cache <- cache_windows(scenario, ...)
+    }
 
     # rounded effects in kbs need to be more precise than the requested tolerance
     e.decimals <- max(4, ceiling(abs(log10(effect_tolerance / 10))))
@@ -262,7 +263,7 @@ epx_binary_search <- function(scenario, level, effect_tolerance, factor_cutoff, 
       message("epx: screening multiplication factors")
       message(paste0("  start: ", f.test))
     }
-    e.test <- effect(scenario, factor=f.test, ep_only=TRUE, ...)
+    e.test <- effect(scenario, factor=f.test, ep_only=TRUE, .cache=.cache, ...)
   }, error=function(e) {
     result$error <<- e$message
   })
@@ -288,7 +289,7 @@ epx_binary_search <- function(scenario, level, effect_tolerance, factor_cutoff, 
         # if MF smaller than requested level not found yet, test smaller powers of ten
         while(min(kbs[[ep]]) > e.tgt) {
           f.test <- min(kbs[["mf"]]) / 10
-          e.test <- effect(scenario, f.test, ep_only=TRUE, ...)
+          e.test <- effect(scenario, f.test, ep_only=TRUE, .cache=.cache, ...)
           kbs <- dplyr::bind_rows(kbs, c(mf=f.test, e.test))
           if(verbose)
             message(paste0("  ", ep_name, ": ", f.test, " <<<"))
@@ -302,7 +303,7 @@ epx_binary_search <- function(scenario, level, effect_tolerance, factor_cutoff, 
         # if MF larger than requested level not found yet, test larger powers of ten
         while(max(kbs[[ep]]) < e.tgt) {
           f.test <- max(kbs[["mf"]]) * 10
-          e.test <- effect(scenario, f.test, ep_only=TRUE, ...)
+          e.test <- effect(scenario, f.test, ep_only=TRUE, .cache=.cache, ...)
           kbs <- dplyr::bind_rows(kbs, c(mf=f.test, e.test))
           if(verbose)
             message(paste0("  ", ep_name, ": ", f.test, " >>>"))
@@ -373,7 +374,7 @@ epx_binary_search <- function(scenario, level, effect_tolerance, factor_cutoff, 
             break
           }
 
-          e.cur <- effect(scenario,f.cur,ep_only=TRUE,...)
+          e.cur <- effect(scenario,f.cur,ep_only=TRUE, .cache=.cache,...)
           if(any(e.cur<0 | e.cur>1 | is.nan(e.cur)))
             stop("invalid effect level occurred, check numerical stability", call.=FALSE)
           kbs <- dplyr::bind_rows(kbs, c(mf=f.cur,e.cur))

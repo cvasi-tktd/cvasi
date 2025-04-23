@@ -195,10 +195,12 @@ is_regular_series <- function(x) {
 # Check if scenarios requires a control for effect calculation
 #
 is_control_required <- function(x) {
-  if(is.list(x))
+  if(is.vector(x) & length(x) > 1)
     return(sapply(x, is_control_required))
+  if(is_sequence(x))
+    return(is_control_required(x[[1]]))
   if(!is_scenario(x))
-    return(FALSE)
+    stop("Argument `x` must be a scenario")
 
   x@control.req
 }

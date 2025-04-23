@@ -62,12 +62,11 @@ dose_response <- function(scenario, range=c(1, 99), n=20, strategy=c("exponentia
   else
     map2 <- furrr::future_map2_dfr
   # check if controls are present
-  if(!has_controls(scenario))
-    scenario <- cache_controls(scenario, ...)
+  cache <- cache_windows(scenario, ...)
 
-  epx.min <- epx(scenario, level=min.effect, ...) %>%
+  epx.min <- epx(scenario, level=min.effect, .cache=cache, ...) %>%
     dplyr::rename_with(~gsub("\\.EP\\d+", "", .x))
-  epx.max <- epx(scenario, level=max.effect, ...) %>%
+  epx.max <- epx(scenario, level=max.effect, .cache=cache, ...) %>%
     dplyr::rename_with(~gsub("\\.EP\\d+", "", .x))
   drc <- data.frame(endpoint=character(), mf=numeric(), effect=numeric())
 
@@ -141,7 +140,7 @@ dose_response <- function(scenario, range=c(1, 99), n=20, strategy=c("exponentia
     if(verbose)
       message("  calculating ", length(mf), " new effect levels")
     # calculate effects
-    efx <- map2(rep(c(scenario), length(mf)), mf, effect, ep_only=TRUE, ...)
+    efx <- map2(rep(c(scenario), length(mf)), mf, effect, ep_only=TRUE, .cache=cache, ...)
     dplyr::bind_rows(drc, tibble::tibble(mf=mf, effect=efx[[ep]], endpoint=ep)) -> drc
   }
   drc <- drc %>%

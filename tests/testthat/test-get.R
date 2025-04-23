@@ -14,3 +14,14 @@ test_that("get_model", {
   # invalid arguments
   expect_error(get_model(assessment()))
 })
+
+test_that("get_window", {
+  sc <- new("EffectScenario") %>% set_window(length=-1, interval=-1)
+  expect_equal(get_window(sc), list(length=-1, interval=-1))
+
+  sc <- new("EffectScenario") %>% set_window(length=2, interval=3)
+  l <- list(length=2, interval=3)
+  expect_equal(get_window(sc), l)
+
+  expect_equal(get_window(list(sc, sc)), list(l, l))
+})

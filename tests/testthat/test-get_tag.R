@@ -9,7 +9,7 @@ test_that("supported object types", {
   expect_equal(get_tag(list(s1, s2)), list("foo", "bar"))
   # scenario sequence
   suppressMessages(seq <- sequence(list(s1, s2), breaks=3))
-  expect_equal(get_tag(seq), list("foo", "bar"))
+  expect_equal(get_tag(seq), "foo")
   # parameter set
   ps <- parameter_set("xy", tag="baz")
   expect_equal(get_tag(ps), "baz")

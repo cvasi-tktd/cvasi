@@ -108,11 +108,7 @@ endpoints for a scenario.
 
 Some scenarios or models require control runs to calculate effects under
 exposure. Generally, control simulations will run automatically
-where needed. However, when conducting a large number of repeated simulations, e.g.
-when calculating effect profiles (EPx values) or simulating moving exposure
-windows, it may be computational efficient to run control simulations only
-once and cache their results within the scenario. Please refer to \code{\link[=cache_controls]{cache_controls()}}
-for details.
+where needed.
 }
 
 \subsection{Moving exposure windows}{

@@ -250,8 +250,9 @@ fx_gutsredsd <- function(scenario, ...) {
 fx_gutsredit <- function(scenario, ...) {
   # we avoid the control run if we just set the background mortality to zero
   # as it would cancel out anyways
-  if(scenario@param$hb > 0)
-    scenario@param$hb <- 0
+  if(scenario@param$hb > 0) {
+    scenario <- set_param(scenario, c(hb=0))
+  }
 
   res <- simulate(scenario, ...)
   c("L"=1 - tail(res$S, n=1))

@@ -36,8 +36,7 @@ setMethod("set_times", "EffectScenario", function(x, times) set_times_scenario(x
 setMethod("set_times", "ScenarioSequence", function(x, times) set_times_sequence(x, times))
 
 set_times_scenario <- function(x, times) {
-  # convert `units` objects to simple numerical to avoid issues
-  if(any(has_units(times))) {
+  if(is(times, "units")) {
     times <- units::drop_units(times)
   }
   if(!is.vector(times) | !is.numeric(times)) {
@@ -60,7 +59,7 @@ set_times_sequence <- function(x, times) {
   for(i in seq_along(x@scenarios)) {
     x@scenarios[[i]] <- set_times(x@scenarios[[i]], times)
   }
-  # modify to consider breaks between elements
+  # modify sequence to consider breaks between elements
   x <- split_sequence(x, .messages=FALSE)
   x
 }

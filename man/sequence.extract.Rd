@@ -15,8 +15,6 @@
 
 \S4method{[[}{ScenarioSequence,numeric,missing,EffectScenario}(x, i, j) <- value
 
-\S4method{[[}{ScenarioSequence,numeric,ANY,ANY}(x, i, j) <- value
-
 \S4method{length}{ScenarioSequence}(x)
 }
 \arguments{
@@ -42,8 +40,6 @@ am existing sequence. \code{[} and \code{[[} work identical to
 \item \code{x[[i}: Returns a single scenario from the sequence.
 
 \item \code{`[[`(x = ScenarioSequence, i = numeric, j = missing) <- value}: Replaces a single scenario in the sequence.
-
-\item \code{`[[`(x = ScenarioSequence, i = numeric, j = ANY) <- value}: Replaces a single scenario in the sequence.
 
 \item \code{length(ScenarioSequence)}: Returns the number of scenarios in the sequence.
 

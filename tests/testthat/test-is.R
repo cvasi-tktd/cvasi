@@ -149,8 +149,8 @@ test_that("is_control_required", {
   expect_equal(is_control_required(c(Lemna_Schmitt(),Lemna_Schmitt())), c(TRUE,TRUE))
   # invalid arguments
   expect_false(is_control_required(GUTS_RED_IT()))
-  expect_false(is_control_required(NA))
-  expect_false(is_control_required(NULL))
-  expect_false(is_control_required(1))
-  expect_equal(is_control_required(1:5), FALSE)
+  expect_error(is_control_required(NA))
+  expect_error(is_control_required(NULL))
+  expect_error(is_control_required(1))
+  expect_error(is_control_required(1:5))
 })

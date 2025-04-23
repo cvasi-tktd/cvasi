@@ -2,7 +2,11 @@
 #' @export
 #' @aliases sequence
 #' @include sequence.R
-setClass("ScenarioSequence", slots=list(scenarios="list", breaks="numeric"))
+setClass("ScenarioSequence",
+         slots=list(scenarios="list",
+                    breaks="numeric",
+                    inc_start="logical",
+                    inc_end="logical"))
 
 #' Sequence of scenarios
 #'
@@ -73,6 +77,8 @@ sequence <- function(seq, breaks=NULL) {
   }
 
   obj <- new("ScenarioSequence", scenarios=seq)
+  obj@inc_start <- c(TRUE, rep(FALSE, length(obj) - 1))
+  obj@inc_end <- rep(TRUE, length(obj))
   if(!is.null(breaks)) {
     obj@breaks <- breaks
     obj <- split_sequence(obj, .messages=FALSE)
@@ -80,6 +86,7 @@ sequence <- function(seq, breaks=NULL) {
     obj@breaks <- breaks_from_sequence(obj)
   }
   check_sequence(obj)
+  obj <- mock_as_scenario(obj)
   obj
 }
 
@@ -135,21 +142,28 @@ setMethod("[[", c("ScenarioSequence", "numeric"), function(x, i) {
 #' @export
 #' @describeIn sequence.extract Replaces a single scenario in the sequence.
 setMethod("[[<-", c("ScenarioSequence","numeric","missing","EffectScenario"), function(x, i, j, value) {
-  if(any(is.na(i)))
+  if(any(is.na(i))) {
     stop("Argument `i` must not contain NAs")
+  }
 
-  if(length(i) != 1)
+  if(length(i) != 1) {
     stop("Index must be of length one")
-  if(any(i < 1 | i > length(x@scenarios)))
+  }
+  if(any(i < 1 | i > length(x@scenarios))) {
     stop("Index is out of bounds")
+  }
 
   x@scenarios[[i]] <- value
   check_sequence(x)
+  if(i == 1) {
+    x <- mock_as_scenario(x)
+  }
+
   x
 })
 
-#' @export
-#' @describeIn sequence.extract Replaces a single scenario in the sequence.
+# do not export, re-assigning scenarios has complicated consequences
+# @describeIn sequence.extract Replaces a single scenario in the sequence.
 setMethod("[[<-", c("ScenarioSequence","numeric","ANY","ANY"), function(x, i, j, value) {
   stop("Assigned type not supported")
 })
@@ -180,44 +194,75 @@ split_sequence <- function(x, .messages=FALSE) {
   }
 
   breaks <- x@breaks
-  n <- length(breaks)
-
-  # no breaks, nothing to do
-  if(n == 0) {
+  n <- length(x)
+  if(n == 1) {
     return(x)
   }
 
   if(.messages) {
     cli::cli_text("Splitting sequence at {n} break{?s} ...")
   }
-  for(i in seq(1, length(x) - 1)) {
-    cur <- x[[i]]
-    nxt <- x[[i + 1]]
-    br <- breaks[[i]]
-    last <- i == length(x) - 1
 
-    # current scenario ends at break
-    times <- get_times(cur)
-    times <- c(times[times < br], br)
-    if(length(times) < 2)
-      stop("Scenario #", i, " has too few output times for t < ", br)
-    cur <- set_times(cur, times)
-    # next scenario starts at break
-    ntimes <- get_times(nxt)
-    ntimes <- c(br, ntimes[ntimes > br])
-    if(last & length(ntimes) < 2)
-      stop("Scenario #", i+1, " has too few output times for t > ", br)
-    nxt <- set_times(nxt, ntimes)
+  x@inc_start <- rep(TRUE, n)
+  x@inc_end <- rep(TRUE, n)
+  is_relevant <- rep(FALSE, n)
+  for(i in seq_along(x))
+  {
+    is_last <- i == length(x)
+    t_start <- if(i == 1) -Inf else breaks[[i - 1]]
+    t_end <- if(is_last) Inf else breaks[[i]]
+    times <- get_times(x[[i]])
+
+    # is there overlap of the scenario and the time period we are selecting for?
+    if(min(times) < t_end & max(times) > t_start) {
+      times <- times[times >= t_start & times <= t_end] # reframe output times
+      is_relevant[[i]] <- TRUE
+    } else { # no overlap
+      times <- numeric(0)
+      x@inc_start[[i]] <- FALSE
+      x@inc_end[[i]] <- FALSE
+    }
+    x@scenarios[[i]]@times <- times
+  }
+
+  # check if start and end time need to be included in the output times
+  for(i in seq_along(x))
+  {
+    if(is_relevant[[i]])
+    {
+      t_start <- if(i == 1) -Inf else breaks[[i - 1]]
+      t_end <- if(i == n) Inf else breaks[[i]]
+      times <- get_times(x[[i]])
+      any_before <- any(head(is_relevant, i - 1))
+      any_after <- any(tail(is_relevant, n - i))
+
+      # continue where previous scenario ended
+      if(length(times) == 0) {
+        times <- t_start
+        x@inc_start[[i]] <- FALSE
+        x@inc_end[[i]] <- FALSE
+      }
+      if(any_before)
+      {
+        x@inc_start[[i]] <- FALSE
+        if(times[[1]] != t_start) {
+          times <- c(t_start, times)
+        }
+      }
+      if(any_after && times[[length(times)]] != t_end) {
+        times <- c(times, t_end)
+        x@inc_end[[i]] <- FALSE
+      }
+      x@scenarios[[i]]@times <- times
+    }
 
     if(.messages)
     {
-      cli::cli_text(" Scenario #", i, ": simulated period [", min(times), ", ", max(times), "]")
-      if(last)
-        cli::cli_text("  Scenario #", i+1, ": simulated period [", min(ntimes), ", ", max(ntimes), "]")
+      if(is_relevant[[i]])
+        cli::cli_text(" Scenario #", i, ": simulated period [", min(times), ", ", max(times), "]")
+      else
+        cli::cli_text(" Scenario #", i, ": not simulated")
     }
-
-    x@scenarios[[i]] <- cur
-    x@scenarios[[i + 1]] <- nxt
   }
 
   x
@@ -225,18 +270,16 @@ split_sequence <- function(x, .messages=FALSE) {
 
 # check validity of sequence elements
 check_sequence <- function(seq) {
-  lst <- seq@scenarios
-  if(!is.list(lst)) {
+  if(!all(is_scenario(seq@scenarios))) {
     stop("sequence does not contain a list of effect scenarios")
   }
   # check if start and end of output times match between subsequent scenarios
-  for(i in seq_along(lst)) {
-    cur <- lst[[i]]
+  for(i in seq_along(seq)) {
+    cur <- seq[[i]]
     if(is.null(cur)) {
       next
     }
     if(length(cur@times) == 0) {
-      stop(sprintf("scenario #%d has no output times", i))
       next
     }
     # skip further check for first element in sequence
@@ -244,7 +287,7 @@ check_sequence <- function(seq) {
       next
     }
 
-    prev <- lst[[i-1]]
+    prev <- seq[[i-1]]
     if(is.null(prev)) { # nothing to compare to
       next
     }
@@ -260,4 +303,51 @@ check_sequence <- function(seq) {
       stop(sprintf("output time overlap between scenario #%d and #%d: [_, %g], [%g, _]", i-1, i, end, start))
     }
   }
+}
+
+# Sets a scenario's slot values as attributes of a sequence.
+#
+# This emulates or mocks the existence of slots in the sequence
+# object, at least for read-only access. Writing to these emulated slots will
+# fail with an error.
+#
+# This is a workaround to make code work with sequence objects, which is not
+# aware of sequences and cannot handle them, e.g. some model-specific `fx()`
+# functions. Will not mock the contents of exposure and forcings slots, as these
+# are too difficult to handle as the actual time-series may also depend on
+# solver settings.
+#
+# @param sq [sequence] where slots are emulated
+# @param scenario [scenario] to mock slots from
+# @return modified [sequence]
+mock_as_scenario <- function(sq, scenario=NULL) {
+  if(!is_sequence(sq))
+    stop("Argument `sq` must be a sequence")
+  if(is.null(scenario))
+    scenario <- sq[[1]]
+  if(!is_scenario(scenario))
+    stop("Argument `scenario` must be a scenario")
+
+  # these slots/attributes will never be set/mocked
+  protected <- slotNames(new("ScenarioSequence"))
+  exclude <- c(protected, "times", "exposure", "forcings")
+
+  nms <- slotNames(scenario)
+  if(any(protected %in% nms)) {
+    warning("Mocked scenario contains slots with protected names: ", paste(intersect(nms, protected), collapse=", "))
+  }
+  nms <- setdiff(nms, exclude)
+  # mock slots by setting an attribute of the same name, this hack works because S4
+  # slots are implemented by R using attributes.
+  for(nm in nms) {
+    attr(sq, nm) <- slot(scenario, nm)
+  }
+  # special handling for output times
+  attr(sq, "times") <- get_times(sq)
+  # A sequence's exposure and forcings should never ever be accessed by using slots.
+  # Setting them to NA should make sure that any code accessing them fails.
+  attr(sq, "exposure") <- NA
+  attr(sq, "forcings") <- NA
+
+  sq
 }

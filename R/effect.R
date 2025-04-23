@@ -69,28 +69,36 @@ setGeneric("effect", function(x, ...) standardGeneric("effect"), signature="x")
 
 
 #' @autoglobal
-effect_scenario <- function(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_effect, ...) {
+effect_scenario <- function(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_effect, .cache, ...) {
   if(is.vector(x))
     stop("vectors of scenarios not supported")
-  if(length(x@endpoints) == 0)
+  eps <- get_endpoints(x)
+  if(length(eps) == 0)
     warning("no endpoints selected", call.=FALSE)
 
   # apply multiplication factor
-  x@exposure@series[,2] <- x@exposure@series[,2] * factor
+  if(is_sequence(x)) {
+    for(i in seq_along(x))
+      x[[i]]@exposure@series[, 2] <- x[[i]]@exposure@series[, 2] * factor
+  } else {
+    x@exposure@series[, 2] <- x@exposure@series[, 2] * factor
+  }
 
-  # check if controls required
-  if(!has_controls(x))
-    x <- cache_controls(x, ...)
+  # is a cache set? it would contain window candidates as well as results of
+  # control simulations (i.e. with zero exposure)
+  if(missing(.cache)) {
+    .cache <- cache_windows(x, ...)
+  }
   ctrl_req <- is_control_required(x)
 
   # calculate effects for all windows
-  efx <- dplyr::bind_rows(lapply(x@control, function(ctrl) {
+  efx <- dplyr::bind_rows(lapply(seq_along(.cache$windows), function(i) {
     # current exposure window
-    win <- ctrl[c(1,2)]
+    win <- .cache$windows[[i]]
     # derive endpoints rel to ctrl if required, otherwise use values as they are
-    rs <- fx(clip_scenario(x, window=win), window=win, ...)
+    rs <- fx(clip_scenario(x, window=win), ...)
     if(ctrl_req) {
-      rs <- calc_effect(rs, ctrl[-c(1,2)])
+      rs <- calc_effect(rs, .cache$controls[[i]])
     }
     # return effects including exposure window
     c(win, rs)
@@ -102,17 +110,17 @@ effect_scenario <- function(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_
     if(marginal_effect>0.01)
       warning("marginal effect threshold is larger than 1%")
 
-    efx <- dplyr::mutate_at(efx, -c(1,2),~ifelse(abs(.)<marginal_effect,0,.))
+    efx <- dplyr::mutate_at(efx, -c(1,2), ~ifelse(abs(.) < marginal_effect, 0, .))
   }
 
   # find maximum of all endpoints and corresponding time points
   if(max_only) {
     # check if all endpoints are present in result set
-    if(length(setdiff(x@endpoints, names(efx))) > 0)
-      stop(paste("endpoint(s)",paste(setdiff(x@endpoints, names(efx)),collapse=","),"missing in effect result"))
+    if(length(setdiff(eps, names(efx))) > 0)
+      stop(paste("endpoint(s)",paste(setdiff(eps, names(efx)),collapse=","),"missing in effect result"))
 
     rs <- tibble::tibble(scenario=c(x))
-    for(ep in x@endpoints) {
+    for(ep in eps) {
       max.efx <- dplyr::arrange(efx, dplyr::desc(.data[[ep]]), window.start)
       max.efx <- max.efx[1,c(ep,"window.start","window.end")]
       names(max.efx) <- c(ep,paste0(ep,".dat.start"),paste0(ep,".dat.end"))
@@ -121,12 +129,12 @@ effect_scenario <- function(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_
 
     # discard timestamps and scenario?
     if(ep_only)
-      rs <- unlist(rs[,x@endpoints])
+      rs <- unlist(rs[, eps])
     return(rs)
   }
   # return endpoints only, for all windows
   else if(ep_only) {
-    return(efx[,x@endpoints])
+    return(efx[, eps])
   }
 
   # rename date columns, move to back
@@ -138,11 +146,6 @@ effect_scenario <- function(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_
   dplyr::relocate(efx, scenario)
 }
 
-effect_sequence <- function(x, ...) {
-  stop("Sequences are not supported, yet.")
-}
-
-
 #' @describeIn effect Default for all generic [scenarios]
 #' @include class-EffectScenario.R
 #' @export
@@ -152,8 +155,7 @@ setMethod("effect", "EffectScenario", effect_scenario)
 #' @describeIn effect For scenario [sequences][sequence]
 #' @include sequence.R
 #' @export
-setMethod("effect", "ScenarioSequence", function(x, ...) effect_sequence(x, ...))
-
+setMethod("effect", "ScenarioSequence", function(x, ...) effect_scenario(x, ...))
 
 # Calculates the effect based on simulation and control. Takes into
 # account some edge cases where sim/control are zero which would otherwise
@@ -175,50 +177,17 @@ calc_effect <- function(sim, control) {
 
 
 #### Helper functions ####
-
-#
-# Returns all possible windows, i.e. simulation periods to evaluate for effects
-#
-window_candidates <- function(scenario, skipZeroExposure=FALSE) {
-  t.start <- scenario@times[[1]]
-  t.end <- tail(scenario@times,1)
-
-  # if no window defined, then use period of output times
-  if(scenario@window.length <= 0)
-    return(list(c("window.start"=t.start,"window.end"=t.end)))
-  if(scenario@window.interval <= 0)
-    stop("window.interval has invalid value")
-
-  # create list of candidate windows
-  win.starts <- seq(t.start, max(t.end - scenario@window.length, t.start), scenario@window.interval)
-  windows <- lapply(win.starts, function(ws) c("window.start"=ws,"window.end"=ws+scenario@window.length))
-
-  # remove windows with zero exposure?
-  if(skipZeroExposure) {
-    sum <- sapply(windows, function(w) {
-      df <- scenario@exposure@series
-      sum(df[seq(max(1,sum(df[,1]<=w[[1]])), min(nrow(df),sum(df[,1]<w[[2]])+1)),][,2])
-    })
-    # check if at least one window has non-zero exposure
-    if(any(sum>0))
-      windows <- windows[sum>0]
-    else # return at least one window candidate irrespective of exposure
-      windows <- windows[1]
-  }
-  windows
-}
-
 clip_scenario <- function(scenario, window) {
   if(missing(window))
     stop("nothing to clip")
-  if(length(window)!=2)
+  if(length(window) != 2)
     stop("window must consist of a start and end time point")
   if(any(is.na(window)))
     stop("window contains invalid values")
 
   # select relevant range
-  times <- scenario@times
-  times <- times[times>=min(window)&times<=max(window)]
+  times <- get_times(scenario)
+  times <- times[times >= min(window) & times <= max(window)]
   # make sure that start and end of window are included
   if(length(times) == 0)
     times <- window[[1]]
@@ -227,6 +196,13 @@ clip_scenario <- function(scenario, window) {
   if(tail(times,1) < window[2])
     times <- c(times, window[[2]])
 
+  # update output times
+  scenario <- set_times(scenario, times)
+  # do not touch exposure & forcing time-series of sequences, it's too fragile
+  if(is_sequence(scenario)) {
+    return(scenario)
+  }
+
   # clip exposure series
   exposure <- clip_forcings(scenario@exposure@series, window)
   # clip any forcings data
@@ -234,8 +210,7 @@ clip_scenario <- function(scenario, window) {
   for(fnm in names(forcings))
     forcings[[fnm]] <- clip_forcings(forcings[[fnm]], window)
 
-  # update scenario
-  scenario@times <- times
+  # update other scenario settings
   scenario@exposure@series <- exposure
   scenario@forcings <- forcings
 

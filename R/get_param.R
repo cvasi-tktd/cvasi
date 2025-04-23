@@ -22,7 +22,7 @@ setMethod("get_param", "list", function(x) lapply(x, get_param))
 setMethod("get_param", "EffectScenario", function(x) return(x@param))
 #' @export
 #' @describeIn get_param Returns a list of parameter lists, one for each scenario in the sequence
-setMethod("get_param", "ScenarioSequence", function(x) return(get_param(x@scenarios)))
+setMethod("get_param", "ScenarioSequence", function(x) return(get_param(x[[1]])))
 #' @export
 #' @describeIn get_param Returns a list of parameters for a single [parameter_set]
 setMethod("get_param", "ParameterSet", function(x) return(x@param))
@@ -32,6 +32,6 @@ setGeneric("get_rparam", function(x) standardGeneric("get_rparam"))
 setMethod("get_rparam", "ANY", function(x) stop("Object type is not supported"))
 setMethod("get_rparam", "list", function(x) lapply(x, get_rparam))
 setMethod("get_rparam", "EffectScenario", function(x) return(x@param.req))
-setMethod("get_rparam", "ScenarioSequence", function(x) return(get_rparam(x@scenarios)))
+setMethod("get_rparam", "ScenarioSequence", function(x) return(get_rparam(x[[1]])))
 
 

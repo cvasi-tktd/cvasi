@@ -48,7 +48,7 @@ Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd",
 Config/testthat/edition: 3
 Collate: 
     'batch.R'
-    'cache_controls.R'
+    'cache.R'
     'class-CalibrationSet.R'
     'class-ExposureSeries.R'
     'class-EffectScenario.R'

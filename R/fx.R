@@ -10,6 +10,9 @@ setGeneric("fx", function(scenario, ...) standardGeneric("fx"), signature = "sce
 #' @describeIn fx Use state variables at end of simulation
 setMethod("fx", "ANY", function(scenario, ...) fx_default(scenario, ...))
 
+#' @describeIn fx Wrapper for [sequences][sequence]
+setMethod("fx", "ScenarioSequence", function(scenario, ...) fx_sequence(scenario, ...))
+
 # Use value of state variable at end of simulation to derive effect
 fx_default <- function(scenario, ...) {
   row <- tail_nm(simulate(scenario, ...))
@@ -17,6 +20,14 @@ fx_default <- function(scenario, ...) {
   # of simulate(). in this case the return value would contain columns named
   # `<NA>`, which we want to avoid.
   setNames(row[scenario@endpoints], scenario@endpoints)
+}
+
+#' @importFrom methods selectMethod
+fx_sequence <- function(scenario, ...) {
+  # use type of first scenario in sequence to select an appropriate `fx` function
+  cls <- class(scenario[[1]])[1]
+  fun <- selectMethod("fx", signature=c(scenario=cls))
+  fun(scenario, ...)
 }
 
 # return the last row of a data.frame or matrix as a vector and assures that

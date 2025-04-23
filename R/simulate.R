@@ -231,12 +231,12 @@ simulate_scenario <- function(x, times, .suppress=FALSE, ...) {
 #
 # @param scenario EffectScenario to simulate
 # @param times optional numerical vector overriding the scenario's output times
-# @param in_sequence optional logical, set to TRUE if simulated scenario is part
+# @param .in_sequence optional logical, set to TRUE if simulated scenario is part
 #   of a scenario sequence, then it will return a proposed initial state for
 #   simulate_seq to use
 # @param ... additional parameters passend on to [solver()]
 # @return data.frame
-simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
+simulate_transfer <- function(scenario, times, .in_sequence=FALSE, ...) {
   if(!has_transfer(scenario)) # shortcut if no transfers were defined
     return(simulate_scenario(scenario, times=times, ...))
   if(!missing(times))
@@ -320,7 +320,7 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
 
   # add metadata at which system state the subsequent simulation should start
   # if they were simulated in a sequence, cf. simulate_seq()
-  if(in_sequence) {
+  if(.in_sequence) {
     if(ends_on_transfer)
       attr(df, "next_init") <- init
     else
@@ -339,47 +339,66 @@ simulate_transfer <- function(scenario, times, in_sequence=FALSE, ...) {
 #
 # @return data.frame
 simulate_seq <- function(seq, times, ...) {
-  if(length(seq@scenarios)==0)
-    stop("no scenarios in sequence")
-  if(!missing(times))
-    stop("overriding output times not supported for scenario sequences")
+  if(length(seq) == 0)
+    stop("No scenarios in sequence")
+  if(!missing(times)) {
+    seq <- set_times(seq, times)
+  }
+  # for backwards compatibility, include all breaks in output times
+  # since v1.5.0
+  if(methods::.hasSlot(seq, "inc_start")) {
+    inc_start <- seq@inc_start
+    inc_end <- seq@inc_end
+  } else {
+    inc_start <- c(TRUE, rep(FALSE, length(seq) - 1))
+    inc_end <- rep(TRUE, length(seq))
+  }
 
   df <- data.frame() # result table
-  init <- seq@scenarios[[1]]@init
-  t.start <- seq@scenarios[[1]]@times[1]
+  init <- seq[[1]]@init
+  t_start <- NA_real_
   nms <- names(init)
 
-  for(i in seq(length(seq@scenarios))) {
-    # get current scenario and re-set init state
-    sc <- set_init(seq@scenarios[[i]], init)
-    # if explicit time points were provided, try to accommodate them with the
-    # scenario's settings
-    if(!missing(times)) {
-      t.end <- sc@times[length(sc@times)]
-      sc.times <- times[times>=t.start & times<=t.end]
-      if(t.start < sc.times[1])
-        sc.times <- c(t.start, sc.times)
-      sc <- set_times(sc, sc.times)
+  for(i in seq_along(seq))
+  {
+    # skip scenario if no output times defined
+    if(length(seq[[i]]@times) == 0) {
+      next
     }
+    # get the first output time from the sequence
+    if(is.na(t_start)) {
+      t_start <- seq[[i]]@times[1]
+    }
+
+    # get current scenario and re-set init state
+    sc <- set_init(seq[[i]], init)
     # check if current scenario starts where the previous ended
-    if(sc@times[1] != t.start)
-      stop("scenarios are not on a continuous time scale")
-    t.start <- tail(sc@times,1)
+    if(sc@times[1] != t_start)
+      stop("Scenarios are not on a continuous time scale")
     # we simulate each scenario as is
-    out <- simulate(sc, times=times, in_sequence=TRUE, ...)
-    # append results to output data.frame
-    if(i==1)
-      df <- rbind(df, out)
-    else
-      df <- rbind(df, out[-1,])
+    out <- simulate(sc, .in_sequence=TRUE, ...)
 
     # which system state to use as initial state for next scenario
     # in sequence?
     # a) if simulate() returned suitable metadata then use that
     # b) otherwise, use last system state of last scenario
     init <- attr(out, "next_init", exact=TRUE)
-    if(is.null(init))
-      init <- tail(out,1)[nms]
+    if(is.null(init)) {
+      init <- tail(out, 1)[nms]
+    }
+
+    # filter certain output times from result if they are not supposed to be reported
+    if(!inc_start[[i]]) {
+      out <- out[sc@times != t_start, ]
+    }
+    if(!inc_end[[i]]) {
+      t_end <- sc@times[length(sc@times)]
+      out <- out[out[, 1] != t_end, ]
+    }
+
+    t_start <- tail(sc@times, 1)
+    # reported result
+    df <- rbind(df, out)
   }
   attr(df, "next_init") <- NULL
   rownames(df) <- NULL

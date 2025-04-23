@@ -32,7 +32,7 @@ setMethod("get_tag", "list", function(x) lapply(x, get_tag))
 setMethod("get_tag", "EffectScenario", function(x) return(x@tag))
 #' @export
 #' @describeIn get_tag Returns a list of tags, one for each scenario in the sequence
-setMethod("get_tag", "ScenarioSequence", function(x) return(get_tag(x@scenarios)))
+setMethod("get_tag", "ScenarioSequence", function(x) return(get_tag(x[[1]])))
 #' @export
 #' @describeIn get_tag Returns the tag of a single [parameter_set]
 setMethod("get_tag", "ParameterSet", function(x) return(x@tag))

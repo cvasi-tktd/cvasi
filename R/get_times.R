@@ -26,4 +26,28 @@ setMethod("get_times", "list", function(x) lapply(x, get_times))
 setMethod("get_times", "EffectScenario", function(x) return(x@times))
 
 #' @export
-setMethod("get_times", "ScenarioSequence", function(x) return(get_times(x@scenarios)))
+setMethod("get_times", "ScenarioSequence", function(x) get_times_seq(x))
+
+get_times_seq <- function(x) {
+  # for backwards compatibility, since v1.5.0
+  if(methods::.hasSlot(x, "inc_start")) {
+    inc_start <- x@inc_start
+    inc_end <- x@inc_end
+  } else {
+    inc_start <- c(TRUE, rep(FALSE, length(x) - 1))
+    inc_end <- rep(TRUE, length(x))
+  }
+
+  times <- c()
+  for(i in seq_along(x)) {
+    tms <- get_times(x[[i]])
+    if(!inc_start[[i]]) {
+      tms <- tms[ tms != tms[1] ]
+    }
+    if(!inc_end[[i]]) {
+      tms <- tms[ tms != tms[length(tms)] ]
+    }
+    times <- c(times, tms)
+  }
+  times
+}

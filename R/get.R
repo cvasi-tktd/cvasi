@@ -1,3 +1,11 @@
+get_endpoints <- function(x) {
+  if(is.vector(x))
+    return(lapply(x, get_endpoints))
+
+  if(is_sequence(x))
+    return(get_endpoints(x[[1]]))
+  x@endpoints
+}
 
 # Get forcings
 get_forcings <- function(scenario) {
@@ -17,6 +25,18 @@ get_vars <- function(x) {
   return(names(x@init))
 }
 
+# Get settings for moving windows
+get_window <- function(x) {
+  if(is.vector(x) & length(x) > 1) {
+    return(lapply(x, get_window))
+  }
+  if(is_scenario(x)) {
+    return(list(length=x@window.length, interval=x@window.interval))
+  } else if(is_sequence(x)) {
+    return(get_window(x[[1]]))
+  }
+  stop("Type not supported")
+}
 
 #' Get model name
 #'

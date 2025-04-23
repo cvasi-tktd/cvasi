@@ -75,3 +75,77 @@ test_that("Lemna sequence", {
   expect_equal(out.ss, out.orig, tolerance=tol, ignore_attr=TRUE)
 
 })
+
+test_that("output times", {
+  # break included in output times
+  sc <- minnow_it %>% set_times(0:6)
+  sq <- sequence(list(sc, sc), breaks=3)
+  rs1 <- simulate(sq)
+  expect_equal(rs1$time, 0:6)
+
+  # break included multiple times
+  tms <- c(0:3, 3, 4:6)
+  sc <- minnow_it %>% set_times(tms)
+  sq <- sequence(list(sc, sc), breaks=3)
+  rs1 <- simulate(sq)
+  expect_equal(rs1$time, tms)
+
+  # break not included
+  sq <- sequence(list(sc, sc), breaks=3.1)
+  rs2 <- simulate(sq)
+  expect_equal(rs2$time, tms)
+  expect_equal(rs2, rs1, tolerance=1e-5, ignore_attr=TRUE)
+})
+
+test_that("included outputs", {
+  # single break
+  sc1 <- minnow_it %>% set_times(0:3)
+  sc2 <- minnow_it %>% set_times(3:6)
+  sq <- sequence(list(sc1, sc2))
+  rs <- simulate(sq)
+  expect_equal(rs$time, 0:6)
+
+  sq@inc_start <- c(TRUE, FALSE)
+  sq@inc_end <- c(FALSE, FALSE)
+  rs <- simulate(sq)
+  expect_equal(rs$time, c(0, 1, 2, 4, 5))
+
+
+  sq@inc_start <- c(TRUE, TRUE)
+  sq@inc_end <- c(FALSE, FALSE)
+  rs <- simulate(sq)
+  expect_equal(rs$time, c(0, 1, 2, 3, 4, 5))
+
+  sq@inc_start <- c(FALSE, FALSE)
+  sq@inc_end <-  c(TRUE, TRUE)
+  rs <- simulate(sq)
+  expect_equal(rs$time, c(1, 2, 3, 4, 5, 6))
+
+  # multiple breaks
+  sc <- minnow_it %>% set_times(0:6)
+  sq <- sequence(list(sc, sc, sc), breaks=c(2.1, 4))
+  expect_equal(sq@inc_start, c(TRUE, FALSE, FALSE))
+  expect_equal(sq@inc_end, c(FALSE, TRUE, TRUE))
+  rs <- simulate(sq)
+  expect_equal(rs$time, 0:6)
+
+  sq@inc_start <- c(TRUE, TRUE, TRUE)
+  rs <- simulate(sq)
+  expect_equal(rs$time, c(0, 1, 2, 2.1, 3, 4, 4, 5, 6))
+
+  # 1st scenario without output
+  sc <- minnow_it %>% set_times(0:6)
+  sq <- sequence(list(sc, sc), breaks=3) %>% set_times(3:6)
+  rs <- simulate(sq)
+  expect_equal(rs$time, 3:6)
+
+  # 2ns scenario without output
+  sc <- minnow_it %>% set_times(0:6)
+  sq <- sequence(list(sc, sc), breaks=3) %>% set_times(0:3)
+  rs <- simulate(sq)
+  expect_equal(rs$time, 0:3)
+
+  sq <- sq %>% set_times(0:2)
+  rs <- simulate(sq)
+  expect_equal(rs$time, 0:2)
+})

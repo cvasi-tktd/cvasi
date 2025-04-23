@@ -8,9 +8,9 @@ test_that("supported types", {
 
   # sequences
   suppressWarnings(sq <- sequence(list(sc)))
-  expect_equal(get_times(sq), list(tms))
+  expect_equal(get_times(sq), tms)
   sq <- sequence(list(sc, sc), breaks=3)
-  expect_equal(get_times(sq), list(0:3, 3:5))
+  expect_equal(get_times(sq), tms)
 })
 
 test_that("unsupported types", {

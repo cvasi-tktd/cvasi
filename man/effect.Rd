@@ -8,7 +8,15 @@
 \usage{
 effect(x, ...)
 
-\S4method{effect}{EffectScenario}(x, factor = 1, max_only = TRUE, ep_only = FALSE, marginal_effect, ...)
+\S4method{effect}{EffectScenario}(
+  x,
+  factor = 1,
+  max_only = TRUE,
+  ep_only = FALSE,
+  marginal_effect,
+  .cache,
+  ...
+)
 
 \S4method{effect}{ScenarioSequence}(x, ...)
 }

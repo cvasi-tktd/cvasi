@@ -81,45 +81,38 @@ setMethod("set_exposure", c("ANY","ANY"), function(scenarios, series, ...) {
   stop("argument types not supported")
 })
 
-# single data.frame object, could be a time-series or a table containing
-# metadata + ExposureSeries objects
+# single data.frame object, i.e. a time-series
 #' @noRd
-set_exposure_dfr <- function(scenarios, series, ...) {
-  # check if its a data.frame containing ExposureSeries objects?
-  if("series" %in% names(series)) {
-    if(all(is_exp_series(series[["series"]])))
-      return(set_exposure(scenarios, series[["series"]], ...))
+set_exposure_dfr <- function(scenarios, series, reset_times=TRUE) {
+  if(is(series[, 1], "units") | is(series[, 2], "units")) {
+    series <- units::drop_units(series)
   }
-  check_exposure(series)
-  # coerce to data.frame to avoid issues with data.frame-like types
-  series <- dplyr::select(as.data.frame(series), c(1, 2))
-  return(set_exposure(scenarios, ExposureSeries(series), ...))
+  scenarios@exposure <- ExposureSeries(series)
+  if(reset_times) {
+    scenarios <- set_times(scenarios, dplyr::pull(series, 1))
+  }
+  scenarios
 }
 
 # single ExposureSeries object
 #' @noRd
 set_exposure_exs <- function(scenarios, series, reset_times=TRUE) {
-  check_exposure(series)
-
   # coerce to data.frame to avoid issues with data.frame-like types
   df <- as.data.frame(series@series)
   # remove any `units` information to avoid issues for now. this is not ideal but we
   # would need to check and/or remove units in many places where the series
   # is used.
   # TODO check if we can keep units
-  if(any(has_units(df[,1]) | has_units(df[,2])))
+  if(is(df[, 1], "units") | is(df[, 2], "units")) {
     df <- units::drop_units(df)
+  }
 
   # assign checked data.frame to scenario but keep also any additional data from
   # exposure series object
   series@series <- df
   scenarios@exposure <- series
   if(reset_times) {
-    if(nrow(series@series) >= 2) {
-      scenarios <- set_times(scenarios, series@series[,1])
-    } else {
-      warning("Exposure series is too short to be used as output times.")
-    }
+    scenarios <- set_times(scenarios, dplyr::pull(series@series, 1))
   }
 
   scenarios
@@ -132,7 +125,7 @@ set_exposure_lst <- function(scenarios, series, ...) {
 }
 
 #' @rdname set_exposure
-setMethod("set_exposure", c("EffectScenario","data.frame"), set_exposure_dfr)
+setMethod("set_exposure", c("EffectScenario","data.frame"), function(scenarios, series, ...) set_exposure_dfr(scenarios, series, ...))
 
 #' @rdname set_exposure
 setMethod("set_exposure", c("EffectScenario","ExposureSeries"), set_exposure_exs)
@@ -209,7 +202,7 @@ check_exposure <- function(series) {
       err <- c(err, "First column (time) must contain numeric values only.")
     else
     {
-      if(any(has_units(time)))
+      if(is(time, "units"))
         time <- units::drop_units(time)
       # no missing, infinite, or NaN values
       if(any(is.na(time) | is.nan(time) | is.infinite(time)))

@@ -19,6 +19,9 @@ has_exposure <- function(x) {
 # forcings we only need to simulate a single moving window instead of all of
 # them. This is due to the fact that results for all windows will be identical.
 has_constant_forcings <- function(x) {
+  # the heuristic would be too complicated/fragile to perform for sequences
+  if(any(is_sequence(x)))
+    return(FALSE)
   if(length(x) > 1)
     return(sapply(x, has_constant_forcings))
 

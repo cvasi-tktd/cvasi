@@ -228,7 +228,7 @@ calibrate_set <- function(x, par, endpoint=deprecated(), output, metric_fun=depr
     stop("All elements of argument `par` must be named")
   }
 
-  unused <- setdiff(nms, names(unlist(get_param(x[[1]]@scenario))))
+  unused <- setdiff(nms, names(get_param(x[[1]]@scenario)))
   if(length(unused) > 0) {
     stop(paste("Argument `par` contains elements which are not scenario parameters: ", paste(unused, collapse=", ")))
   }

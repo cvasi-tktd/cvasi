@@ -11,8 +11,8 @@ test_that("supported types", {
   expect_equal(get_param(c(sc, sc)), list(param, param))
 
   # sequence
-  suppressMessages(scs <- sequence(list(sc, sc), breaks=3))
-  expect_equal(get_param(scs), list(param, param))
+  sq <- sequence(list(sc, sc), breaks=3)
+  expect_equal(get_param(sq), param)
 
   # parameter set
   ps <- parameter_set("foobar", param)
@@ -35,7 +35,7 @@ test_that("get_rparam", {
   expect_equal(get_rparam(list(sc1, sc1)), list(rp, rp))
   # sequence
   suppressMessages(sq <- sequence(list(sc1, sc1), breaks=3))
-  expect_equal(get_rparam(sq), list(rp, rp))
+  expect_equal(get_rparam(sq), rp)
 
   # invalid argument
   expect_error(get_rparam(1))

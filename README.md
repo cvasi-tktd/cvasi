@@ -104,13 +104,18 @@ Calculation of effects:
 ``` r
 # calculate effect level
 scenario %>% effect()
-#> # A tibble: 1 x 4
+#> # A tibble: 1 × 4
 #>   scenario         L L.dat.start L.dat.end
 #>   <list>       <dbl>       <dbl>     <dbl>
 #> 1 <GutsRdIt> 0.00135           1       400
 
 # create a dose-response curve
 scenario %>% dose_response() -> drc
+#> 
+#> Attaching package: 'purrr'
+#> The following object is masked from 'package:testthat':
+#> 
+#>     is_null
 head(drc)
 #>   endpoint        mf      effect
 #> 1        L  3.812500 0.009915394
@@ -130,7 +135,7 @@ plot(drc)
 
 # derive EPx values
 scenario %>% epx()
-#> # A tibble: 1 x 3
+#> # A tibble: 1 × 3
 #>   scenario   L.EP10 L.EP50
 #>   <list>      <dbl>  <dbl>
 #> 1 <GutsRdIt>   19.0   82.1

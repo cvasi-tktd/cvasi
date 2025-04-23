@@ -55,7 +55,7 @@ my_it <- set_param(my_it, c(kd=1.2, hb=0, alpha=9.2, beta=4.3))
 my_it
 #> 'GUTS-RED-IT' scenario
 #> param: kd=1.2, hb=0, alpha=9.2, beta=4.3
-#> init : D=0, H=0
+#> init: D=0, H=0
 #> endpt: L
 #> times: none
 #> forcs: none
@@ -75,7 +75,7 @@ GUTS_RED_IT() %>%
   set_param(c(kd=1.2, hb=0, alpha=9.2, beta=4.3))
 #> 'GUTS-RED-IT' scenario
 #> param: kd=1.2, hb=0, alpha=9.2, beta=4.3
-#> init : D=0, H=0
+#> init: D=0, H=0
 #> endpt: L
 #> times: none
 #> forcs: none
@@ -134,7 +134,7 @@ GUTS_RED_IT() %>%
   set_param(c(kd=1.2, hb=0, alpha=9.2, beta=4.3))
 #> 'GUTS-RED-IT' scenario
 #> param: kd=1.2, hb=0, alpha=9.2, beta=4.3
-#> init : D=0, H=0
+#> init: D=0, H=0
 #> endpt: L
 #> times: none
 #> forcs: none
@@ -229,7 +229,7 @@ displayed in the console output.
 myscenario
 #> 'GUTS-RED-IT' scenario
 #> param: kd=1.2, hb=0, alpha=9.2, beta=4.3
-#> init : D=0, H=0
+#> init: D=0, H=0
 #> endpt: L
 #> times: [0,5] n=4, regular
 #> forcs: none
@@ -266,7 +266,7 @@ myscenario %>%
   set_noexposure()
 #> 'GUTS-RED-IT' scenario
 #> param: kd=1.2, hb=0, alpha=9.2, beta=4.3
-#> init : D=0, H=0
+#> init: D=0, H=0
 #> endpt: L
 #> times: [0,5] n=4, regular
 #> forcs: none
@@ -299,9 +299,10 @@ DEB_abj() %>%
   set_window(length=3, interval=1) # Using moving exposure windows of length 3 days
 #> 'DEB_abj' scenario
 #> param: p_M=3211, v=0.023, k_J=0.63, MoA=4
-#> init : L=0.02, E=0, H=0, R=0, cV=0, Lmax=0
+#> init: L=0.02, E=0, H=0, R=0, cV=0, Lmax=0
 #> endpt: L, R
 #> times: [0,10] n=11, regular
+#> windws: length=3, interval=1
 #> forcs: none
 #> expsr:
 #>   time conc
@@ -320,13 +321,13 @@ metsulfuron %>%
   simulate()
 #>   time       BM E    M_int     C_int  FrondNo
 #> 1    0 50.00000 1   0.0000 0.0000000 500000.0
-#> 2    1 52.15858 1 223.0745 0.2560989 521585.8
-#> 3    2 52.43495 1 369.6344 0.4221192 524349.5
-#> 4    3 52.33917 1 463.0261 0.5297392 523391.7
-#> 5    4 52.17923 1 521.8927 0.5989176 521792.3
-#> 6    5 52.00016 1 558.6268 0.6432808 520001.6
-#> 7    6 51.81403 1 581.2187 0.6717006 518140.3
-#> 8    7 51.63740 1 474.0716 0.5497473 516374.0
+#> 2    1 52.15860 1 223.0746 0.2560990 521586.0
+#> 3    2 52.43488 1 369.6343 0.4221196 524348.8
+#> 4    3 52.33910 1 463.0257 0.5297395 523391.0
+#> 5    4 52.17916 1 521.8922 0.5989178 521791.6
+#> 6    5 52.00010 1 558.6262 0.6432809 520001.0
+#> 7    6 51.81396 1 581.2167 0.6716992 518139.6
+#> 8    7 51.63733 1 474.0708 0.5497470 516373.3
 ```
 
 `simulate()` returns the model state for each output time point. In this
@@ -341,12 +342,12 @@ metsulfuron %>%
   simulate() %>%
   tail()
 #>    time       BM E    M_int     C_int  FrondNo
-#> 66  6.5 51.72111 1 556.4478 0.6442288 517211.1
-#> 67  6.6 51.70319 1 544.1623 0.6302236 517031.9
-#> 68  6.7 51.68570 1 529.6855 0.6136648 516857.0
-#> 69  6.8 51.66877 1 513.1159 0.5946630 516687.7
-#> 70  6.9 51.65259 1 494.5480 0.5733237 516525.9
-#> 71  7.0 51.63740 1 474.0716 0.5497473 516374.0
+#> 66  6.5 51.72105 1 556.4461 0.6442276 517210.5
+#> 67  6.6 51.70312 1 544.1607 0.6302225 517031.2
+#> 68  6.7 51.68563 1 529.6839 0.6136637 516856.3
+#> 69  6.8 51.66871 1 513.1144 0.5946620 516687.1
+#> 70  6.9 51.65253 1 494.5465 0.5733227 516525.3
+#> 71  7.0 51.63733 1 474.0708 0.5497470 516373.3
 ```
 
 The resulting table now contains ten times as many rows because we
@@ -375,8 +376,8 @@ metsulfuron %>%
 #> 4    3 52.33917 1 463.0261 0.5297392 523391.7
 #> 5    4 52.17923 1 521.8927 0.5989176 521792.3
 #> 6    5 52.00016 1 558.6268 0.6432808 520001.6
-#> 7    6 51.81403 1 581.2187 0.6717006 518140.3
-#> 8    7 51.63740 1 474.0716 0.5497473 516374.0
+#> 7    6 51.81403 1 581.2174 0.6716992 518140.3
+#> 8    7 51.63740 1 474.0725 0.5497483 516374.0
 ```
 
 Although very effective, reducing `hmax` to small values may lead to
@@ -606,20 +607,20 @@ metsulfuron@init   # Initial state
 metsulfuron %>% simulate()
 #>    time       BM E     M_int      C_int  FrondNo
 #> 1     0 50.00000 1   0.00000 0.00000000 500000.0
-#> 2     1 52.15858 1 223.07447 0.25609887 521585.8
-#> 3     2 52.43495 1 369.63440 0.42211917 524349.5
-#> 4     3 52.33917 1 463.02605 0.52973924 523391.7
-#> 5     4 52.17923 1 521.89269 0.59891761 521792.3
-#> 6     5 52.00016 1 558.62681 0.64328081 520001.6
-#> 7     6 51.81403 1 581.21867 0.67170059 518140.3
-#> 8     7 51.63740 1 474.07158 0.54974731 516374.0
-#> 9     8 51.61806 1 301.84519 0.35015964 516180.6
-#> 10    9 52.32264 1 192.18727 0.21994721 523226.4
-#> 11   10 54.34850 1 122.36718 0.13482205 543485.0
-#> 12   11 57.08426 1  77.91217 0.08172830 570842.6
-#> 13   12 59.99459 1  49.60731 0.04951275 599945.9
-#> 14   13 62.96113 1  31.58537 0.03003980 629611.3
-#> 15   14 65.95879 1  20.11066 0.01825733 659587.9
+#> 2     1 52.15860 1 223.07463 0.25609895 521586.0
+#> 3     2 52.43488 1 369.63428 0.42211960 524348.8
+#> 4     3 52.33910 1 463.02568 0.52973949 523391.0
+#> 5     4 52.17916 1 521.89216 0.59891777 521791.6
+#> 6     5 52.00010 1 558.62619 0.64328091 520001.0
+#> 7     6 51.81396 1 581.21672 0.67169918 518139.6
+#> 8     7 51.63733 1 474.07075 0.54974702 516373.3
+#> 9     8 51.61800 1 301.84473 0.35015952 516180.0
+#> 10    9 52.32258 1 192.18697 0.21994713 523225.8
+#> 11   10 54.34844 1 122.36700 0.13482199 543484.4
+#> 12   11 57.08420 1  77.91205 0.08172826 570842.0
+#> 13   12 59.99453 1  49.60723 0.04951273 599945.3
+#> 14   13 62.96107 1  31.58532 0.03003978 629610.7
+#> 15   14 65.95873 1  20.11063 0.01825732 659587.3
 ```
 
 The model state in the first row is, by definition, equal to the initial
@@ -638,10 +639,10 @@ metsulfuron %>%
   head(5)
 #>   time       BM E    M_int
 #> 1    0 50.00000 1   0.0000
-#> 2    1 52.15858 1 223.0745
-#> 3    2 52.43495 1 369.6344
-#> 4    3 52.33917 1 463.0261
-#> 5    4 52.17923 1 521.8927
+#> 2    1 52.15860 1 223.0746
+#> 3    2 52.43488 1 369.6343
+#> 4    3 52.33910 1 463.0257
+#> 5    4 52.17916 1 521.8922
 ```
 
 Intermediate model variables can be enabled in the same manner:
@@ -652,10 +653,10 @@ metsulfuron %>%
   head(5)
 #>   time       BM E    M_int     C_int  FrondNo   C_int_u BM_fresh k_phot_eff k_resp_eff     f_Eff P_up_eff
 #> 1    0 50.00000 1   0.0000 0.0000000 500000.0 0.0000000 835.0000 0.07548561 0.02030631 1.0000000   0.0054
-#> 2    1 52.15858 1 223.0745 0.2560989 521585.8 0.3414652 871.0482 0.03746128 0.02030631 0.5049205   0.0054
-#> 3    2 52.43495 1 369.6344 0.4221192 524349.5 0.5628256 875.6636 0.01993781 0.02030631 0.2693322   0.0054
-#> 4    3 52.33917 1 463.0261 0.5297392 523391.7 0.7063190 874.0641 0.01760496 0.02030631 0.2376344   0.0054
-#> 5    4 52.17923 1 521.8927 0.5989176 521792.3 0.7985568 871.3931 0.01699676 0.02030631 0.2291285   0.0054
+#> 2    1 52.15860 1 223.0746 0.2560990 521586.0 0.3414653 871.0486 0.03746125 0.02030631 0.5049202   0.0054
+#> 3    2 52.43488 1 369.6343 0.4221196 524348.8 0.5628261 875.6624 0.01993781 0.02030631 0.2693320   0.0054
+#> 4    3 52.33910 1 463.0257 0.5297395 523391.0 0.7063193 874.0630 0.01760497 0.02030631 0.2376343   0.0054
+#> 5    4 52.17916 1 521.8922 0.5989178 521791.6 0.7985570 871.3920 0.01699677 0.02030631 0.2291285   0.0054
 ```
 
 ## Effect levels
@@ -692,16 +693,16 @@ metsulfuron %>%
   set_window(length=7, interval=1) %>%   # enable moving exposure windows
   effect(max_only=FALSE)                 # return effects of all windows
 #> # A tibble: 8 × 5
-#>   scenario          BM         r dat.start dat.end
-#>   <list>         <dbl>     <dbl>     <dbl>   <dbl>
-#> 1 <LmnSchmS>  2.68e- 1  9.06e- 1         0       7
-#> 2 <LmnSchmS>  2.65e- 1  8.95e- 1         1       8
-#> 3 <LmnSchmS>  2.48e- 1  8.29e- 1         2       9
-#> 4 <LmnSchmS>  2.05e- 1  6.69e- 1         3      10
-#> 5 <LmnSchmS>  1.47e- 1  4.63e- 1         4      11
-#> 6 <LmnSchmS>  7.39e- 2  2.23e- 1         5      12
-#> 7 <LmnSchmS>  3.15e- 3  9.18e- 3         6      13
-#> 8 <LmnSchmS> -6.66e-16 -1.78e-15         7      14
+#>   scenario              BM            r dat.start dat.end
+#>   <list>             <dbl>        <dbl>     <dbl>   <dbl>
+#> 1 <LmnSchmS>  0.268         0.906               0       7
+#> 2 <LmnSchmS>  0.265         0.895               1       8
+#> 3 <LmnSchmS>  0.248         0.829               2       9
+#> 4 <LmnSchmS>  0.205         0.669               3      10
+#> 5 <LmnSchmS>  0.147         0.463               4      11
+#> 6 <LmnSchmS>  0.0739        0.223               5      12
+#> 7 <LmnSchmS>  0.00315       0.00918             6      13
+#> 8 <LmnSchmS> -0.0000000571 -0.000000166         7      14
 ```
 
 In few cases, `effect()` may report spurious non-zero effect levels that
@@ -837,26 +838,29 @@ allowed range of multiplication factors.
 # References
 
 - EFSA PPR Panel (EFSA Panel on Plant Protection Products and their
-  Residues), Ockleford C., Adriaanse P., Berny P., et al., 2018:
-  *Scientific Opinion on the state of the art of
-  Toxicokinetic/Toxicodynamic (TKTD) effect models for regulatory risk
-  assessment of pesticides for aquatic organisms*. EFSA Journal 2018;
-  16(8):5377, 188 pp. DOI:
+  Residues), Ockleford C., et al., 2018: *Scientific Opinion on the
+  state of the art of Toxicokinetic/Toxicodynamic (TKTD) effect models
+  for regulatory risk assessment of pesticides for aquatic organisms*.
+  EFSA Journal 2018; 16(8):5377, 188 pp. DOI:
   [10.2903/j.efsa.2018.5377](https://doi.org/10.2903/j.efsa.2018.5377)
-- Geiger D.L., Call D.J., and Brooke L.T., 1988: *Acute toxicities of
-  organic chemicals to fathead minnows (Pimephales promelas): Volume
-  IV*, pp. 195-197. University of Wisconsin-Superior, Center for Lake
-  Superior Environmental Studies. ISBN 9780961496838.
-- Klein J., Cedergreen N., Heine S., Reichenberger S., Rendal C.,
-  Schmitt W., Hommen U., 2021: *Refined description of the Lemna TKTD
-  growth model based on Schmitt et al. (2013) - equation system and
-  default parameters*. Report of the working group *Lemna* of the SETAC
-  Europe Interest Group Effect Modeling. Version 1, uploaded on 22.
-  Sept. 2021. <https://www.setac.org/group/effect-modeling.html>
-- Schmitt W., Bruns E., Dollinger M., and Sowig P., 2013: *Mechanistic
-  TK/TD-model simulating the effect of growth inhibitors on Lemna
-  populations*. Ecol Model 255, pp. 1-10. DOI:
+- Geiger D.L., et al., 1988: *Acute toxicities of organic chemicals to
+  fathead minnows (Pimephales promelas): Volume IV*, pp. 195-197.
+  University of Wisconsin-Superior, Center for Lake Superior
+  Environmental Studies. ISBN 9780961496838.
+- Klein J., et al., 2021: *Refined description of the Lemna TKTD growth
+  model based on Schmitt et al. (2013) - equation system and default
+  parameters*. Report of the working group *Lemna* of the SETAC Europe
+  Interest Group Effect Modeling. Version 1.1, uploaded on 09 May 2022.
+  <https://www.setac.org/group/effect-modeling.html>
+- Schmitt W., et al., 2013: *Mechanistic TK/TD-model simulating the
+  effect of growth inhibitors on Lemna populations*. Ecol Model 255,
+  pp. 1-10. DOI:
   [10.1016/j.ecolmodel.2013.01.017](https://doi.org/10.1016/j.ecolmodel.2013.01.017)
+- Weber D., et al., 2012: *Combination of a higher-tier flow-through
+  system and population modeling to assess the effects of time-variable
+  exposure of isoproturon on the green algae Desmodesmus subspictatus
+  and Pseudokirchneriella subcapitata*. Environ Toxicol Chem 31(4),
+  pp. 899-908. DOI: [10.1002/etc.1765](https://doi.org/10.1002/etc.1765)
 - Wickham H. and Grolemund G., 2017: *R for Data Science: Import, Tidy,
   Transform, Visualize, and Model Data* (1st ed.). O’Reilly Media.
   <https://r4ds.had.co.nz>

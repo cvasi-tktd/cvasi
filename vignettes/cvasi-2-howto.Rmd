@@ -731,17 +731,17 @@ function `fx()` which calculates effect endpoints:
 setMethod("fx", "MyGuts", function(scenario, ...) fx_myguts(scenario, ...))
 
 # @param scenario Scenario object to assess
-# @param window Start & end time of the moving exposure window
 # @param ... any additional parameters
-fx_myguts <- function(scenario, window, ...) {
+fx_myguts <- function(scenario, ...) {
   # simulate the scenario (it is already clipped to the moving exposure window)
   out <- simulate(scenario, ...)
   # only use model state at the end of the simulation
-  out <- tail(out, 1)
+  end <- tail(out, 1)
+  # length of the simulated period, first column of result contains time
+  t <- tail(out[, 1], 1)- out[[1, 1]]
   # calculate survival according to EFSA Scientific Opinion on TKTD models
   # p. 33, doi:10.2903/j.efsa.2018.5377
-  t <- unname(window[2] - window[1])
-  survival <- exp(-out$H) * exp(-scenario@param$hb * t)
+  survival <- exp(-end$H) * exp(-scenario@param$hb * t)
   return(c("L"=survival))
 }
 
@@ -755,9 +755,9 @@ numerical vector containing the effect endpoints for the provided scenario
 and moving exposure window. The scenario will already be parameterized to
 only simulate the current exposure window. The return value of `fx()` will then
 be used to calculate effect levels. In case of models requiring a control
-scenario, the effect level will be calculated as `1 - effect/control`. For models not
+scenario, the effect level will generally be calculated as `1 - effect/control`. For models not
 requiring a control, the overloaded `fx()` must return the final effect
-level, i.e. a value from the interval `[0,1]` (0% to 100% effect).
+value.
 
 
 ## Complete working example

@@ -58,7 +58,7 @@ myscenario
 #> tag: Lab experiment #1
 #> param: Emax=1, AperBM=1000, Kbm=1, P_Temp=0, MolWeight=390.4, k_phot_fix=1, k_phot_max=0.47, k_resp=0.05, k_loss=0, Tmin=8, Tmax=40.5, Topt=26.7, t_ref=25, Q10=2, k_0=3, a_k=5e-05, C_P=0.3,
 #> CP50=0.0043, a_P=1, KiP=101, C_N=0.6, CN50=0.034, a_N=1, KiN=604, BM50=176, mass_per_frond=1e-04, BMw2BMd=16.7
-#> init : BM=0.0012, E=1, M_int=0
+#> init: BM=0.0012, E=1, M_int=0
 #> endpt: BM, r
 #> times: none
 #> forcs: none
@@ -175,7 +175,6 @@ exposure_profile <- data.frame(time=0:14, conc=random_conc)
 minnow_it %>%
   set_exposure(exposure_profile) %>%  # set a specific exposure scenario
   epx()  # run EPx calculations
-#> Warning: package 'purrr' was built under R version 4.3.3
 #> # A tibble: 1 × 3
 #>   scenario   L.EP10 L.EP50
 #>   <list>      <dbl>  <dbl>
@@ -484,8 +483,8 @@ fit2 <- calibrate(
   verbose=FALSE
 )
 fit2$par
-#>       EC50          b       P_up 
-#> 0.52090177 4.69630443 0.01708181
+#>      EC50         b      P_up 
+#> 0.5215368 4.6905906 0.0171712
 
 # Update the scenario with fitted parameter and simulate all trials
 fitted_tktd <- fitted_growth %>%
@@ -537,14 +536,14 @@ res <- lik_profile(x = cs, # the calibration set
                                  b = list(1, 5),
                                  P = list(0.0001, 0.2)))
 #> Profiling: EC50
-#> start param value: 0.521LL:-237.245
+#> start param value: 0.522LL:-237.227
 #> hit 95% Conf Region, changing direction
 #> hit 95% Conf Region, end of profiling
 #> Profiling: b
-#> start param value: 4.696LL:-237.245
+#> start param value: 4.691LL:-237.227
 #> hit 95% Conf Region, changing direction
 #> Profiling: P_up
-#> start param value: 0.017LL:-237.245
+#> start param value: 0.017LL:-237.227
 #> hit 95% Conf Region, changing direction
 #> hit 95% Conf Region, end of profiling
 # visualise profiling results
@@ -557,9 +556,9 @@ plot_lik_profile(res)
 
 # access 95% confidence intervals of profiled parameters
 res$EC50$confidence_interval
-#> [1] 0.5145915 0.5272611
+#> [1] 0.5151939 0.5279234
 res$b$confidence_interval
-#> [1] 4.383194 5.000000
+#> [1] 4.377094 5.000000
 ```
 
 Finally, relations between estimates of the calibrated parameters can be
@@ -623,9 +622,6 @@ sc2 <- sc1 %>%
 # scenario `sc1` will be simulated for *t = [0, 7]*, and
 # scenario `sc2` will be simulated for *t = [7, 14]*.
 sq <- sequence(list(sc1, sc2), breaks=7)
-#> Modifying sequence to consider breaks ...
-#>   Scenario #1: simulated period [0, 7]
-#>   Scenario #2: simulated period [7, 14]
 simulate(sq)
 #>    time       BM E      M_int      C_int  FrondNo
 #> 1     0 50.00000 1   0.000000 0.00000000 500000.0
@@ -827,7 +823,7 @@ new("MyGuts", name="My custom model") %>%
 myscenario
 #> 'My custom model' scenario
 #> param: kd=22, hb=0.01, z=0.5, kk=0.08
-#> init : Dw=0, H=0
+#> init: Dw=0, H=0
 #> endpt: L
 #> times: [0,5] n=6, regular
 #> forcs: none
@@ -931,17 +927,17 @@ implement this specialized endpoint, we need to overload the function
 setMethod("fx", "MyGuts", function(scenario, ...) fx_myguts(scenario, ...))
 
 # @param scenario Scenario object to assess
-# @param window Start & end time of the moving exposure window
 # @param ... any additional parameters
-fx_myguts <- function(scenario, window, ...) {
+fx_myguts <- function(scenario, ...) {
   # simulate the scenario (it is already clipped to the moving exposure window)
   out <- simulate(scenario, ...)
   # only use model state at the end of the simulation
-  out <- tail(out, 1)
+  end <- tail(out, 1)
+  # length of the simulated period, first column of result contains time
+  t <- tail(out[, 1], 1)- out[[1, 1]]
   # calculate survival according to EFSA Scientific Opinion on TKTD models
   # p. 33, doi:10.2903/j.efsa.2018.5377
-  t <- unname(window[2] - window[1])
-  survival <- exp(-out$H) * exp(-scenario@param$hb * t)
+  survival <- exp(-end$H) * exp(-scenario@param$hb * t)
   return(c("L"=survival))
 }
 
@@ -959,10 +955,9 @@ numerical vector containing the effect endpoints for the provided
 scenario and moving exposure window. The scenario will already be
 parameterized to only simulate the current exposure window. The return
 value of `fx()` will then be used to calculate effect levels. In case of
-models requiring a control scenario, the effect level will be calculated
-as `1 - effect/control`. For models not requiring a control, the
-overloaded `fx()` must return the final effect level, i.e. a value from
-the interval `[0,1]` (0% to 100% effect).
+models requiring a control scenario, the effect level will generally be
+calculated as `1 - effect/control`. For models not requiring a control,
+the overloaded `fx()` must return the final effect value.
 
 ## Complete working example
 

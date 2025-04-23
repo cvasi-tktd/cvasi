@@ -86,6 +86,12 @@ test_that("set_noexposure", {
     set_exposure(data.frame(time=1, conc=2), FALSE) %>%
     set_times(1:3)
 
+  rs <- sc %>% set_exposure(no_exposure())
+  # times unmodified
+  expect_equal(rs@times, sc@times)
+  # exposure set to zero
+  expect_true(all(rs@exposure@series[,2] == 0))
+
   rs <- set_noexposure(sc)
   # times unmodified
   expect_equal(rs@times, sc@times)

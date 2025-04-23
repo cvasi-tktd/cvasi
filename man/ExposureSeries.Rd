@@ -3,6 +3,7 @@
 \name{ExposureSeries}
 \alias{ExposureSeries}
 \alias{ExposureSeries-class}
+\alias{NoExposureSeries-class}
 \title{Exposure time-series}
 \usage{
 ExposureSeries(series, dates, file, meta, context)

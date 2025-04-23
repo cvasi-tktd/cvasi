@@ -6,9 +6,9 @@
 \alias{effect,ScenarioSequence-method}
 \title{Effect level}
 \usage{
-effect(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_effect, ...)
+effect(x, ...)
 
-\S4method{effect}{EffectScenario}(x, ...)
+\S4method{effect}{EffectScenario}(x, factor = 1, max_only = TRUE, ep_only = FALSE, marginal_effect, ...)
 
 \S4method{effect}{ScenarioSequence}(x, ...)
 }
@@ -19,10 +19,10 @@ effect(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_effect, ...)
 
 \item{factor}{optional numeric value which scales the exposure time-series}
 
-\item{ep_only}{logical, if TRUE only effect endpoints are returned as a vector}
-
 \item{max_only}{\code{logical}, if \code{TRUE} only the maximum effect is returned, else
 results for all effect windows are reported}
+
+\item{ep_only}{logical, if TRUE only effect endpoints are returned as a vector}
 
 \item{marginal_effect}{\code{numeric}, if set, any effect smaller than this threshold will
 be reported as zero to exclude pseudo-effects originating from small numerical

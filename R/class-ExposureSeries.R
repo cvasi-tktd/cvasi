@@ -1,5 +1,4 @@
 #' @export
-#' @aliases NoExposureSeries-class
 setClass("ExposureSeries",
          slots=list(
            series="data.frame",
@@ -35,7 +34,7 @@ setClass("NoExposureSeries", contains="ExposureSeries")
 #' @return an S4 object of type [ExposureSeries-class]
 #'
 #' @seealso [no_exposure()]
-#' @aliases ExposureSeries-class
+#' @aliases ExposureSeries-class NoExposureSeries-class
 #' @export
 ExposureSeries <- function(series, dates, file, meta, context) {
   check_exposure(series)

@@ -12,7 +12,8 @@ explore_space(
   sample_size = 1000,
   max_runs = 30,
   nr_accept = 100,
-  sample_factor = 1.2
+  sample_factor = 1.2,
+  ...
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ is used in calibration}
 \item{nr_accept}{threshold for number of points sampled within the inner circle}
 
 \item{sample_factor}{multiplication factor for sampling (95\% interval * sample factor)}
+
+\item{...}{additional parameters passed through to \code{\link[=simulate]{simulate()}}}
 }
 \value{
 a list containing a plot to explore the parameter space, and the \code{data.frame}

@@ -20,6 +20,7 @@
 #' @param max_runs max number of times to redraw samples (within a smaller space), and repeat the process
 #' @param nr_accept threshold for number of points sampled within the inner circle
 #' @param sample_factor multiplication factor for sampling (95% interval * sample factor)
+#' @param ... additional parameters passed through to [simulate()]
 #'
 #' @return a list containing a plot to explore the parameter space, and the `data.frame`
 #' supporting it
@@ -105,7 +106,8 @@ explore_space <- function(x,
                           sample_size = 1000,
                           max_runs = 30,
                           nr_accept = 100,
-                          sample_factor = 1.2) {
+                          sample_factor = 1.2,
+                          ...) {
   # some checks
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # check sensible use of function
@@ -140,7 +142,7 @@ explore_space <- function(x,
     pred_orig[[i]] <- x[[i]]@scenario %>%
       set_times(x[[i]]@data[, 1]) %>% # time is the 1st column, mandatory that it is the 1st column
       set_param(par) %>% #use pars from calibration
-      simulate()
+      simulate(...)
     ll_orig[[i]] <- log_lik(
       npars = length(res),
       obs = x[[i]]@data[, 2], # observations are the 2nd column, mandatory that it is the 2nd column
@@ -174,7 +176,7 @@ explore_space <- function(x,
       pred <- x[[j]]@scenario %>%
         set_param(param = par_sample[i, ]) %>%
         set_times(x[[j]]@data[, 1]) %>%
-        simulate()
+        simulate(...)
       LL_tmp[[j]] <- log_lik(
         npars = length(res),
         obs = x[[j]]@data[, 2],
@@ -250,7 +252,7 @@ explore_space <- function(x,
         pred <- x[[j]]@scenario %>%
           set_param(param = par_sample_new[i, ]) %>%
           set_times(x[[j]]@data[, 1]) %>%
-          simulate()
+          simulate(...)
         LL_tmp[[j]] <- log_lik(
           npars = length(res),
           obs = x[[j]]@data[, 2],

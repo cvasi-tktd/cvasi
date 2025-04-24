@@ -203,6 +203,10 @@ simulate_scenario <- function(x, times, .suppress=FALSE, ...) {
     if(was_aborted) {
       attr(rs, "cvasi_status") <- "aborted"
       warn1 <- which.min(sapply(conds, function(lst) lst[[1]] == "warning"))
+      if(length(warn1) == 0) {
+        conds <- list(list("", "", "An unknown error occurred."))
+        warn1 <- 1
+      }
       warn(c("Simulation aborted.", conds[[warn1]][[3]]),
            footer = "Please run `num_info()` on result to get help on numerical issues.")
     }

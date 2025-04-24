@@ -5,6 +5,16 @@ test_that("raised warnings", {
   # suppress warnings
   foo <- minnow_it %>% simulate(maxsteps=10, .suppress=TRUE)
   expect_true(num_aborted(foo))
+
+  # warning raised by solver
+  source(test_path("dummy.R"), local = TRUE)
+  instable <- new("DummyScenario", solver=function(...) {
+    warning("planned warning")
+    df <- data.frame(t=0, A=1)
+    attr(df, "desolve_diagn") <- list(istate=-42) # magic value from deSolve, cf. [num_info()]
+    df
+  })
+  expect_warning(rs <- simulate(instable), "planned warning")
 })
 
 test_that("raised errors", {

@@ -215,6 +215,19 @@ test_that("failed simulations during fitting", {
     )
   )
 
+  # some runs are unstable
+  instable <- new("DummyScenario", solver=function(...) {
+    warning("planned warning")
+    df <- data.frame(t=0:2, A=1)
+    attr(df, "desolve_diagn") <- list(istate=c(-1, 100), rstate=1) # magic value from deSolve, cf. [num_info()]
+    df
+  })
+  suppressWarnings(
+    expect_warning(rs <- calibrate(instable, par=c("baz"=0), data=data.frame("t"=0:2, "A"=0),
+                                   output="A", verbose=FALSE, method="Brent", lower=0, upper=1),
+                  "num_info")
+  )
+  expect_equal(attr(rs, "desolve_diagn"), list(istate=c(-1, 100), rstate=1))
 })
 
 test_that("fit with weights", {

@@ -2,6 +2,7 @@
 
 S3method(diagnostics,cvasi_simulate)
 S3method(diagnostics,default)
+S3method(num_info,cvasi_fit)
 S3method(num_info,cvasi_simulate)
 S3method(num_info,default)
 S3method(plot,cvasi_drc)

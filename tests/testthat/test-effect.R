@@ -86,13 +86,13 @@ test_that("marginal effects", {
   source(test_path("dummy.R"), local = TRUE)
 
   # nothing changes if effect larger than threshold
-  sc <- new("DummyScenario", fx=c("foo"=1))
+  sc <- new("DummyScenario", endpoints=c("foo","bar"), fx=c("foo"=1))
   expect_equal(effect(sc, ep_only=TRUE, marginal_effect=1e-4), c(foo=1, bar=NA_real_))
 
   # round effect value to zero
-  sc <- new("DummyScenario", fx=c("foo"=1e-5))
+  sc <- new("DummyScenario", endpoints=c("foo","bar"), fx=c("foo"=1e-5))
   expect_equal(effect(sc, ep_only=TRUE, marginal_effect=1e-4), c(foo=0, bar=NA_real_))
-  sc <- new("DummyScenario", fx=c("foo"=-1e-5))
+  sc <- new("DummyScenario", endpoints=c("foo","bar"), fx=c("foo"=-1e-5))
   expect_equal(effect(sc, ep_only=TRUE, marginal_effect=1e-4), c(foo=0, bar=NA_real_))
 
   sc <- new("DummyScenario", endpoints="foo", fx=c("foo"=-1e-5))

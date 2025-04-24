@@ -89,7 +89,7 @@ num_info.cvasi_simulate <- function(obj) {
 
     # get issue description
     if(rc < 0) {
-      tx <- capture.output(diagnostics.cvasi_simulate(obj))
+      tx <- tryCatch(capture.output(diagnostics.cvasi_simulate(obj)), error=function(e) "")
       idesc <- trimws(tx[which(startsWith(tx, "  return code")) + 1])
     }
 
@@ -160,6 +160,12 @@ num_info.cvasi_simulate <- function(obj) {
       cli::cli_end(l4)
     }
   }
+}
+
+#' @rdname num_info
+#' @export
+num_info.cvasi_fit <- function(obj) {
+  num_info.cvasi_simulate(obj)
 }
 
 #' @importFrom deSolve diagnostics diagnostics.default diagnostics.deSolve

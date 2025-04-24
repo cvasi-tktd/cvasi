@@ -292,9 +292,12 @@ calibrate_set <- function(x, par, endpoint=deprecated(), output, metric_fun=depr
     }
   }
 
+  # create an environment object to enable passing data back from inside `optim()`
+  env <- new.env()
+
   # start optimization
   stats::optim(par=par, fn=optim_set, sets=x, par_names=par_names, output=output,
-               err_fun=err_fun, verbose=verbose, ...) -> fit
+               err_fun=err_fun, verbose=verbose, env=env, ...) -> fit
 
   # re-set names in case method 'Brent' dropped them
   names(fit$par) <- par_names
@@ -308,14 +311,21 @@ calibrate_set <- function(x, par, endpoint=deprecated(), output, metric_fun=depr
     message("Best fit: ", paste(par_names, fit$par, sep="=", collapse=","))
   }
 
+  # assign solver info, if it exists
+  if(!is.null(env$desolve_diagn)) {
+    attr(fit, "desolve_diagn") <- env$desolve_diagn
+    attr(fit, "cvasi_status") <- env$cvasi_status
+  }
+
   # return fit
+  class(fit) <- c("cvasi_fit", "list")
   fit
 }
 
 # Calculate error for a single set of parameters, functions is called by
 # `optim()` repeatedly
 optim_set <- function(par, sets, par_names, output, err_fun, verbose=verbose,
-                      ode_method, ...) {
+                      ode_method, env, ...) {
   if(verbose) {
     message(paste("Testing:", paste(par_names, par, sep="=", collapse=", ")), appendLF=FALSE)
   }
@@ -371,12 +381,25 @@ optim_set <- function(par, sets, par_names, output, err_fun, verbose=verbose,
       is_issue <- TRUE
       msg <- "output column contains NAs"
     }
+    else if(num_aborted(out)) {
+      is_issue <- TRUE
+      msg <- "simulation terminated early"
+      if(is.null(env$desolve_diagn)) { # save issue info, but do not overwrite any existing info
+        env$desolve_diagn <- attr(out, "desolve_diagn")
+        env$cvasi_status <- attr(out, "cvasi_status")
+      }
+    }
     else if(num_error(out)) {
       is_issue <- TRUE
       msg <- "simulation failed"
+      if(is.null(env$desolve_diagn)) { # save issue info, but do not overwrite any existing info
+        env$desolve_diagn <- attr(out, "desolve_diagn")
+        env$cvasi_status <- attr(out, "cvasi_status")
+      }
     }
 
-    if(is_issue | is_error) {
+    if(is_issue | is_error)
+    {
       if(verbose) {
         message(" failed")
         message("  ", msg)

@@ -4,6 +4,7 @@
 \alias{num_info}
 \alias{num_info.default}
 \alias{num_info.cvasi_simulate}
+\alias{num_info.cvasi_fit}
 \title{Print information about numerical solver result}
 \usage{
 num_info(obj)
@@ -11,6 +12,8 @@ num_info(obj)
 \method{num_info}{default}(obj)
 
 \method{num_info}{cvasi_simulate}(obj)
+
+\method{num_info}{cvasi_fit}(obj)
 }
 \arguments{
 \item{obj}{Return value of \code{\link[=simulate]{simulate()}}}

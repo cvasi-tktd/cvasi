@@ -36,21 +36,36 @@
 #' ```
 #'
 #' ### Error function
-#' By default, the total sum of squared errors is used as the target
-#' function which is minimized during fitting. A custom error function can be
-#' supplied by the user: The function must accept four vectorized
-#' arguments and return a numeric of length one, i.e. the total error value
-#' which gets *minimized* by `calibrate()`.
+#' The error function quantifies the deviations between simulated and observed data.
+#' The decision for an error function can have influence on the result of the
+#' fitting procedure. Two error functions are pre-defined by the package and
+#' can be selected by the user, but custom error functions can be used as well.
 #'
-#' Example of a custom error function which returns the sum of absolute errors:
+#' Available pre-defined error functions:
+#'
+#' * `"sse"`: Sum of squared errors
+#' * `"log_sse"`: Sum of squared errors on logarithmized data
+#'
+#' By default, the sum of squared errors is used as the error function which
+#' gets minimized during fitting. A custom error function must accept four vectorized
+#' arguments and return a numeric of length one, i.e. the total error value.
+#' The arguments to the error function will all have the same length and are
+#' defined as follows:
+#'
+#' * First argument: all observed data points
+#' * Second argument: all simulated data points
+#' * Third argument: optional weights for each data point
+#' * Fourth argument: a list of optional caliset tags
+#'
+#' You can choose to ignore certain arguments, such as weights and tags, in your
+#' custom error function. An example of a custom error function which returns
+#' the sum of absolute errors looks as follow:
 #' ```
 #' my_absolute_error <- function(observed, predicted, weights, tags) {
 #'   sum(abs(observed - predicted))
 #' }
 #' ```
 #'
-#' The arguments to the error function will contain all observed and predicted
-#' values, as well as any weights and tags that were defined by the *calibration sets*.
 #' As tags are optional, the fourth argument may be a list containing `NULL` values.
 #' The fourth argument can be used to pass additional information to the error
 #' function: For example, the tag may identify the study from where the data
@@ -61,9 +76,9 @@
 #' @param par named numeric vector with parameters to fit and their start values
 #' @param output `character`, name of a single output column of [simulate()] to
 #'   optimize on
-#' @param err_fun  vectorized error function to calculate an error term that is
-#'   minimized during optimization, must accept exactly four vectorized
-#'   arguments, defaults to sum of squared errors
+#' @param err_fun a `character` choosing one of the pre-defined error functions,
+#'   or alternatively a function implementing a custom error function. Defaults
+#'   to *Sum of squared errors*.
 #' @param verbose `logical`, if `TRUE` then debug outputs are displayed during
 #'   optimization
 #' @param data `data.frame` with two or more columns with experimental data,
@@ -71,6 +86,7 @@
 #' which the scenario is fitted to.
 #' @param by optional `character`, groups and splits the experimental data
 #'   into multiple distinct trials and datasets before fitting
+#' @param ode_method optional `character` to select an ODE solver for [simulate()]
 #' @param endpoint *deprecated* `character`, please use `output` instead
 #' @param metric_fun *deprecated*, please use `err_fun` instead
 #' @param metric_total *deprecated*
@@ -83,7 +99,7 @@
 #'
 #' @export
 #' @aliases calibrate,EffectScenario-method calibrate,CalibrationSet-method
-#'    calibrate,list-method
+#'    calibrate,list-method calibrate,ScenarioSequence-method
 #' @examples
 #' library(dplyr)
 #'
@@ -115,7 +131,7 @@ setGeneric("calibrate", function(x,...) standardGeneric("calibrate"), signature=
 #' @export
 #' @describeIn calibrate Fit single scenario [sequence] using a dataset
 #' @include sequence.R
-setMethod("calibrate", "ScenarioSequence", function(x, par, output, data, by, err_fun, verbose=TRUE, ...) {
+setMethod("calibrate", "ScenarioSequence", function(x, par, output, data, by, err_fun=c("sse", "log_sse"), verbose=TRUE, ...) {
     calibrate_scenario(x=x, par=par, data=data, output=output, by=by, err_fun=err_fun, verbose=verbose, ...)
   }
 )
@@ -123,7 +139,7 @@ setMethod("calibrate", "ScenarioSequence", function(x, par, output, data, by, er
 #' @export
 #' @describeIn calibrate Fit single [scenario] using a dataset
 #' @include class-EffectScenario.R
-setMethod("calibrate", "EffectScenario", function(x, par, output, data, by, err_fun, verbose=TRUE, ...) {
+setMethod("calibrate", "EffectScenario", function(x, par, output, data, by, err_fun=c("sse", "log_sse"), verbose=TRUE, ...) {
     calibrate_scenario(x=x, par=par, data=data, output=output, by=by, err_fun=err_fun, verbose=verbose, ...)
   }
 )
@@ -187,41 +203,43 @@ calibrate_scenario <- function(x, data, endpoint=deprecated(), output, by, ...)
 }
 
 #' @export
-#' @describeIn calibrate Fit using a [CalibrationSet]
+#' @describeIn calibrate Fit using a single [CalibrationSet]
 #' @include class-CalibrationSet.R
-setMethod("calibrate", "CalibrationSet", function(x, par, output, err_fun, verbose=TRUE, ...) {
-    calibrate_set(x=list(x), par=par, output=output, err_fun=err_fun, verbose=verbose, ...)
-  }
-)
+setMethod("calibrate", "CalibrationSet", function(x, ...) calibrate_set(x=list(x), ...))
 
 #' @export
 #' @importFrom lifecycle deprecated
 #' @describeIn calibrate Fit using a list of [caliset] objects
-setMethod("calibrate", "list", function(x, par, output, err_fun, verbose=TRUE,
+setMethod("calibrate", "list", function(x, par, output, err_fun=c("sse", "log_sse"), verbose=TRUE,
       endpoint=deprecated(), metric_fun=deprecated(), metric_total=deprecated(), as_tibble=deprecated(),
-      catch_errors=deprecated(), ...) {
+      catch_errors=deprecated(), ode_method, ...) {
     calibrate_set(x=x, par=par, output=output, err_fun=err_fun, verbose=verbose,
       endpoint=endpoint, metric_fun=metric_fun, metric_total=metric_total, as_tibble=as_tibble,
-      catch_errors=catch_errors, ...)
+      catch_errors=catch_errors, ode_method=ode_method, ...)
   }
 )
 
 calibrate_set <- function(x, par, endpoint=deprecated(), output, metric_fun=deprecated(), metric_total=deprecated(),
                           err_fun, as_tibble=deprecated(), catch_errors=deprecated(), verbose, data, ...) {
   if(!missing(data)) {
-    stop("Argument 'data' cannot be used in combination with calibration sets")
+    stop("Argument 'data' cannot be used in combination with calisets")
   }
   if(!all(sapply(x, function(y) is(y, "CalibrationSet")))) {
-    stop("Argument 'x' must only contain calibration set objects")
+    stop("Argument 'x' must only contain caliset objects")
   }
 
   # parameters to fit
-  if(!is.vector(par)) {
-    stop("Argument `par` must be a list or vector")
+  if(missing(par)) {
+    stop("Argument `par` is missing")
   }
-  par <- unlist(par)
-  if(!is.numeric(par)) {
-    stop("Argument 'par' must contain numerical values only")
+  if(is.list(par)) {
+    par <- unlist(par)
+  }
+  if(!is.numeric(par) | !is.vector(par)) {
+    stop("Argument `par` must be a numeric vector")
+  }
+  if(length(par) == 0) {
+    stop("Argument `par` is empty")
   }
   nms <- names(par)
   nms <- nms[nms != ""]
@@ -250,19 +268,33 @@ calibrate_set <- function(x, par, endpoint=deprecated(), output, metric_fun=depr
   }
 
   # error function
-  err_desc <- "Custom"
+  err_desc <- "n.a."
   if(lifecycle::is_present(metric_fun)) {
     lifecycle::deprecate_warn("1.1.0", "calibrate(metric_fun)", "calibrate(err_fun)")
     err_fun <- metric_fun
   }
   if(lifecycle::is_present(metric_total)) {
-    lifecycle::deprecate_warn("1.1.0", "calibrate(metric_total)")
+    lifecycle::deprecate_stop("1.1.0", "calibrate(metric_total)", details="Has been removed without replacement. Please use `err_fun` instead.")
   }
-  if(missing(err_fun)) {
-    err_fun <- sse
-    err_desc <- "Sum of squared errors"
-  } else if(!is.function(err_fun)) {
-    stop("Argument 'err_fun' must be a function")
+
+  ## Choose an error functions
+  # One of the defaults selected?
+  if(is.character(err_fun)) {
+    err_fun <- err_fun[[1]]
+    # one of the pre-defined error functions
+    if(err_fun == "sse") {
+      err_fun <- sse
+      err_desc <- "Sum of squared errors"
+    } else if(err_fun == "log_sse") {
+      err_fun <- log_sse
+      err_desc <- "Sum of squared errors on log data"
+    } else {
+      stop("Argument `err_fun` contains the name of an unsupported error function: ", err_fun)
+    }
+  } else if(is.function(err_fun)) {
+    err_desc <- "Custom error function"
+  } else {
+    stop("Argument `err_fun` must be a string or function")
   }
 
   # deprecated and removed parameters
@@ -446,5 +478,13 @@ sse <- function(obs, pred, weights=1, tags=NULL) {
     stop("Length mismatch of observed and predicted data.")
   if(length(weights) != 1 & length(weights) != length(obs))
     stop("Length mismatch of weights and observed data.")
-  sum((obs - pred)^2 * weights, na.rm = TRUE)
+  sum((obs - pred)^2 * weights)
+}
+
+# Sum of squared errors on logarithmized data
+# @param orig observed data
+# @param pred predicted data
+# @param ... additional parameters passed through to [sse()]
+log_sse <- function(obs, pred, ...) {
+  sse(log(obs), log(pred), ...)
 }

@@ -10,23 +10,42 @@
 \usage{
 calibrate(x, ...)
 
-\S4method{calibrate}{ScenarioSequence}(x, par, output, data, by, err_fun, verbose = TRUE, ...)
+\S4method{calibrate}{ScenarioSequence}(
+  x,
+  par,
+  output,
+  data,
+  by,
+  err_fun = c("sse", "log_sse"),
+  verbose = TRUE,
+  ...
+)
 
-\S4method{calibrate}{EffectScenario}(x, par, output, data, by, err_fun, verbose = TRUE, ...)
+\S4method{calibrate}{EffectScenario}(
+  x,
+  par,
+  output,
+  data,
+  by,
+  err_fun = c("sse", "log_sse"),
+  verbose = TRUE,
+  ...
+)
 
-\S4method{calibrate}{CalibrationSet}(x, par, output, err_fun, verbose = TRUE, ...)
+\S4method{calibrate}{CalibrationSet}(x, ...)
 
 \S4method{calibrate}{list}(
   x,
   par,
   output,
-  err_fun,
+  err_fun = c("sse", "log_sse"),
   verbose = TRUE,
   endpoint = deprecated(),
   metric_fun = deprecated(),
   metric_total = deprecated(),
   as_tibble = deprecated(),
   catch_errors = deprecated(),
+  ode_method,
   ...
 )
 }
@@ -47,9 +66,9 @@ which the scenario is fitted to.}
 \item{by}{optional \code{character}, groups and splits the experimental data
 into multiple distinct trials and datasets before fitting}
 
-\item{err_fun}{vectorized error function to calculate an error term that is
-minimized during optimization, must accept exactly four vectorized
-arguments, defaults to sum of squared errors}
+\item{err_fun}{a \code{character} choosing one of the pre-defined error functions,
+or alternatively a function implementing a custom error function. Defaults
+to \emph{Sum of squared errors}.}
 
 \item{verbose}{\code{logical}, if \code{TRUE} then debug outputs are displayed during
 optimization}
@@ -63,6 +82,8 @@ optimization}
 \item{as_tibble}{\emph{deprecated}, result can no longer be returned as a tibble}
 
 \item{catch_errors}{\emph{deprecated}, simulation errors are always caught}
+
+\item{ode_method}{optional \code{character} to select an ODE solver for \code{\link[=simulate]{simulate()}}}
 }
 \value{
 A list of fitted parameters (as produced by \code{\link[stats:optim]{stats::optim()}})
@@ -109,21 +130,38 @@ A minimal observed dataset could look like this:
 
 \subsection{Error function}{
 
-By default, the total sum of squared errors is used as the target
-function which is minimized during fitting. A custom error function can be
-supplied by the user: The function must accept four vectorized
-arguments and return a numeric of length one, i.e. the total error value
-which gets \emph{minimized} by \code{calibrate()}.
+The error function quantifies the deviations between simulated and observed data.
+The decision for an error function can have influence on the result of the
+fitting procedure. Two error functions are pre-defined by the package and
+can be selected by the user, but custom error functions can be used as well.
 
-Example of a custom error function which returns the sum of absolute errors:
+Available pre-defined error functions:
+\itemize{
+\item \code{"sse"}: Sum of squared errors
+\item \code{"log_sse"}: Sum of squared errors on logarithmized data
+}
+
+By default, the sum of squared errors is used as the error function which
+gets minimized during fitting. A custom error function must accept four vectorized
+arguments and return a numeric of length one, i.e. the total error value.
+The arguments to the error function will all have the same length and are
+defined as follows:
+\itemize{
+\item First argument: all observed data points
+\item Second argument: all simulated data points
+\item Third argument: optional weights for each data point
+\item Fourth argument: a list of optional caliset tags
+}
+
+You can choose to ignore certain arguments, such as weights and tags, in your
+custom error function. An example of a custom error function which returns
+the sum of absolute errors looks as follow:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{my_absolute_error <- function(observed, predicted, weights, tags) \{
   sum(abs(observed - predicted))
 \}
 }\if{html}{\out{</div>}}
 
-The arguments to the error function will contain all observed and predicted
-values, as well as any weights and tags that were defined by the \emph{calibration sets}.
 As tags are optional, the fourth argument may be a list containing \code{NULL} values.
 The fourth argument can be used to pass additional information to the error
 function: For example, the tag may identify the study from where the data
@@ -137,7 +175,7 @@ accordingly.
 
 \item \code{calibrate(EffectScenario)}: Fit single \link{scenario} using a dataset
 
-\item \code{calibrate(CalibrationSet)}: Fit using a \link{CalibrationSet}
+\item \code{calibrate(CalibrationSet)}: Fit using a single \link{CalibrationSet}
 
 \item \code{calibrate(list)}: Fit using a list of \link{caliset} objects
 

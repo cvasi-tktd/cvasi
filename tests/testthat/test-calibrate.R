@@ -5,13 +5,10 @@
 test_that("fit to simple dataset", {
   tol <- 1e-5
 
-  ##
   ## set up a scenario to create perfect fit data
-  ##
   rs <- simulate(minnow_it)
-
   # modify scenario by setting parameter `kd` to quasi-random value
-  tofit <- minnow_it %>% set_param(c(kd=0.1))
+  tofit <- minnow_it %>% set_param(c(kd=0.01))
 
   # calibrate modified scenario on synthetic data
   calib <- calibrate(tofit,
@@ -301,4 +298,80 @@ test_that("invalid inputs: calisets", {
   expect_error(calibrate(cs, par=c(foo=0), output=1), "output. must be a string")
   # output var missing from datasets
   suppressMessages(expect_error(calibrate(cs, par=c(foo=0), output="baz"), "missing from dataset"))
+})
+
+test_that("fit with error functions", {
+  tol <- 1e-5
+  rs <- simulate(minnow_it)
+  tofit <- minnow_it %>% set_param(c(kd=0.01))
+
+  # use an alternative error function
+  tofit <- tofit %>% set_init(rs[2,c("D", "H")])
+  calib <- calibrate(tofit,
+                     par=c(kd=0.1),
+                     data=rs[-1, -3],
+                     output="D",
+                     err_fun="log_sse",
+                     method="Brent",
+                     lower=0.001,
+                     upper=10,
+                     verbose=FALSE)
+  expect_equal(calib$par[["kd"]],
+               minnow_it@param$kd,
+               tolerance=tol)
+
+  # use a custom error function
+  myerr <- function(obs, pred, ...) sum((log(obs) - log(pred))^2)
+  calib2 <- calibrate(tofit, par=c(kd=0.1), data=rs[-1, -3],
+                      output="D", err_fun=myerr, method="Brent",
+                      lower=0.001, upper=10, verbose=FALSE)
+  expect_equal(calib2$par[["kd"]],
+               calib$par[["kd"]],
+               tolerance=tol)
+})
+
+test_that("SSE errfun", {
+  # basic use
+  expect_equal(sse(c(1), c(1)), 0)
+  expect_equal(sse(c(1), c(0)), 1)
+  expect_equal(sse(c(2), c(0)), 4)
+  expect_equal(sse(c(0), c(1)), 1)
+  expect_equal(sse(c(0), c(2)), 4)
+  expect_equal(sse(c(1, 1), c(1, 1)), 0)
+  expect_equal(sse(c(2, 2), c(1, 1)), 2)
+  expect_equal(sse(c(3, 3), c(1, 1)), 8)
+  # weights
+  expect_equal(sse(c(1), c(1), c(1)), 0)
+  expect_equal(sse(c(3), c(1), c(1)), 4)
+  expect_equal(sse(c(3), c(1), c(0.1)), 0.4)
+  expect_equal(sse(c(3, 1), c(1, 1), c(0.1)), 0.4)
+  # sizes of arguments dont match
+  expect_error(sse(1, numeric(0)), "observed and predicted")
+  expect_error(sse(1:3, 1), "observed and predicted")
+  expect_error(sse(1, 1:3), "observed and predicted")
+  expect_error(sse(1, 1, numeric(0)), "weights and observed")
+  expect_error(sse(1, 1, 1:3), "weights and observed")
+  # invalid/missing values
+  expect_equal(sse(NA_real_, 1), NA_real_)
+})
+
+test_that("Log SSE errfun", {
+  # basic use
+  expect_equal(log_sse(1, 1), 0)
+  expect_equal(log_sse(exp(1), 1), 1)
+  # TODO how to deal with zeros in data?
+  expect_equal(log_sse(c(1, 1), c(1, 1)), 0)
+  expect_equal(log_sse(c(exp(1), exp(1)), c(1, 1)), 2)
+  # weights
+  expect_equal(log_sse(1, 1, 1), 0)
+  expect_equal(log_sse(exp(1), 1, 1), 1)
+  expect_equal(log_sse(exp(1), 1, 0.1), 0.1)
+  # sizes of arguments dont match
+  expect_error(log_sse(1, numeric(0)), "observed and predicted")
+  expect_error(log_sse(1:3, 1), "observed and predicted")
+  expect_error(log_sse(1, 1:3), "observed and predicted")
+  expect_error(log_sse(1, 1, numeric(0)), "weights and observed")
+  expect_error(log_sse(1, 1, 1:3), "weights and observed")
+  # invalid/missing values
+  expect_equal(log_sse(NA_real_, 1), NA_real_)
 })

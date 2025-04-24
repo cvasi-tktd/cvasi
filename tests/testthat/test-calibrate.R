@@ -204,15 +204,14 @@ test_that("fit to calibration set", {
 # TODO optim raises one warning about the selected method and then additional
 #   ones originating from the dummy scenario, the test does not account for the former
 test_that("failed simulations during fitting", {
-  source(test_path("class-DummyScenario.R"), local=TRUE)
+  source(test_path("dummy.R"), local = TRUE)
+  fail <- new("DummyScenario", simulate=function(...) stop("dummy scenario failed"))
 
-  fail <- DummyFails()
-  fail@param$foo <- 1
-  fail@param.req <- c("foo")
   # simulation fails completely
   suppressWarnings( # suppress any additional warnings
     expect_warning(
-      calibrate(fail, par=c("foo"=0), data=data.frame("t"=0:2, "a"=0), output="a", verbose=FALSE)
+      calibrate(fail, par=c("baz"=0), data=data.frame("t"=0:2, "a"=0), output="a", verbose=FALSE),
+      "dummy scenario failed"
     )
   )
 

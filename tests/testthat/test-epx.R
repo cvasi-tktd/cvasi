@@ -49,26 +49,31 @@ test_that("factor cutoff", {
 })
 
 test_that("ep_only", {
-  source(test_path("class-DummyScenario.R"), local=TRUE)
+  source(test_path("dummy.R"), local = TRUE)
 
-  sc <- DummyScenario()
+  sc <- new("DummyScenario", endpoints="foo", fx=function(scenario, ...) {
+    return(c(foo=scenario@exposure@series[1, 2]))
+  })
 
   # single scenario, single EPx level
   rs <- epx(sc, level=10, ep_only=TRUE)
   expect_equal(nrow(rs), 1)
-  expect_equal(names(rs), c("L.EP10"))
+  expect_equal(names(rs), "foo.EP10")
+  expect_equal(rs[[1, 1]], 0.1)
 
   # two scenarios, a two EPx levels
-  rs <- epx(c(sc, sc), level=c(10, 50), ep_only=TRUE)
+  rs <- epx(c(sc, sc), level=c(10, 50), ep_only=TRUE, effect_tolerance = 1e-5)
   expect_equal(nrow(rs), 2)
-  expect_equal(names(rs), c("L.EP10","L.EP50"))
+  expect_equal(names(rs), c("foo.EP10","foo.EP50"))
+  expect_equal(rs[[1, 1]], 0.1)
+  expect_equal(rs[[1, 2]], 0.5, tolerance=1e-5)
 })
 
 test_that("long_format", {
-  source(test_path("class-DummyScenario.R"), local=TRUE)
-
-  sc <- DummyScenario() %>%
-    set_exposure(data.frame(t=0, c=1), reset_times=FALSE)
+  source(test_path("dummy.R"), local = TRUE)
+  sc <- new("DummyScenario", endpoints="foo", fx=function(scenario, ...) {
+    return(c(foo=scenario@exposure@series[1, 2]))
+  })
 
   # single scenario, single EPx level
   rs <- epx(sc, level=10, long_format=TRUE)
@@ -88,31 +93,44 @@ test_that("long_format", {
 })
 
 test_that("error handling", {
-  source(test_path("class-DummyScenario.R"), local=TRUE)
+  source(test_path("dummy.R"), local = TRUE)
 
-  # only a single scenario and it failed
-  expect_warning(rs <- epx(DummyFails(), level=10))
-  expect_equal(names(rs), c("scenario","L.EP10", "error"))
-  expect_true(is.na(rs[['L.EP10']]))
+  # single scenario, simulation fails
+  sc <- new("DummyScenario", endpoints="foo", fx=function(...) stop("planned error"))
 
-  # single actual scenario, two levels, one fails
-  expect_warning(rs <- epx(set_endpoints(metsulfuron,"BM"), level=c(10,50)))
-  expect_equal(names(rs), c("scenario","BM.EP10", "BM.EP50", "error"))
-  expect_true(is.na(rs[['BM.EP50']]))
+  expect_warning(rs <- epx(sc, level=10))
+  expect_equal(names(rs), c("scenario","foo.EP10", "error"))
+  expect_true(is.na(rs[['foo.EP10']]))
+  expect_equal(rs[['error']], "planned error")
 
-  # two scenarios, one passed, one failed
-  scen <- c(DummyScenario(), DummyFails())
+  # single scenario, two levels, one without valid results
+  sc <- new("DummyScenario", endpoints="foo", fx=function(scenario, ...) {
+    c <- scenario@exposure@series[1, 2]
+    if(c > 60) return(NA_real_)
+    return(c(foo=c/100))
+  })
 
-  expect_warning(epx(scen) -> rs) # continue with warning
-  expect_true(all(!is.na(rs[1,c("L.EP10","L.EP50")]))) # EPx present
-  expect_true(is.na(rs[1,"error"])) # no error msg
-  expect_true(all(is.na(rs[2,c("L.EP10","L.EP50")]))) # no EPx
-  expect_true(!is.na(rs[2,"error"])) # error msg
-  rm(scen,rs)
+  expect_warning(rs <- epx(sc, level=c(10,90)), "Some scenarios have failed")
+  expect_equal(names(rs), c("scenario","foo.EP10", "foo.EP90"))
+  expect_equal(rs[['foo.EP10']], 10)
+  expect_true(is.na(rs[['foo.EP90']]))
+
+  # two scenarios, one passes, one fails
+  sc1 <- new("DummyScenario", endpoints="foo", simulate=function(...) stop("planned error"))
+  sc2 <- new("DummyScenario", endpoints="foo", fx=function(scenario, ...) {
+    return(c(foo=scenario@exposure@series[1, 2]))
+  })
+
+  expect_warning(rs <- epx(list(sc1, sc2))) # continue with warning
+  expect_true(all(!is.na(rs[2,c("foo.EP10","foo.EP50")]))) # EPx present
+  expect_true(is.na(rs[2,"error"])) # no error msg
+  expect_true(all(is.na(rs[1,c("foo.EP10","foo.EP50")]))) # no EPx
+  expect_true(!is.na(rs[1,"error"])) # error msg
+  rm(rs)
 
   # two scenarios, both failed
-  expect_warning(rs <- epx(c(DummyFails(), DummyFails()), level=10))
-  expect_equal(names(rs), c("scenario","L.EP10", "error"))
+  expect_warning(rs <- epx(list(sc1, sc1), level=10))
+  expect_equal(names(rs), c("scenario","foo.EP10", "error"))
   expect_true(all(is.na(rs[1:2,2])))
   expect_true(all(!is.na(rs[1:2,3])))
 })

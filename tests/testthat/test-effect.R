@@ -23,9 +23,52 @@ test_that("return types", {
   sc <- minnow_it
 
   expect_true(is.numeric(effect(sc, max_only=TRUE, ep_only=TRUE)))
-  expect_true(tibble::is_tibble(effect(sc, max_only=TRUE, ep_only=FALSE)))
-  expect_true(tibble::is_tibble(effect(sc, max_only=FALSE, ep_only=TRUE)))
-  expect_true(tibble::is_tibble(effect(sc, max_only=FALSE, ep_only=FALSE)))
+  expect_true(is.data.frame(effect(sc, max_only=TRUE, ep_only=FALSE)))
+  expect_true(is.data.frame(effect(sc, max_only=FALSE, ep_only=TRUE)))
+  expect_true(is.data.frame(effect(sc, max_only=FALSE, ep_only=FALSE)))
+  expect_true(is.numeric(effect(sc)$L))
+
+  sc <- metsulfuron
+  expect_true(is.numeric(effect(sc, max_only=TRUE, ep_only=TRUE)))
+  expect_true(is.data.frame(effect(sc, max_only=TRUE, ep_only=FALSE)))
+  expect_true(is.data.frame(effect(sc, max_only=FALSE, ep_only=TRUE)))
+  expect_true(is.data.frame(effect(sc, max_only=FALSE, ep_only=FALSE)))
+  expect_true(is.numeric(effect(sc)$BM))
+  expect_true(is.numeric(effect(sc)$r))
+})
+
+test_that("return names", {
+  # A GUTS-RED-IT model has only one effect endpoint
+  sc <- minnow_it
+
+  fxn <- function(...) {
+    names(effect(sc, ...))
+  }
+
+  expect_equal(fxn(ep_only=FALSE, max_only=FALSE), c("scenario","L","dat.start","dat.end"))
+  expect_equal(fxn(ep_only=FALSE, max_only=TRUE),  c("scenario","L","L.dat.start","L.dat.end"))
+  expect_equal(fxn(ep_only=TRUE,  max_only=FALSE), c("L"))
+  expect_equal(fxn(ep_only=TRUE,  max_only=TRUE),  c("L"))
+
+  expect_equal(fxn(ep_only=FALSE, max_only=FALSE, marginal_effect=1e-3), c("scenario","L","dat.start","dat.end"))
+  expect_equal(fxn(ep_only=TRUE,  max_only=TRUE,  marginal_effect=1e-3), c("L"))
+
+  expect_equal(fxn(ep_only=FALSE, max_only=FALSE, factor=2), c("scenario","L","dat.start","dat.end"))
+  expect_equal(fxn(ep_only=TRUE,  max_only=TRUE,  factor=2), c("L"))
+
+  # The Lemna model has two effect endpoints
+  sc <- metsulfuron
+
+  expect_equal(fxn(ep_only=FALSE, max_only=FALSE), c("scenario","BM","r","dat.start","dat.end"))
+  expect_equal(fxn(ep_only=FALSE, max_only=TRUE),  c("scenario","BM","BM.dat.start","BM.dat.end","r","r.dat.start","r.dat.end"))
+  expect_equal(fxn(ep_only=TRUE,  max_only=FALSE), c("BM","r"))
+  expect_equal(fxn(ep_only=TRUE,  max_only=TRUE),  c("BM","r"))
+
+  expect_equal(fxn(ep_only=FALSE, max_only=FALSE, marginal_effect=1e-3), c("scenario","BM","r","dat.start","dat.end"))
+  expect_equal(fxn(ep_only=TRUE,  max_only=TRUE,  marginal_effect=1e-3), c("BM","r"))
+
+  expect_equal(fxn(ep_only=FALSE, max_only=FALSE, factor=2), c("scenario","BM","r","dat.start","dat.end"))
+  expect_equal(fxn(ep_only=TRUE,  max_only=TRUE,  factor=2), c("BM","r"))
 })
 
 test_that("factor argument", {
@@ -37,6 +80,30 @@ test_that("factor argument", {
   expect_equal(effect(sc, factor=0, ep_only=TRUE), effect(sc0, ep_only=TRUE))
   expect_equal(effect(sc, factor=10, ep_only=TRUE), effect(sc10, ep_only=TRUE))
   expect_equal(effect(sc, factor=20, ep_only=TRUE), effect(sc20, ep_only=TRUE))
+})
+
+test_that("marginal effects", {
+  source(test_path("dummy.R"), local = TRUE)
+
+  # nothing changes if effect larger than threshold
+  sc <- new("DummyScenario", fx=c("foo"=1))
+  expect_equal(effect(sc, ep_only=TRUE, marginal_effect=1e-4), c(foo=1, bar=NA_real_))
+
+  # round effect value to zero
+  sc <- new("DummyScenario", fx=c("foo"=1e-5))
+  expect_equal(effect(sc, ep_only=TRUE, marginal_effect=1e-4), c(foo=0, bar=NA_real_))
+  sc <- new("DummyScenario", fx=c("foo"=-1e-5))
+  expect_equal(effect(sc, ep_only=TRUE, marginal_effect=1e-4), c(foo=0, bar=NA_real_))
+
+  sc <- new("DummyScenario", endpoints="foo", fx=c("foo"=-1e-5))
+  expect_equal(effect(sc, ep_only=TRUE, marginal_effect=1e-4), c(foo=0))
+
+  # test one 'real' scenario
+  sc <- minnow_it
+  expect_equal(effect(sc, ep_only=TRUE, marginal_effect=1e-4), c(L=0))
+
+  # questionable inputs
+  expect_warning(effect(sc, marginal_effect=0.1), "larger than 1%")
 })
 
 test_that("generic effect calculation", {
@@ -210,28 +277,6 @@ test_that("general arguments", {
   lemna2 <- lemna
   lemna2@exposure@series[,2] <- lemna2@exposure@series[,2]*factor
   expect_equal(effect(lemna, factor=factor), effect(lemna2), tolerance=1e-5)
-})
-
-test_that("marginal effects", {
-  # this DEB scenario creates a negative effect in one exposure window due
-  # to instable numerics
-  americamysis %>%
-    set_window(7) %>%
-    set_exposure(data.frame(t=c(0,3,4,7,8), c=c(0,0,3,3,0))) %>%
-    set_times(0:14) -> deb
-
-  # make sure a negative effect level exists
-  efx1 <- dplyr::pull(effect(deb, max_only=FALSE), "L")
-  expect_lt(min(efx1), 0)
-  expect_gt(min(efx1), -0.01)
-  # test marginal effect threshold
-  efx2 <- dplyr::pull(effect(deb, max_only=FALSE, marginal_effect=1e-5), "L")
-  expect_gte(min(efx2), 0)
-  expect_lte(max(abs(efx1 - efx2)), 1e-5)
-
-  # questionable inputs
-  expect_warning(effect(minnow_it, marginal_effect=0.1))
-
 })
 
 test_that("invalid arguments", {

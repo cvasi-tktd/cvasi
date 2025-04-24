@@ -128,6 +128,7 @@ setMethod("calibrate", "EffectScenario", function(x, par, output, data, by, err_
   }
 )
 
+#' @autoglobal
 calibrate_scenario <- function(x, data, endpoint=deprecated(), output, by, ...)
 {
   if(lifecycle::is_present(endpoint)) { # for backwards compatibility

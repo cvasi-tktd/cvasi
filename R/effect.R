@@ -91,7 +91,7 @@ effect_scenario <- function(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_
   ctrl_req <- is_control_required(x)
 
   # calculate effects for all windows
-  efx <- tibble::as_tibble(do.call(rbind, lapply(seq_along(.cache$windows), function(i) {
+  efx <- do.call(rbind, lapply(seq_along(.cache$windows), function(i) {
     # current exposure window
     win <- .cache$windows[[i]]
     # derive endpoints rel to ctrl if required, otherwise use values as they are
@@ -99,30 +99,37 @@ effect_scenario <- function(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_
     if(ctrl_req) {
       rs <- calc_effect(rs, .cache$controls[[i]])
     }
+    # make sure all endpoints exist
+    missing <- eps[is.na(rs[eps])]
+    if(length(missing) > 0) {
+      rs[missing] <- NA_real_
+    }
     # return effects including exposure window
     c(win, rs)
-  })))
+  }))
 
   # set effects with an absolute value smaller than the marginal effect
   # threshold to zero
   if(!missing(marginal_effect)) {
-    if(marginal_effect>0.01)
+    if(marginal_effect > 0.01) {
       warning("marginal effect threshold is larger than 1%")
-
-    efx <- dplyr::mutate_at(efx, -c(1,2), ~ifelse(abs(.) < marginal_effect, 0, .))
+    }
+    efx[, eps] <- ifelse(abs(efx[, eps]) < marginal_effect, 0, efx[, eps])
   }
 
   # find maximum of all endpoints and corresponding time points
   if(max_only) {
     # check if all endpoints are present in result set
-    if(length(setdiff(eps, names(efx))) > 0)
-      stop(paste("endpoint(s)",paste(setdiff(eps, names(efx)),collapse=","),"missing in effect result"))
+    #if(length(setdiff(eps, names(efx))) > 0)
+    #  stop(paste("endpoint(s)",paste(setdiff(eps, names(efx)),collapse=","),"missing in effect result"))
 
     rs <- list()
     for(ep in eps) {
-      idx <- which.max(efx[[ep]])
+      idx <- which.max(efx[, ep])
+      # idx can be empty if all endpoint values are NA, make sure we select some row
+      idx <- ifelse(length(idx) == 0, 1, idx)
       max.efx <- efx[idx, c(ep, "window.start", "window.end")]
-      names(max.efx) <- c(ep,paste0(ep,".dat.start"),paste0(ep,".dat.end"))
+      names(max.efx) <- c(ep, paste0(ep, ".dat.start"), paste0(ep, ".dat.end"))
       rs <- append(rs, max.efx)
     }
 
@@ -137,12 +144,12 @@ effect_scenario <- function(x, factor=1, max_only=TRUE, ep_only=FALSE, marginal_
   }
   # return endpoints only, for all windows
   else if(ep_only) {
-    return(efx[eps])
+    return(as.data.frame(subset(efx, select=eps)))
   }
 
   # rename date columns, move to back
-  dplyr::relocate(efx, window.start, window.end, .after=dplyr::last_col()) %>%
-    dplyr::rename(dat.start=window.start, dat.end=window.end) -> efx
+  efx <- dplyr::relocate(as.data.frame(efx), window.start, window.end, .after=dplyr::last_col()) %>%
+    dplyr::rename(dat.start=window.start, dat.end=window.end)
 
   # add scenario object
   efx$scenario <- list(x)

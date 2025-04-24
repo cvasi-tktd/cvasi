@@ -46,7 +46,8 @@ cache_windows <- function(x, ...) {
       y@control.req <- FALSE
     # derive effect
     df <- effect(y, max_only=FALSE, ep_only=TRUE, .cache=env, ...)
-    env$controls <- lapply(seq(1, nrow(df)), function(i) unlist(df[i, ]))
+    nms <- names(df)
+    env$controls <- lapply(seq(1, nrow(df)), function(i) setNames(df[i, ], nms))
   }
 
   env

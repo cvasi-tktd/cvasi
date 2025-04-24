@@ -189,7 +189,7 @@ epx <- function(scenarios, level=c(10,50), effect_tolerance=0.001, factor_cutoff
 
   # sequential processing requested?
   if(getOption("cvasi.pll.off", FALSE)) {
-    ret <- purrr::map(scenarios$scenario, searchfun, level=level,
+    ret <- lapply(scenarios$scenario, searchfun, level=level,
              effect_tolerance=effect_tolerance, factor_cutoff=factor_cutoff,
              min_factor=min_factor, max_factor=max_factor,
              verbose=verbose, ...)

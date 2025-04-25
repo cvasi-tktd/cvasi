@@ -58,6 +58,13 @@ is_sequence <- function(x) {
   is(x, "ScenarioSequence")
 }
 
+is_caliset <- function(x) {
+  if(is.list(x))
+    return(sapply(x, is_caliset))
+
+  is(x, "CalibrationSet")
+}
+
 is_exp_series <- function(x) {
   if(is.list(x))
     return(sapply(x, is_exp_series))

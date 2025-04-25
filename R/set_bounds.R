@@ -59,11 +59,25 @@ setMethod("set_bounds", c("list","list"), function(x, bounds) {
   sapply(x, set_bounds, bounds)
 })
 
+#' @rdname set_bounds
+#' @export
+setMethod("set_bounds", c("ScenarioSequence","list"), function(x, bounds) {
+  check_bounds(bounds)
+  for(i in seq_along(x)) {
+    x[[i]] <- set_bounds(x[[i]], bounds)
+  }
+  x
+})
+
 get_bounds <- function(x) {
-  if(length(x) != 1)
-    stop("argument `x` must be of length one")
+  if(is.vector(x) & length(x) != 1)
+    stop("Argument `x` must be of length one")
+  if(is_sequence(x))
+    return(get_bounds(x[[1]]))
+  if(is_caliset(x))
+    return(get_bounds(x@scenario))
   if(!is_scenario(x))
-    stop("argument `x` must be a scenario")
+    stop("Argument `x` must be a scenario")
 
   x@param.bounds
 }
@@ -71,14 +85,14 @@ get_bounds <- function(x) {
 check_bounds <- function(bounds) {
   ## check names
   if(!is.list(bounds))
-    stop("argument `bounds` must be a list")
+    stop("Argument `bounds` must be a list")
   if(length(bounds) == 0)
-    stop("argument `bounds` is empty")
+    stop("Argument `bounds` is empty")
   nms <- names(bounds)
   if(is.null(nms))
-    stop("argument `bounds` must be a named list")
+    stop("Argument `bounds` must be a named list")
   if("" %in% nms)
-    stop("argument `bounds` contains unnamed elements")
+    stop("Argument `bounds` contains unnamed elements")
 
   ## check values
   errs <- FALSE
@@ -104,6 +118,6 @@ check_bounds <- function(bounds) {
     }
   }
   if(errs)
-    stop("boundaries contain invalid values")
+    stop("Boundaries contain invalid values")
 }
 

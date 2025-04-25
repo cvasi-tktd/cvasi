@@ -220,7 +220,7 @@ setMethod("calibrate", "list", function(x, par, output, err_fun=c("sse", "log_ss
 )
 
 calibrate_set <- function(x, par, endpoint=deprecated(), output, metric_fun=deprecated(), metric_total=deprecated(),
-                          err_fun, as_tibble=deprecated(), catch_errors=deprecated(), verbose, data, ...) {
+                          err_fun=c("sse", "log_sse"), as_tibble=deprecated(), catch_errors=deprecated(), verbose=TRUE, data, ...) {
   if(!missing(data)) {
     stop("Argument 'data' cannot be used in combination with calisets")
   }

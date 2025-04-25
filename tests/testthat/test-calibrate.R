@@ -150,10 +150,8 @@ test_that("fit to calibration set", {
 
   # modify scenario by setting parameter `kd` to quasi-random value
   tofit <- minnow_it %>% set_param(c(kd=0.1))
-  # create list containing a single calibration set
-  cs <- list(
-    caliset(tofit, rs.ideal)
-  )
+  # create a single calibration set
+  cs <- caliset(tofit, rs.ideal)
 
   calibrate(cs,
             par=c(kd=0.1),
@@ -280,10 +278,10 @@ test_that("invalid inputs: calisets", {
   # data supplied
   expect_error(calibrate(cs, data=data.frame()), "cannot be used in combination")
   # not all elements are calisets
-  expect_error(calibrate(list(cs, 1)), "only contain calibration set")
+  expect_error(calibrate(list(cs, 1)), "only contain caliset")
   # par is non-numeric
-  expect_error(calibrate(cs, par=sc), "must be a list")
-  expect_error(calibrate(cs, par=c("foo"="b")), "numerical values only")
+  expect_error(calibrate(cs, par=sc), "must be a numeric")
+  expect_error(calibrate(cs, par=c("foo"="b")), "must be a numeric")
   # not all elements in par are named
   expect_error(calibrate(cs, par=c(1)), "must be named")
   expect_error(calibrate(cs, par=c(foo=1, 2)), "must be named")

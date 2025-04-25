@@ -5,6 +5,7 @@
 \alias{set_bounds,EffectScenario,list-method}
 \alias{set_bounds,CalibrationSet,list-method}
 \alias{set_bounds,list,list-method}
+\alias{set_bounds,ScenarioSequence,list-method}
 \title{Set boundaries of model parameters}
 \usage{
 set_bounds(x, bounds)
@@ -14,6 +15,8 @@ set_bounds(x, bounds)
 \S4method{set_bounds}{CalibrationSet,list}(x, bounds)
 
 \S4method{set_bounds}{list,list}(x, bounds)
+
+\S4method{set_bounds}{ScenarioSequence,list}(x, bounds)
 }
 \arguments{
 \item{x}{vector of \link{scenario} or \link{caliset} objects}

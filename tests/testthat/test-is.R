@@ -11,6 +11,27 @@ test_that("is_scenario", {
   expect_equal(is_scenario(1:5), FALSE)
 })
 
+test_that("is_sequence", {
+  sc <- new("EffectScenario") %>% set_times(0:6)
+  suppressWarnings(sq <- sequence(list(sc)))
+  expect_true(is_sequence(sq))
+  expect_equal(is_sequence(list(sq, sq)), c(TRUE, TRUE))
+
+  expect_false(is_sequence(minnow_it))
+  expect_false(is_sequence(1))
+  expect_error(is_sequence())
+})
+
+test_that("is_caliset", {
+  cs <- caliset(minnow_it, data.frame(t=0, n=0))
+  expect_true(is_caliset(cs))
+  expect_equal(is_caliset(list(cs, cs)), c(TRUE, TRUE))
+
+  expect_false(is_caliset(minnow_it))
+  expect_false(is_caliset(1))
+  expect_error(is_caliset())
+})
+
 test_that("is_parameter_set", {
   expect_true(is_parameter_set(parameter_set("test")))
   expect_equal(is_parameter_set(c(parameter_set("test"),parameter_set("test"))), c(TRUE,TRUE))

@@ -101,7 +101,11 @@ num_info.cvasi_simulate <- function(obj) {
       cli::cli_h1("Numerical Steps")
       l1 <- cli::cli_ul()
       cli::cli_li(idesc)
-      cli::cli_li("Simulation terminated early at t={.val {signif(diag$rstate[[1]], digits=3)}}")
+      if(!is.null(diag$rstate)) {
+        cli::cli_li("Simulation terminated early at t={.val {signif(diag$rstate[[3]], digits=3)}}")
+      } else {
+        cli::cli_li("Simulation terminated early")
+      }
       def <- ifelse(steps == 5000, " (default value)", "")
       cli::cli_li("Argument {.field maxsteps}={.val {steps}}{def}")
 

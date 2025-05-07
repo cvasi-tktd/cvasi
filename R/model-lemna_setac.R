@@ -4,6 +4,7 @@
 
 # Lemna model class (Klein et al. 2021)
 #' @export
+#' @include man-lemna.R
 setClass("LemnaSetac", contains="Lemna")
 # for backwards compatibility
 #' @export

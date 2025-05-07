@@ -4,7 +4,7 @@
 
 # Lemna model class (Schmitt et al. 2013)
 #' @export
-#' @include model-lemna_setac.R
+#' @include man-lemna.R
 setClass("LemnaSchmitt", contains="Lemna")
 # for backwards compatibility
 #' @export

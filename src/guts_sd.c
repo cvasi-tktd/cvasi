@@ -19,7 +19,7 @@
 /*
  * Allocate memory for global parameter array
  */
-static double parms[6] = {0};
+static double parms[7] = {0};
 static int M_id = 0;
 
 /*

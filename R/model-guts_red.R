@@ -107,6 +107,14 @@ setClass("GutsRedIt", contains="EffectScenario")
 #'
 #' @inherit GUTS-RED-models references
 #'
+#' @section Model history and changes:
+#' - cvasi v1.0.0
+#'   - Model and parameters as described by EFSA PPR (2018).
+#' - cvasi v1.5.0
+#'   - Cumulative damage over time will be calculated on ODE level, instead on
+#'     results of [simulate()], to avoid influence of selected output times
+#'     on predicted survival.
+#'
 #' @param param optional named `list` or `vector` with model parameters
 #' @param init optional named numeric `vector` to use as initial state
 #' @return an S4 object of type [GutsRedIt-class]

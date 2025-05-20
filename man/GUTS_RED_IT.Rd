@@ -40,6 +40,22 @@ to e.g. \code{\link[=simulate]{simulate()}} on how to pass arguments to \emph{de
 workflows.
 }
 
+\section{Model history and changes}{
+
+\itemize{
+\item cvasi v1.0.0
+\itemize{
+\item Model and parameters as described by EFSA PPR (2018).
+}
+\item cvasi v1.5.0
+\itemize{
+\item Cumulative damage over time will be calculated on ODE level, instead on
+results of \code{\link[=simulate]{simulate()}}, to avoid influence of selected output times
+on predicted survival.
+}
+}
+}
+
 \section{State variables}{
 
 The following list describes the default names and standard units of \emph{GUTS-RED}

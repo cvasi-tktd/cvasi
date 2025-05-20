@@ -12,6 +12,7 @@
 \alias{solver,DebTox-method}
 \alias{solver,DebDaphnia-method}
 \alias{solver,GutsSd-method}
+\alias{solver,GutsIt-method}
 \alias{solver,GutsRedSd-method}
 \alias{solver,GutsRedIt-method}
 \alias{solver,LemnaSchmitt-method}
@@ -37,6 +38,8 @@ solver(scenario, ...)
 \S4method{solver}{DebDaphnia}(scenario, ...)
 
 \S4method{solver}{GutsSd}(scenario, ...)
+
+\S4method{solver}{GutsIt}(scenario, ...)
 
 \S4method{solver}{GutsRedSd}(scenario, ...)
 
@@ -88,6 +91,8 @@ details.
 \item \code{solver(DebDaphnia)}: (deprecated) Numerically integrates \emph{DEBtox_Daphnia} scenarios
 
 \item \code{solver(GutsSd)}: Numerically integrates GUTS-SD models
+
+\item \code{solver(GutsIt)}: Numerically integrates GUTS-IT models
 
 \item \code{solver(GutsRedSd)}: Numerically integrates GUTS-RED-SD models
 

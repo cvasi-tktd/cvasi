@@ -228,18 +228,22 @@ solver_gutsredit <- function(scenario, method="lsoda", hmax=1, ...) {
   # make sure that parameters are present and in required order
   odeparams <- params[c("kd","hb")]
 
-  # F := cumulative maximum of D(t)
-  F_init <- scenario@init[["D"]]
-  df <- ode2df(ode(y=c(scenario@init, "F"=F_init), times=scenario@times, parms=odeparams, dllname="cvasi",
+  # CMax := cumulative maximum of D(t)
+  CMax_init <- scenario@init[["D"]]
+  df <- ode2df(ode(y=c(scenario@init, "CMax"=CMax_init), times=scenario@times, parms=odeparams, dllname="cvasi",
                 initfunc="gutsredit_init", func="gutsredit_func", initforc="gutsredit_forc",
                 forcings=scenario@exposure@series, outnames=c("Cw"),
                 method=method, hmax=hmax, ...))
 
+  # The internal damage can, by definition, not become negative. However, the
+  # numerical schemes may sometimes return negative values due to interpolation.
+  df$CMax <- pmax(0, df$CMax)
+
   # Derive survival probability, EFSA Scientific Opinion on TKTD models, p. 33
-  # doi:10.2903/j.efsa.2018.5377; column `F` approximates `cummax(df$D)`
-  FS <- (1 / (1 + (df$F / params["alpha"])^(-params["beta"])))
+  # doi:10.2903/j.efsa.2018.5377
+  FS <- (1 / (1 + (df$CMax / params["alpha"])^(-params["beta"])))
   df$S <- (1 - FS) * exp(-df$H)
-  df$F <- NULL
+  df$CMax <- NULL
   df
 }
 #' @describeIn solver Numerically integrates GUTS-RED-IT models

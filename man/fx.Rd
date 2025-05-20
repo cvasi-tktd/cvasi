@@ -7,6 +7,7 @@
 \alias{fx,ScenarioSequence-method}
 \alias{fx,Algae-method}
 \alias{fx,GutsSd-method}
+\alias{fx,GutsIt-method}
 \alias{fx,GutsRedSd-method}
 \alias{fx,GutsRedIt-method}
 \alias{fx,Lemna-method}
@@ -22,6 +23,8 @@ fx(scenario, ...)
 \S4method{fx}{Algae}(scenario, ...)
 
 \S4method{fx}{GutsSd}(scenario, ...)
+
+\S4method{fx}{GutsIt}(scenario, ...)
 
 \S4method{fx}{GutsRedSd}(scenario, ...)
 
@@ -50,7 +53,9 @@ Generic to calculate effects for a particular scenario
 
 \item \code{fx(Algae)}: Effect at end of simulation of \link{Algae-models}
 
-\item \code{fx(GutsSd)}: Numerically integrates GUTS-SD models
+\item \code{fx(GutsSd)}: Calculates lethality of \link{GUTS-SD} scenarios
+
+\item \code{fx(GutsIt)}: Calculates lethality of \link{GUTS-IT} scenarios
 
 \item \code{fx(GutsRedSd)}: Calculates lethality of \link{GUTS-RED-SD} scenarios
 

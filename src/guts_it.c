@@ -4,8 +4,8 @@
 #include <math.h>
 /*******************************************************************
  *
- * General Unified Threshold model of Survival, Full Stochastic Death
- * (GUTS-SD) model with selectable dose metric.
+ * General Unified Threshold model of Survival, Individual Tolerance
+ * Distribution (GUTS-IT) model.
  *
  * Equations and parameter names were chosen according to Jager et al.
  * (2011), DOI: 10.1021/es103092a
@@ -19,7 +19,7 @@
 /*
  * Allocate memory for global parameter array
  */
-static double parms[7] = {0};
+static double parms[5] = {0};
 static int M_id = 0;
 
 /*
@@ -38,9 +38,7 @@ static double forc[1] = {0};
 #define ki parms[0] // accumulation rate into body (equal to `ke * Kiw` for scaled Ci)
 #define ke parms[1] // elimination rate from body
 #define kr parms[2] // damage recovery rate
-#define kk parms[3] // killing rate constant
-#define hb parms[4] // background hazard rate
-#define z  parms[5] // threshold for effects
+#define hb parms[3] // background hazard rate
 
 #define Cw forc[0]  // external concentration
 
@@ -51,13 +49,13 @@ static double forc[1] = {0};
 /*
  * Parameter initializer
  */
-void gutssd_init(void (* odeparms)(int *, double *))
+void gutsit_init(void (* odeparms)(int *, double *))
 {
-  int N = 7;
+  int N = 5;
   odeparms(&N, parms);
 
   // Dose metric selection switch
-  M_id = (int)parms[6];
+  M_id = (int)parms[4];
   // Other parameters, may be NaN
   if(ki < 0)
     Rf_error("invalid argument: ki is smaller than zero");
@@ -65,18 +63,14 @@ void gutssd_init(void (* odeparms)(int *, double *))
     Rf_error("invalid argument: ke is smaller than zero");
   if(kr < 0)
     Rf_error("invalid argument: kr is smaller than zero");
-  if(kk < 0)
-    Rf_error("invalid argument: kk is smaller than zero");
   if(hb < 0)
     Rf_error("invalid argument: hb is smaller than zero");
-  if(z < 0)
-    Rf_error("invalid argument: z is smaller than zero");
 }
 
 /*
  * Forcings initializer
  */
-void gutssd_forc(void (* odeforcs)(int *, double *))
+void gutsit_forc(void (* odeforcs)(int *, double *))
 {
   int N = 1;
   odeforcs(&N, forc);
@@ -85,9 +79,9 @@ void gutssd_forc(void (* odeforcs)(int *, double *))
 /*
  * Derivatives
  */
-void gutssd_func(int *neq, double *t, double *y, double *ydot, double *yout, int *ip)
+void gutsit_func(int *neq, double *t, double *y, double *ydot, double *yout, int *ip)
 {
-  if(*neq != 3)  {
+  if(*neq != 4)  {
     Rf_error("invalid number of state variables");
   }
 
@@ -95,19 +89,24 @@ void gutssd_func(int *neq, double *t, double *y, double *ydot, double *yout, int
   ydot[0] = ki * Cw - ke * Ci;
   // dD/dt
   ydot[1] = kr * (Ci - D);
+  // dH/dt
+  ydot[2] = hb;
 
   // Select the dose metric
-  double M = 0;
+  double M = 0, Mdot = 0;
   switch(M_id) {
-    case 0: M = D; break;
-    case 1: M = Ci; break;
+    case 0: M = D; Mdot = ydot[1]; break;
+    case 1: M = Ci; Mdot = ydot[0]; break;
     case 2: M = Cw; break;
     default:
-      Rf_error("invalid dose metric selected");
+     Rf_error("invalid dose metric selected");
   }
 
-  // dH/dt
-  ydot[2] = kk * fmax(0, M - z) + hb;
+  // Cumulative maximum of M(t) expressed as an ODE
+  ydot[3] = 0;
+  if(y[3] <= M) {
+    ydot[3] = fmax(Mdot, M - y[3]);
+  }
 
   // additional output variables requested (nout > 0)?
   if(*ip > 0)

@@ -2,25 +2,26 @@
 % Please edit documentation in R/model-guts.R
 \name{GUTS_IT}
 \alias{GUTS_IT}
-\alias{GutsIT-class}
+\alias{GutsIt-class}
 \alias{GUTS-IT}
 \title{GUTS-IT scenario}
 \usage{
 GUTS_IT(scaled_ci = FALSE, dose_metric = c("D", "Ci", "Cw"))
 }
 \arguments{
-\item{scaled_ci}{\code{logical}, if \code{TRUE}, the model will use the scaled internal concentration
-\verb{Ci*}. Otherwise the internal concentration \code{Ci} is not scaled. Default value
-is \code{FALSE}.}
+\item{scaled_ci}{\code{logical}, switch to enable scaling. If \code{TRUE}, the model
+will use the scaled internal concentration \verb{Ci*}. Else no scaling. Default
+value is \code{FALSE}.}
 
-\item{dose_metric}{\code{character}, set to \code{'D'} to use scaled damage, \code{'Ci'} to
-use internal concentration, or \code{'Cw'} to use the external concentration as dose
-metric. Default value is \code{'D'}.}
+\item{dose_metric}{\code{character}, selects the dose metric. \code{'D'} to use damage, \code{'Ci'} to
+for internal concentration, or \code{'Cw'} for the external concentration. Default
+value is \code{'D'}.}
 }
 \value{
 an S4 object of type \code{GutsIt-class}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}\if{html}{\out{<br/>}}
 Full \emph{General Unified Threshold models of Survival} (GUTS) with Individual Tolerance
 compatible with the \emph{Full GUTS} model as described by EFSA (2018), but
 some parameter names may differ.

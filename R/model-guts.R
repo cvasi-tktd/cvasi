@@ -21,6 +21,7 @@ setClass("GutsIt", contains="Guts")
 
 #' GUTS-SD scenario
 #'
+#' `r lifecycle::badge("experimental")`<br/>
 #' Full *General Unified Threshold models of Survival* (GUTS) with stochastic
 #' death (*SD*). The model was defined by Jager et al. (2011). It is
 #' compatible with the *Full GUTS* model as described by EFSA (2018), but
@@ -69,16 +70,16 @@ setClass("GutsIt", contains="Guts")
 #' Environ. Sci. Technol. 45(7), pp. 2529-2540. \doi{10.1021/es103092a}
 #'
 #'
-#' @param scaled_ci `logical`, if `TRUE`, the model will use the scaled internal concentration
-#'   `Ci*`. Otherwise the internal concentration `Ci` is not scaled. Default value
-#'    is `FALSE`.
-#' @param dose_metric `character`, set to `'D'` to use scaled damage, `'Ci'` to
-#'   use internal concentration, or `'Cw'` to use the external concentration as dose
-#'   metric. Default value is `'D'`.
+#' @param scaled_ci `logical`, switch to enable scaling. If `TRUE`, the model
+#'    will use the scaled internal concentration `Ci*`. Else no scaling. Default
+#'    value is `FALSE`.
+#' @param dose_metric `character`, selects the dose metric. `'D'` to use damage, `'Ci'` to
+#'   for internal concentration, or `'Cw'` for the external concentration. Default
+#'   value is `'D'`.
 #' @return an S4 object of type `GutsSd-class`
 #' @export
 #' @family GUTS models
-#' @aliases GutsSd-class GUTS-SD
+#' @aliases Guts-class GutsSd-class GUTS-SD
 #' @seealso [GUTS-RED-SD]
 #' @importFrom methods new
 GUTS_SD <- function(scaled_ci=FALSE, dose_metric=c("D", "Ci", "Cw")) {
@@ -132,6 +133,7 @@ GUTS_SD <- function(scaled_ci=FALSE, dose_metric=c("D", "Ci", "Cw")) {
 #   cf Jager et al (2011), Table 3
 #' GUTS-IT scenario
 #'
+#' `r lifecycle::badge("experimental")`<br/>
 #' Full *General Unified Threshold models of Survival* (GUTS) with Individual Tolerance
 #  Distribution (*IT*). The model was defined by Jager et al. (2011). It is
 #' compatible with the *Full GUTS* model as described by EFSA (2018), but
@@ -179,16 +181,16 @@ GUTS_SD <- function(scaled_ci=FALSE, dose_metric=c("D", "Ci", "Cw")) {
 #' Environ. Sci. Technol. 45(7), pp. 2529-2540. \doi{10.1021/es103092a}
 #'
 #'
-#' @param scaled_ci `logical`, if `TRUE`, the model will use the scaled internal concentration
-#'   `Ci*`. Otherwise the internal concentration `Ci` is not scaled. Default value
-#'    is `FALSE`.
-#' @param dose_metric `character`, set to `'D'` to use scaled damage, `'Ci'` to
-#'   use internal concentration, or `'Cw'` to use the external concentration as dose
-#'   metric. Default value is `'D'`.
+#' @param scaled_ci `logical`, switch to enable scaling. If `TRUE`, the model
+#'    will use the scaled internal concentration `Ci*`. Else no scaling. Default
+#'    value is `FALSE`.
+#' @param dose_metric `character`, selects the dose metric. `'D'` to use damage, `'Ci'` to
+#'   for internal concentration, or `'Cw'` for the external concentration. Default
+#'   value is `'D'`.
 #' @return an S4 object of type `GutsIt-class`
 # @export
 #' @family GUTS models
-#' @aliases GutsIT-class GUTS-IT
+#' @aliases GutsIt-class GUTS-IT
 #' @seealso [GUTS-RED-IT]
 #' @importFrom methods new
 GUTS_IT <- function(scaled_ci=FALSE, dose_metric=c("D", "Ci", "Cw")) {

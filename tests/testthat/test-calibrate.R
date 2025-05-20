@@ -373,3 +373,53 @@ test_that("Log SSE errfun", {
   # invalid/missing values
   expect_equal(log_sse(NA_real_, 1), NA_real_)
 })
+
+test_that("input check: fitted parameter", {
+  # parameter to fit not set yet, process should succeed
+  val <- minnow_it@param[["kd"]]
+  sc <- minnow_it
+  sc@param[["kd"]] <- NULL
+  moptim <- function(...) list(convergence=0, par=list(kd=0))
+
+  with_mocked_bindings(
+    calibrate(sc, par=c(kd=val), data=data.frame(t=0:5, S=0), output="S", verbose=FALSE),
+    optim=moptim
+  )
+  succeed()
+
+  # generic scenario which has an empty param.req slot
+  sc <- minnow_it
+  sc@param.req <- character(0)
+  with_mocked_bindings(
+    calibrate(sc, par=c(kd=val), data=data.frame(t=0:5, S=0), output="S", verbose=FALSE),
+    optim=moptim
+  )
+  succeed()
+
+  # parameter does not belong to model
+  sc <- minnow_it
+  expect_error(with_mocked_bindings(
+    calibrate(sc, par=c(foo=1), data=data.frame(t=0:5, S=0), output="S", verbose=FALSE),
+    optim=moptim
+  ),
+  "not scenario parameters")
+})
+
+
+test_that("deprecated arguments", {
+  sc <- minnow_it
+  data <- data.frame(time=0:5, S=1)
+  par <- c(kd = 0)
+  moptim <- function(...) list(convergence=0, par=list(kd=0))
+
+  # no lifecycle messages
+  with_mocked_bindings(calibrate(sc, data=data, par=par, output="S", verbose=FALSE),
+                       optim = moptim)
+  succeed()
+
+  # outdated arguments
+  lifecycle::expect_deprecated(
+    with_mocked_bindings(calibrate(sc, data=data, par=par, endpoint="S", verbose=FALSE),
+                       optim = moptim)
+  )
+})

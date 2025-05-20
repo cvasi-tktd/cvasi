@@ -153,7 +153,7 @@ calibrate_scenario <- function(x, data, endpoint=deprecated(), output, by, ...)
   }
 
   if(length(x) != 1) {
-    stop("Argument `x` must be of length one")
+    stop("Argument 'x' must be of length one")
   }
   if(!(is_scenario(x) | is_sequence(x))) {
     stop("Argument 'x' must be a scenario")
@@ -178,13 +178,13 @@ calibrate_scenario <- function(x, data, endpoint=deprecated(), output, by, ...)
   if(!missing(by))
   {
     if(length(by) != 1) {
-      stop("Argument `by` must be of length one")
+      stop("Argument 'by' must be of length one")
     }
     if(!is.character(by)) {
-      stop("Argument `by` must be a character string")
+      stop("Argument 'by' must be a character string")
     }
     if(!(by %in% names(data))) {
-      stop("Argument `by` is not a column in argument `data`")
+      stop("Argument 'by' is not a column in argument 'data'")
     }
     data <- data %>% dplyr::group_by(.data[[by]])
   }
@@ -219,6 +219,7 @@ setMethod("calibrate", "list", function(x, par, output, err_fun=c("sse", "log_ss
   }
 )
 
+#' @importFrom stats optim
 calibrate_set <- function(x, par, endpoint=deprecated(), output, metric_fun=deprecated(), metric_total=deprecated(),
                           err_fun=c("sse", "log_sse"), as_tibble=deprecated(), catch_errors=deprecated(), verbose=TRUE, data, ...) {
   if(!missing(data)) {
@@ -230,16 +231,16 @@ calibrate_set <- function(x, par, endpoint=deprecated(), output, metric_fun=depr
 
   # parameters to fit
   if(missing(par)) {
-    stop("Argument `par` is missing")
+    stop("Argument 'par' is missing")
   }
   if(is.list(par)) {
     par <- unlist(par)
   }
   if(!is.numeric(par) | !is.vector(par)) {
-    stop("Argument `par` must be a numeric vector")
+    stop("Argument 'par' must be a numeric vector")
   }
   if(length(par) == 0) {
-    stop("Argument `par` is empty")
+    stop("Argument 'par' is empty")
   }
   nms <- names(par)
   nms <- nms[nms != ""]
@@ -247,9 +248,9 @@ calibrate_set <- function(x, par, endpoint=deprecated(), output, metric_fun=depr
     stop("All elements of argument `par` must be named")
   }
 
-  unused <- setdiff(nms, names(get_param(x[[1]]@scenario)))
+  unused <- setdiff(nms, c(names(get_param(x[[1]]@scenario)), get_rparam(x[[1]]@scenario)))
   if(length(unused) > 0) {
-    stop(paste("Argument `par` contains elements which are not scenario parameters: ", paste(unused, collapse=", ")))
+    stop(paste("Argument 'par' contains elements which are not scenario parameters: ", paste(unused, collapse=", ")))
   }
 
   # output variable
@@ -258,7 +259,7 @@ calibrate_set <- function(x, par, endpoint=deprecated(), output, metric_fun=depr
     output <- endpoint
   }
   if(missing(output)) {
-    stop("Argument `output` is missing")
+    stop("Argument 'output' is missing")
   }
   if(length(output) != 1) {
     stop("Argument 'output' must be of length one")
@@ -289,12 +290,12 @@ calibrate_set <- function(x, par, endpoint=deprecated(), output, metric_fun=depr
       err_fun <- log_sse
       err_desc <- "Sum of squared errors on log data"
     } else {
-      stop("Argument `err_fun` contains the name of an unsupported error function: ", err_fun)
+      stop("Argument 'err_fun' contains the name of an unsupported error function: ", err_fun)
     }
   } else if(is.function(err_fun)) {
     err_desc <- "Custom error function"
   } else {
-    stop("Argument `err_fun` must be a string or function")
+    stop("Argument 'err_fun' must be a string or function")
   }
 
   # deprecated and removed parameters
@@ -328,8 +329,8 @@ calibrate_set <- function(x, par, endpoint=deprecated(), output, metric_fun=depr
   env <- new.env()
 
   # start optimization
-  stats::optim(par=par, fn=optim_set, sets=x, par_names=par_names, output=output,
-               err_fun=err_fun, verbose=verbose, env=env, ...) -> fit
+  optim(par=par, fn=optim_set, sets=x, par_names=par_names, output=output,
+        err_fun=err_fun, verbose=verbose, env=env, ...) -> fit
 
   # re-set names in case method 'Brent' dropped them
   names(fit$par) <- par_names

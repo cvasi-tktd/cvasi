@@ -3,6 +3,7 @@
 \name{GUTS_RED_IT}
 \alias{GUTS_RED_IT}
 \alias{GutsRedIt-class}
+\alias{GUTS-RED-IT}
 \title{GUTS-RED-IT scenario}
 \usage{
 GUTS_RED_IT(param, init)

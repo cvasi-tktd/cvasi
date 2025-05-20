@@ -71,6 +71,12 @@ void gutsredit_func(int *neq, double *t, double *y, double *ydot, double *yout, 
   ydot[0] = kd * (Cw - y[0]);
   // dH/dt
   ydot[1] = hb;
+  // Cumulative maximum of D(t) expressed as an ODE
+  ydot[2] = 0;
+  if(y[2] <= y[0]) {
+    ydot[2] = fmax(ydot[0], y[0] - y[2]);
+  }
+
 
   // additional output variables requested (nout > 0)?
   if(*ip > 0)

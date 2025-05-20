@@ -113,7 +113,7 @@ setClass("GutsRedIt", contains="EffectScenario")
 #'
 #' @export
 #' @family GUTS-RED models
-#' @aliases GutsRedIt-class
+#' @aliases GutsRedIt-class GUTS-RED-IT
 #' @importFrom methods new
 GUTS_RED_IT <- function(param, init) {
   new("GutsRedIt",
@@ -154,7 +154,7 @@ GUTS_RED_IT <- function(param, init) {
 #'
 #' @export
 #' @family GUTS-RED models
-#' @aliases GutsRedSd-class
+#' @aliases GutsRedSd-class GUTS-RED-SD
 #' @importFrom methods new
 GUTS_RED_SD <- function(param, init) {
   new("GutsRedSd",
@@ -187,6 +187,12 @@ solver_gutsredsd <- function(scenario, method="lsoda", hmax=1, ...) {
   if(is.list(params))
     params <- unlist(params)
 
+  # check if all required parameters are present
+  params_missing <- is.na(params[scenario@param.req])
+  if(any(params_missing)) {
+    stop("Missing parameters: ", paste(scenario@param.req[params_missing], collapse=", "))
+  }
+
   # make sure that parameters are present and in required order
   params <- params[c("kd", "hb", "z", "kk")]
 
@@ -213,18 +219,27 @@ solver_gutsredit <- function(scenario, method="lsoda", hmax=1, ...) {
   if(is.list(params))
     params <- unlist(params)
 
+  # check if all required parameters are present
+  params_missing <- is.na(params[scenario@param.req])
+  if(any(params_missing)) {
+    stop("Missing parameters: ", paste(scenario@param.req[params_missing], collapse=", "))
+  }
+
   # make sure that parameters are present and in required order
   odeparams <- params[c("kd","hb")]
 
-  df <- ode2df(ode(y=scenario@init, times=scenario@times, parms=odeparams, dllname="cvasi",
+  # F := cumulative maximum of D(t)
+  F_init <- scenario@init[["D"]]
+  df <- ode2df(ode(y=c(scenario@init, "F"=F_init), times=scenario@times, parms=odeparams, dllname="cvasi",
                 initfunc="gutsredit_init", func="gutsredit_func", initforc="gutsredit_forc",
                 forcings=scenario@exposure@series, outnames=c("Cw"),
                 method=method, hmax=hmax, ...))
 
   # Derive survival probability, EFSA Scientific Opinion on TKTD models, p. 33
-  # doi:10.2903/j.efsa.2018.5377
-  FS <- (1 / (1 + (cummax(df$D) / params["alpha"])^(-params["beta"])))
+  # doi:10.2903/j.efsa.2018.5377; column `F` approximates `cummax(df$D)`
+  FS <- (1 / (1 + (df$F / params["alpha"])^(-params["beta"])))
   df$S <- (1 - FS) * exp(-df$H)
+  df$F <- NULL
   df
 }
 #' @describeIn solver Numerically integrates GUTS-RED-IT models
@@ -259,7 +274,7 @@ fx_gutsredit <- function(scenario, ...) {
 }
 
 #' @include fx.R
-#' @describeIn fx Survival and lethality in [GUTS-RED-models]
+#' @describeIn fx Calculates lethality of [GUTS-RED-SD] scenarios
 setMethod("fx", "GutsRedSd", function(scenario, ...) fx_gutsredsd(scenario, ...))
-#' @describeIn fx Survival and lethality in [GUTS-RED-models]
+#' @describeIn fx Calculates lethality of [GUTS-RED-IT] scenarios
 setMethod("fx", "GutsRedIt", function(scenario, ...) fx_gutsredit(scenario, ...))

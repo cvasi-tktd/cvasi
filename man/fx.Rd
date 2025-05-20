@@ -52,9 +52,9 @@ Generic to calculate effects for a particular scenario
 
 \item \code{fx(GutsSd)}: Numerically integrates GUTS-SD models
 
-\item \code{fx(GutsRedSd)}: Survival and lethality in \link{GUTS-RED-models}
+\item \code{fx(GutsRedSd)}: Calculates lethality of \link{GUTS-RED-SD} scenarios
 
-\item \code{fx(GutsRedIt)}: Survival and lethality in \link{GUTS-RED-models}
+\item \code{fx(GutsRedIt)}: Calculates lethality of \link{GUTS-RED-IT} scenarios
 
 \item \code{fx(Lemna)}: Effect at end of simulation of \link{Lemna-models}
 

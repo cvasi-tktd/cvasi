@@ -42,7 +42,10 @@ observations and predictions, else the data will be used as-is}
 a list
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} \if{html}{\out{<br/>}}
+High-level function to fit TK/TD parameters to observed data. It eases the
+use of \code{\link[=calibrate]{calibrate()}} by providing sensible defaults for various (model dependent)
+settings.
 }
 \details{
 \subsection{Data}{
@@ -62,8 +65,7 @@ function.
 In option 2), all conditions are fully described by a list of calibration sets.
 The user is responsible to set up all \link{caliset} objects to their needs.
 
-Option
-3) is for convenience purposes and allows the chaining of fit functions.
+Option 3) is for convenience purposes and allows the chaining of fit functions.
 The latter alternative accepts the return value of e.g. \code{\link[=fit_growth]{fit_growth()}}
 as argument \code{x} and the fitted parameter values are applied to all
 calibration sets in argument \code{data}.

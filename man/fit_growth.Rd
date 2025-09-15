@@ -41,7 +41,10 @@ observations and predictions, else the data will be used as-is}
 a list
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} \if{html}{\out{<br />}}
+High-level function to fit growth and/or loss parameters to observed data. It eases the
+use of \code{\link[=calibrate]{calibrate()}} by providing sensible defaults for various (model dependent)
+settings.
 }
 \section{Methods (by class)}{
 \itemize{

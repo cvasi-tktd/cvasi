@@ -5,7 +5,10 @@
 
 #' Fit growth parameters
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("experimental")` <br />
+#' High-level function to fit growth and/or loss parameters to observed data. It eases the
+#' use of [calibrate()] by providing sensible defaults for various (model dependent)
+#' settings.
 #'
 #' @param x a [scenario] or a list of [caliset] objects
 #' @param data toxicological trial data to fit growth parameters to: required if

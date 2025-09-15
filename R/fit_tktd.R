@@ -4,7 +4,10 @@
 
 #' Fit TK/TD parameters
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("experimental")` <br/>
+#' High-level function to fit TK/TD parameters to observed data. It eases the
+#' use of [calibrate()] by providing sensible defaults for various (model dependent)
+#' settings.
 #'
 #' ### Data
 #'
@@ -23,8 +26,7 @@
 #' The user is responsible to set up all [caliset] objects to their needs.
 #'
 #'
-#'  Option
-#' 3) is for convenience purposes and allows the chaining of fit functions.
+#' Option 3) is for convenience purposes and allows the chaining of fit functions.
 #' The latter alternative accepts the return value of e.g. [fit_growth()]
 #' as argument `x` and the fitted parameter values are applied to all
 #' calibration sets in argument `data`.

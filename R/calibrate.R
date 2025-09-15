@@ -529,9 +529,9 @@ optim_set <- function(par, sets, par_names, err_fun, log_scale, verbose=verbose,
     if(verbose)
       message("; Simulation failed")
     # save diagnosis data of first caliset that caused issues/errors
-    idx_fist_issue <- head(which(rs$is_error | rs$is_issue), n=1)
-    env$desolve_diagn <- rs$desolve_diagn[[idx_fist_issue]]
-    env$cvasi_status <- rs$cvasi_status[[idx_fist_issue]]
+    idx_first_issue <- head(which(rs$is_error | rs$is_issue), n=1)
+    env$desolve_diagn <- rs$desolve_diagn[[idx_first_issue]]
+    env$cvasi_status <- rs$cvasi_status[[idx_first_issue]]
 
     # penalize parameters causing issues, requires a finite value for method
     # 'L-BFGS-B' to work, therefore returning `Inf` or `NA` is not an option

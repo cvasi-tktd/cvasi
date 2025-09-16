@@ -154,6 +154,9 @@ simulate_scenario <- function(x, times, .suppress=FALSE, ...) {
   if(!missing(times)) {
     x <- set_times(x, times)
   }
+  if(length(x@times) < 2) {
+    stop("Scenario must have at least two output time points for simulation.")
+  }
 
   # listof conditions raised by deSolve
   has_error <- FALSE

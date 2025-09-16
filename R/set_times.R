@@ -40,10 +40,10 @@ set_times_scenario <- function(x, times) {
     times <- units::drop_units(times)
   }
   if(!is.vector(times) | !is.numeric(times)) {
-    stop("Argument `times` has invalid type")
+    stop("Argument 'times' has invalid type")
   }
   if(length(times) < 2) {
-    stop("Argument `times` is too short, must have at least two elements")
+    stop("Argument 'times' is too short, must have at least two elements")
   }
 
   x@times <- times

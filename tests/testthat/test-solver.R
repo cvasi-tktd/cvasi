@@ -8,6 +8,6 @@ test_that("custom solver", {
   on.exit(removeMethod("solver", "test_model"))
   on.exit(removeClass("test_model"))
 
-  rs <- new("test_model") %>% simulate()
+  rs <- new("test_model") %>% set_times(0:7) %>% simulate()
   expect_equal(rs, "foobar", ignore_attr=TRUE)
 })

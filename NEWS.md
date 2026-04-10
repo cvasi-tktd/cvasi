@@ -1,8 +1,3 @@
-# cvasi Development version
-
-* NEW
-* MODIFIED
-* DEPRECATED
 
 # cvasi 1.5.1
 * MODIFIED

@@ -60,9 +60,8 @@ get_tag(myscenario)
 myscenario
 #> 'Lemna_Schmitt' scenario
 #> tag: Lab experiment #1
-#> param: Emax=1, AperBM=1000, Kbm=1, P_Temp=0, MolWeight=390.4, k_phot_fix=1, k_phot_max=0.47, k_resp=0.05, k_loss=0, Tmin=8, Tmax=40.5, Topt=26.7,
-#> t_ref=25, Q10=2, k_0=3, a_k=5e-05, C_P=0.3, CP50=0.0043, a_P=1, KiP=101, C_N=0.6, CN50=0.034, a_N=1, KiN=604, BM50=176, mass_per_frond=1e-04,
-#> BMw2BMd=16.7
+#> param: Emax=1, AperBM=1000, Kbm=1, P_Temp=0, MolWeight=390.4, k_phot_fix=1, k_phot_max=0.47, k_resp=0.05, k_loss=0, Tmin=8, Tmax=40.5, Topt=26.7, t_ref=25, Q10=2, k_0=3, a_k=5e-05,
+#> C_P=0.3, CP50=0.0043, a_P=1, KiP=101, C_N=0.6, CN50=0.034, a_N=1, KiN=604, BM50=176, mass_per_frond=1e-04, BMw2BMd=16.7
 #> init: BM=0.0012, E=1, M_int=0
 #> endpt: BM, r
 #> times: none
@@ -269,7 +268,7 @@ ggplot(results) +
   labs(x="Start of window (day)", y="Effect on biomass (%)")
 ```
 
-![](../doc/figures/howto-unnamed-chunk-12-1.png)<!-- --> The effect plot
+![](../doc/figures/howto-unnamed-chunk-9-1.png)<!-- --> The effect plot
 shows the effect for the time point where each window starts. Effects
 are not available, and therefore not plotted, for time points where the
 window exceeds the simulated timeframe.
@@ -319,7 +318,7 @@ ggplot(result) +
   labs(x="Time (days)", y="Biomass (g_dw/m2)", title="Biomass transfer every three days")
 ```
 
-![](../doc/figures/howto-unnamed-chunk-13-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-10-1.png)<!-- -->
 
 Option 2: Custom time points and custom biomass
 
@@ -336,7 +335,7 @@ ggplot(result2) +
   labs(x="Time (days)", y="Biomass (g_dw/m2)", title="Biomass transfer at custom time points")
 ```
 
-![](../doc/figures/howto-unnamed-chunk-14-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
 # Call the help page of set_transfer
@@ -409,30 +408,30 @@ fit1 <- calibrate(
 #> Output variable: BM
 #> Error function: Sum of squared errors
 #> Optimization method: Brent
-#> Testing: k_phot_max=0.190983; Error: 7.7561e+06
-#> Testing: k_phot_max=0.309017; Error: 3.76839e+06
-#> Testing: k_phot_max=0.381966; Error: 32460
-#> Testing: k_phot_max=0.427051; Error: 5.00351e+06
-#> Testing: k_phot_max=0.364209; Error: 594969
-#> Testing: k_phot_max=0.399187; Error: 349928
-#> Testing: k_phot_max=0.384143; Error: 12397.9
-#> Testing: k_phot_max=0.385561; Error: 7040.8
-#> Testing: k_phot_max=0.386101; Error: 6694.52
-#> Testing: k_phot_max=0.386032; Error: 6685.54
-#> Testing: k_phot_max=0.386026; Error: 6685.5
-#> Testing: k_phot_max=0.386027; Error: 6685.5
-#> Testing: k_phot_max=0.386027; Error: 6685.5
-#> Testing: k_phot_max=0.386027; Error: 6685.5
-#> Testing: k_phot_max=0.386027; Error: 6685.5
-#> Testing: k_phot_max=0.388027; Error: 13475.3
-#> Testing: k_phot_max=0.386027; Error: 6685.5
-#> Testing: k_phot_max=0.386027; Error: 6685.5
-#> Testing: k_phot_max=0.384027; Error: 13114.8
+#> Testing: k_phot_max=0.190983; Error: 7.77308e+06
+#> Testing: k_phot_max=0.309017; Error: 3.77352e+06
+#> Testing: k_phot_max=0.381966; Error: 32464.3
+#> Testing: k_phot_max=0.427051; Error: 5.00742e+06
+#> Testing: k_phot_max=0.364217; Error: 595123
+#> Testing: k_phot_max=0.399187; Error: 350337
+#> Testing: k_phot_max=0.384142; Error: 12404.3
+#> Testing: k_phot_max=0.38556; Error: 7049.28
+#> Testing: k_phot_max=0.386098; Error: 6703.22
+#> Testing: k_phot_max=0.386029; Error: 6694.26
+#> Testing: k_phot_max=0.386024; Error: 6694.22
+#> Testing: k_phot_max=0.386025; Error: 6694.22
+#> Testing: k_phot_max=0.386024; Error: 6694.22
+#> Testing: k_phot_max=0.386025; Error: 6694.22
+#> Testing: k_phot_max=0.386025; Error: 6694.22
+#> Testing: k_phot_max=0.388025; Error: 13489.9
+#> Testing: k_phot_max=0.386025; Error: 6694.22
+#> Testing: k_phot_max=0.386025; Error: 6694.22
+#> Testing: k_phot_max=0.384025; Error: 13129.2
 #> Best fitting parameter:
-#>   k_phot_max = 0.386026744995834
+#>   k_phot_max = 0.386024505937623
 fit1$par
 #> k_phot_max 
-#>  0.3860267
+#>  0.3860245
 
 # Update the scenario with fitted parameter and simulate it
 fitted_growth <- control %>% 
@@ -463,7 +462,7 @@ plot_sd(
 )
 ```
 
-![](../doc/figures/howto-unnamed-chunk-16-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-13-1.png)<!-- -->
 
 Option 2: Create a list of *calibration sets* and then fit TK/TD model
 parameters on all datasets and exposure levels at the same time:
@@ -480,7 +479,7 @@ fit2 <- calibrate(
 )
 fit2$par
 #>       EC50          b       P_up 
-#> 0.51139437 4.16159683 0.01416002
+#> 0.52117354 4.16158328 0.01536408
 
 # Update the scenario with fitted parameter and simulate all trials
 fitted_tktd <- fitted_growth %>%
@@ -503,7 +502,7 @@ plot_sd(
 )
 ```
 
-![](../doc/figures/howto-unnamed-chunk-17-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-14-1.png)<!-- -->
 
 The resulting scenario with fitted parameters shows a very good fit with
 the observed effects from experiments.
@@ -533,6 +532,8 @@ fit <- calibrate(
   method="L-BFGS-B",
   verbose=FALSE
 )
+#> Warning:   Possible convergence problem during optimization: `optim()` convergence code = 52
+#>   'ERROR: ABNORMAL_TERMINATION_IN_LNSRCH'
 
 # Conduct profiling
 res <- lik_profile(x = fitted_growth,
@@ -544,33 +545,33 @@ res <- lik_profile(x = fitted_growth,
                                  b = list(1, 5),
                                  P = list(0.0001, 0.2)))
 #> Profiling: EC50
-#> start param value: 0.511
-#> LL:-233.964
+#> start param value: 0.521
+#> LL:-264.289
 #> hit 95% Conf Region, changing direction
 #> hit 95% Conf Region, end of profiling
 #> Profiling: b
 #> start param value: 4.162
-#> LL:-233.964
+#> LL:-264.289
 #> hit 95% Conf Region, changing direction
 #> critical limit reached, end of profiling
 #> Profiling: P_up
-#> start param value: 0.014
-#> LL:-233.964
+#> start param value: 0.015
+#> LL:-264.289
 #> hit 95% Conf Region, changing direction
 #> hit 95% Conf Region, end of profiling
 # Visualise profiling results
 plot(res)
 ```
 
-![](../doc/figures/howto-unnamed-chunk-18-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-15-1.png)<!-- -->
 
 ``` r
 
 # Access 95% confidence intervals of profiled parameters
 res$EC50$confidence_interval
-#> [1] 0.5043907 0.5182930
+#> [1] 0.5145157 0.5278810
 res$b$confidence_interval
-#> [1] 4.089679 4.334786
+#> [1] 4.099115 4.334771
 ```
 
 Optionally, we can adapt caliset weights and tags, for example, a study
@@ -599,25 +600,25 @@ res_2 <- lik_profile(x = cs, # the calibration set
                                  P = list(0.0001, 0.2)),
                    individual = TRUE)
 #> Profiling: EC50
-#> start param value: 0.511
-#> LL:-317.379
+#> start param value: 0.521
+#> LL:-358.717
 #> hit 95% Conf Region, changing direction
 #> hit 95% Conf Region, end of profiling
 #> Profiling: b
 #> start param value: 4.162
-#> LL:-317.379
+#> LL:-358.717
 #> hit 95% Conf Region, changing direction
 #> critical limit reached, end of profiling
 #> Profiling: P_up
-#> start param value: 0.014
-#> LL:-317.379
+#> start param value: 0.015
+#> LL:-358.717
 #> hit 95% Conf Region, changing direction
 #> hit 95% Conf Region, end of profiling
                    
 plot(res_2)
 ```
 
-![](../doc/figures/howto-unnamed-chunk-19-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-16-1.png)<!-- -->
 
 ## Assessing parameter correlations and identifiability
 
@@ -651,6 +652,8 @@ fit <- calibrate(
   method="L-BFGS-B",
   verbose=FALSE
 )
+#> Warning:   Possible convergence problem during optimization: `optim()` convergence code = 52
+#>   'ERROR: ABNORMAL_TERMINATION_IN_LNSRCH'
 # conduct profiling
 res <- lik_profile(x = cs, # the calibration set
                    par = fit$par, # the parameter values after calibration
@@ -660,18 +663,18 @@ res <- lik_profile(x = cs, # the calibration set
                                  b = list(1, 5),
                                  P = list(0.0001, 0.2)))
 #> Profiling: EC50
-#> start param value: 0.511
-#> LL:-233.964
+#> start param value: 0.521
+#> LL:-264.289
 #> hit 95% Conf Region, changing direction
 #> hit 95% Conf Region, end of profiling
 #> Profiling: b
 #> start param value: 4.162
-#> LL:-233.964
+#> LL:-264.289
 #> hit 95% Conf Region, changing direction
 #> critical limit reached, end of profiling
 #> Profiling: P_up
-#> start param value: 0.014
-#> LL:-233.964
+#> start param value: 0.015
+#> LL:-264.289
 #> hit 95% Conf Region, changing direction
 #> hit 95% Conf Region, end of profiling
 # Conduct space exploration
@@ -687,7 +690,7 @@ res_space <- explore_space(
 plot(res_space)
 ```
 
-![](../doc/figures/howto-unnamed-chunk-21-1.png)<!-- -->
+![](../doc/figures/howto-unnamed-chunk-18-1.png)<!-- -->
 
 ## Changes in parameter values over time
 
@@ -1167,7 +1170,7 @@ plot_sd(
 )
 ```
 
-<img src="../doc/figures/howto-unnamed-chunk-35-1.png" width="100%" />
+<img src="../doc/figures/howto-unnamed-chunk-32-1.png" width="100%" />
 
 ``` r
 
@@ -1188,4 +1191,4 @@ plot_sd(
 )
 ```
 
-<img src="../doc/figures/howto-unnamed-chunk-35-2.png" width="100%" />
+<img src="../doc/figures/howto-unnamed-chunk-32-2.png" width="100%" />

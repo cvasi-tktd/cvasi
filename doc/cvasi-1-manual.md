@@ -59,8 +59,9 @@ my_it
 #> endpt: L
 #> times: none
 #> forcs: none
-#> expsr:
-#> >> exposure series is empty
+#> expsr: no exposure
+#>   time conc
+#> 1    0    0
 ```
 
 A more advanced approach is to use the *tidyr* syntax (cf. Wickham &
@@ -79,8 +80,9 @@ GUTS_RED_IT() %>%
 #> endpt: L
 #> times: none
 #> forcs: none
-#> expsr:
-#> >> exposure series is empty
+#> expsr: no exposure
+#>   time conc
+#> 1    0    0
 ```
 
 Both workflow styles achieve the same result, but *tidyr* is terser,
@@ -138,8 +140,9 @@ GUTS_RED_IT() %>%
 #> endpt: L
 #> times: none
 #> forcs: none
-#> expsr:
-#> >> exposure series is empty
+#> expsr: no exposure
+#>   time conc
+#> 1    0    0
 ```
 
 If a scenario is properly defined, it can be passed to dedicated

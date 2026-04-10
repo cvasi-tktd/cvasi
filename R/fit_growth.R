@@ -5,7 +5,7 @@
 
 #' Fit growth parameters
 #'
-#' `r lifecycle::badge("experimental")` <br />
+#' `r lifecycle::badge("experimental")` <br>
 #' High-level function to fit growth and/or loss parameters to observed data. It eases the
 #' use of [calibrate()] by providing sensible defaults for various (model dependent)
 #' settings.

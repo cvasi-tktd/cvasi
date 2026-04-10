@@ -4,6 +4,11 @@
 * MODIFIED
 * DEPRECATED
 
+# cvasi 1.5.1
+* MODIFIED
+
+   * Minor fix to HTML elements in man pages.
+
 # cvasi 1.5.0
 
 * NEW

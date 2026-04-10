@@ -21,7 +21,7 @@ value is \code{'D'}.}
 an S4 object of type \code{GutsIt-class}
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}\if{html}{\out{<br/>}}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}\if{html}{\out{<br>}}
 Full \emph{General Unified Threshold models of Survival} (GUTS) with Individual Tolerance
 compatible with the \emph{Full GUTS} model as described by EFSA (2018), but
 some parameter names may differ.

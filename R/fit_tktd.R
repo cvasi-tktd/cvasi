@@ -4,7 +4,7 @@
 
 #' Fit TK/TD parameters
 #'
-#' `r lifecycle::badge("experimental")` <br/>
+#' `r lifecycle::badge("experimental")` <br>
 #' High-level function to fit TK/TD parameters to observed data. It eases the
 #' use of [calibrate()] by providing sensible defaults for various (model dependent)
 #' settings.

@@ -22,7 +22,7 @@ value is \code{'D'}.}
 an S4 object of type \code{GutsSd-class}
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}\if{html}{\out{<br/>}}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}\if{html}{\out{<br>}}
 Full \emph{General Unified Threshold models of Survival} (GUTS) with stochastic
 death (\emph{SD}). The model was defined by Jager et al. (2011). It is
 compatible with the \emph{Full GUTS} model as described by EFSA (2018), but

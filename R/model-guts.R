@@ -21,7 +21,7 @@ setClass("GutsIt", contains="Guts")
 
 #' GUTS-SD scenario
 #'
-#' `r lifecycle::badge("experimental")`<br/>
+#' `r lifecycle::badge("experimental")`<br>
 #' Full *General Unified Threshold models of Survival* (GUTS) with stochastic
 #' death (*SD*). The model was defined by Jager et al. (2011). It is
 #' compatible with the *Full GUTS* model as described by EFSA (2018), but
@@ -133,7 +133,7 @@ GUTS_SD <- function(scaled_ci=FALSE, dose_metric=c("D", "Ci", "Cw")) {
 #   cf Jager et al (2011), Table 3
 #' GUTS-IT scenario
 #'
-#' `r lifecycle::badge("experimental")`<br/>
+#' `r lifecycle::badge("experimental")`<br>
 #' Full *General Unified Threshold models of Survival* (GUTS) with Individual Tolerance
 #  Distribution (*IT*). The model was defined by Jager et al. (2011). It is
 #' compatible with the *Full GUTS* model as described by EFSA (2018), but
